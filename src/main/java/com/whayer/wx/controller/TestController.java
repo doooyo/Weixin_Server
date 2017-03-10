@@ -6,6 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.whayer.wx.common.bean.BeanFactory;
+import com.whayer.wx.common.bean.SpringFactory;
+
 @Controller
 public class TestController {
 
@@ -15,6 +18,9 @@ public class TestController {
 	@ResponseBody
 	public String index() {
 		log.info("TestController.index()");
+		//TestBean bean = (TestBean)BeanFactory.getBean("testBean");
+		TestBean bean = (TestBean)SpringFactory.getBean("testBean");
+		bean.hello();
 		return "test controller";
 	}
 }

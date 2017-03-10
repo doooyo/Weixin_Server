@@ -14,5 +14,12 @@
   <!-- 是否启动init 初始化流程 -->
   <!-- default-init-method="init"> -->
   
+  <context:component-scan base-package="com.whayer.wx">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+  
+  <bean id="springFactory" class="com.whayer.wx.common.bean.SpringFactory"></bean>
+  <bean id="beanFactory" class="com.whayer.wx.common.bean.BeanFactory"></bean>
 </beans>
 

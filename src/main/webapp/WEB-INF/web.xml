@@ -42,11 +42,14 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-	<!-- Spring Listener -->
+	<!-- 
+		Spring Listener 加载IOC.xml
+		/WEB-INF/classes/IOC*.xml,classpath*:IOC*.xml,/WEB-INF/IOC*.xml
+	-->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-		/WEB-INF/classes/IOC*.xml,classpath*:IOC*.xml,/WEB-INF/IOC*.xml
+			classpath*:IOC*.xml
 		</param-value>
 	</context-param>
 	<listener>
