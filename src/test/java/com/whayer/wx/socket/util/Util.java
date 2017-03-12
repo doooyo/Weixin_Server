@@ -44,7 +44,7 @@ public class Util {
 	 */
 	public static Connection getConnection() {
 		try {
-			Class.forName(DRIVER);
+			Class c = Class.forName(DRIVER);
 			Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			return conn;
 		} catch (ClassNotFoundException e) {
