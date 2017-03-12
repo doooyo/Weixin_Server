@@ -29,6 +29,8 @@ public class Server {
 				socket=serverSocket.accept();
 				//创建一个新的线程
 				ServerThread serverThread=new ServerThread(socket);
+				//线程优先级范围为【1,10】，默认为5;我们适当降低线程优先级会使程序效率提高
+				serverThread.setPriority(4);
 				//启动线程
 				serverThread.start();
 				

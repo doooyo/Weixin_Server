@@ -48,7 +48,7 @@ public class ServerThread extends Thread {
 			//关闭资源
 			try {
 				if(pw!=null)
-					pw.close();
+					pw.close(); //注意关闭输出流会导致socket关闭
 				if(os!=null)
 					os.close();
 				if(br!=null)
