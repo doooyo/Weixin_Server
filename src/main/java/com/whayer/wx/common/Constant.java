@@ -40,6 +40,15 @@ public interface Constant {
 	
 	public static final String  ROOT     = "root";
 	public static final String  WEB_ROOT = "/";
+	
+	//================FOR SK==============================
+	public static final String  USER_PASS_PREFIX = "_sk_";
+	public static final String  TIME             = "time";
+	
+	public static final String SESSION_ID        = "sessionid";
+	public static final String USER              = "user";
+	public static final String USER_NAME         = "username";
+	public static final String USER_TYPE         = "userType";
 	  
 	/**
 	 * 数据库配置, 第三方API地址也可写在此处
