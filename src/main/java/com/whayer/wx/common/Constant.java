@@ -17,6 +17,10 @@ public interface Constant {
 	public static final String TIMEG = "yyyyMMdd";
 
 	public static final String FILE_SEPARATOR = File.separator;
+	
+	public static final String  UNDERLINE = "_";
+	public static final String  ENCRYPTED = "+";
+	public static final String  DECRYPTED = "-";
 
 	public static final String GBK       = "GBK";
 	public static final String UTF16LE   = "UTF-16LE";
@@ -33,6 +37,10 @@ public interface Constant {
 	public static final boolean FALSE    = false;
 	public static final String  SUCCESS  = "success";
 	public static final String  FAIL     = "fail";
+	
+	public static final String  ROOT     = "root";
+	public static final String  WEB_ROOT = "/";
+	  
 	/**
 	 * 数据库配置, 第三方API地址也可写在此处
 	 */

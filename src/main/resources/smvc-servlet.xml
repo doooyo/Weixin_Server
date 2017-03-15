@@ -25,6 +25,11 @@
 	<!-- 默认的注解映射的支持 -->
 	<mvc:annotation-driven />
 	
+	<!-- AES加密器 -->
+	<bean id="aes" class="com.whayer.wx.common.encrypt.AES">
+		<constructor-arg value="2017.03_sk_chengdu_china" />
+	</bean>
+	
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/jsp/" />
 		<property name="suffix" value=".jsp" />
