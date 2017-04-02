@@ -17,7 +17,9 @@ public class SpringResource implements ApplicationContextAware{
 	}
 	
 	public void getResource() throws IOException {
-		Resource resource = applicationContext.getResource("classpath:test/1.txt");
+		//Resource resource = applicationContext.getResource("classpath:test/1.txt");
+		//Resource resource = applicationContext.getResource("file:/Users/apple/Desktop/test.txt");
+		Resource resource = applicationContext.getResource("url:http://blog.csdn.net/hss01248/article/details/53405251");
 		System.out.println(resource.getFilename());
 		System.out.println(resource.contentLength());
 	}
