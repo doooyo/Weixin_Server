@@ -27,8 +27,9 @@ import com.whayer.wx.login.vo.SkUser;
 public class LoginController extends BaseController {
 
 	private final static Logger log = LoggerFactory.getLogger(LoginController.class);
-
-	@Resource
+	
+	@Resource(name = "userService") //按byName装配,并指定别名; 默认其实就是首字母转小写其他不变的规则
+	//@Resource(type = UserService.class)//按byType装配
 	private UserService userService;
 
 	private ResponseCondition getErrorBean(ResponseCondition res, Integer errorCode) {
