@@ -1,4 +1,6 @@
 package com.whayer.wx.test.annotation;
+import com.whayer.wx.test.annotation.Column;
+import com.whayer.wx.test.annotation.Table;
 
 @Table("user")
 public class Filter {
