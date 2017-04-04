@@ -10,24 +10,38 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd  
         http://www.springframework.org/schema/mvc  
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+        
+    <context:property-placeholder location="classpath:x.properties" />
+    
+    <mvc:annotation-driven />
 
-	<!-- 激活注解标签生命周期 -->
-	<context:annotation-config></context:annotation-config>
-
-	<!-- 自动扫描的controller&service -->
-	<context:component-scan base-package="com.whayer.wx">
+	<context:component-scan base-package="com.whayer.wx.**.controller"
+		use-default-filters="false">
 		<context:include-filter type="annotation"
 			expression="org.springframework.stereotype.Controller" />
-		<context:exclude-filter type="annotation"
-			expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation"
+			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 	</context:component-scan>
-
-	<!-- 默认的注解映射的支持 -->
-	<mvc:annotation-driven />
 	
-	<!-- AES加密器 -->
+	<mvc:resources mapping="/static/**" location="/WEB-INF/static/" />
+
 	<bean id="aes" class="com.whayer.wx.common.encrypt.AES">
-		<constructor-arg value="2017.03_sk_chengdu_china" />
+		<constructor-arg value="2017.03_duyu_chengdu_china" />
+	</bean>
+	
+	<bean
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/ftl/" />
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="template_update_delay">10</prop>
+				<prop key="default_encoding">UTF-8</prop>
+				<prop key="number_format">0.#</prop>
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="classic_compatible">true</prop>
+				<prop key="template_exception_handler">ignore</prop>
+			</props>
+		</property>
 	</bean>
 	
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -36,7 +50,6 @@
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
 	</bean>
 	
-	<!-- 自动注入多视图 -->
 	<bean class="com.whayer.wx.common.mvc.MutiViewResolver">
 		<property name="resolvers">
 			<map>
@@ -59,19 +72,38 @@
 			</map>
 		</property>
 	</bean>
-
-	<!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 id必须为 multipartResolver -->
-	<!-- 如果能自行解析multipart 则不能配置该multipartResolver -->
-	<!-- <bean id="multipartResolver"
+	
+	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!--one of the properties available;the maximum upload size in bytes 100M -->
 		<property name="defaultEncoding" value="UTF-8" />
-		<property name="maxUploadSize" value="200000" />
-	</bean> -->
-
-	<!-- 自定义拦截器 -->
-	<!-- <mvc:interceptors>
-		<bean class="com.whayer.common.wx.xxxxx">
+		<property name="maxUploadSize" value="104857600" />
+	</bean>
+	
+	<bean id="exceptionResolver"
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop
+					key="org.springframework.web.multipart.MaxUploadSizeExceededException">/error_fileupload</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<mvc:interceptors>
+		<bean class="com.whayer.wx.common.mvc.CommonInterceptor">
+			<property name="aes" ref="aes"/>
+			<property name="excludeUrlPatterns">
+				<array>
+					<value>/index</value>
+					<value>/login</value>
+					<value>/logout </value>
+					<value>/upload </value>
+					<value>/facade/** </value>
+					<value>/static/**</value>
+				</array>
+			</property>
 		</bean>
-	</mvc:interceptors> -->
+	</mvc:interceptors>
 
 </beans>   

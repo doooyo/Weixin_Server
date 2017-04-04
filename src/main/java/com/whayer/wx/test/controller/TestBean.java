@@ -1,4 +1,4 @@
-package com.whayer.wx.controller;
+package com.whayer.wx.test.controller;
 
 import org.springframework.stereotype.Repository;
 

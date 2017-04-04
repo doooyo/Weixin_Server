@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.whayer.wx.common.bean.SpringFactory;
-import com.whayer.wx.controller.TestBean;
+import com.whayer.wx.test.controller.TestBean;
 
 public class SpringFactoryTest {
 	

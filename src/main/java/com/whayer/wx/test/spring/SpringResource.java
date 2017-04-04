@@ -1,4 +1,4 @@
-package com.whayer.wx.spring;
+package com.whayer.wx.test.spring;
 
 import java.io.IOException;
 

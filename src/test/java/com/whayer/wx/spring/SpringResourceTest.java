@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.whayer.wx.base.UnitTestBase;
+import com.whayer.wx.test.spring.SpringResource;
 
 public class SpringResourceTest extends UnitTestBase{
 	
