@@ -12,6 +12,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.AES;
+import com.whayer.wx.login.vo.SkUser;
 
 /**
  * 拦截器
@@ -34,7 +35,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		log.debug("SetCommonDataInterceptor.preHandle()");
+		log.debug("CommonInterceptor.preHandle()");
 		if (isExclude(request)) {
 			return true;
 		}
@@ -45,12 +46,15 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		// 验证登录信息,分别从cookie和session取出并进行匹配
 		Box box = new Box();
 		loadCookie(request, box);
-		String user = aes.decrypt(box.$cv(X.USER));
+		String sessioncookieid = aes.decrypt(box.$cv(X.SESSION_ID));
+		String userid = aes.decrypt(box.$cv(X.USERID));
+		String sessionid = (String)request.getSession().getAttribute(X.SESSION_ID);
+		SkUser user = (SkUser)request.getSession().getAttribute(X.USER);
 
-		if (!"error".equals(user)) {
+		if (null != user && sessioncookieid.equals(sessionid) && userid.equals(user.getId())) {
 			return true;
 		} else {
-			request.getRequestDispatcher("/login").forward(request, response);
+			//request.getRequestDispatcher("/login").forward(request, response); //只提供RESTful接口,不提供后台跳转
 		}
 		return false;
 	}

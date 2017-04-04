@@ -9,13 +9,13 @@ public class SkUser implements Serializable{
 	private static final long serialVersionUID = -9040151004036751096L;
 	
 	private String id;
-	private String pId;
-	private String username;
-	private String password;
-	private Long points;
-	private byte[] photo;
-	private Integer auditState;
-	private Integer isAgent;
+	private String pId;      //父级代理ID
+	private String username; //用户名
+	private String password; //用户密码
+	private Long points;     //积分
+	private byte[] photo;    //头像
+	private Integer auditState; //审核状态    0:未审核   1:已审核
+	private Integer isAgent;    //是否区域代理 0:普通用户 1:区域代理
 	
 	@Override
 	public String toString() {

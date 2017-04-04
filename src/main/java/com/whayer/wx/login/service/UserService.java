@@ -18,7 +18,7 @@ public interface UserService {
 	 * @param user
 	 * @return
 	 */
-	public SkUser findUserByName(SkUser user);
+	public SkUser findUserByName(String userName);
 
 	/**
 	 * 修改用户

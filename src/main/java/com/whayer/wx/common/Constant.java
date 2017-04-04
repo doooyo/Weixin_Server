@@ -41,13 +41,21 @@ public interface Constant {
 	public static final String  ROOT     = "root";
 	public static final String  WEB_ROOT = "/";
 	
+	public static final String  KEY      = "key";
+	public static final String  EMPTY    = "";
+	
 	//================FOR SK==============================
 	public static final String  USER_PASS_PREFIX = "_sk_";
 	public static final String  TIME             = "time";
 	
+	public static final String  GET              = "GET";
+	public static final String  POST             = "POST";
+	
 	public static final String SESSION_ID        = "sessionid";
 	public static final String USER              = "user";
 	public static final String USER_NAME         = "username";
+	public static final String PASSWORD          = "password";
+	public static final String USERID            = "userid";
 	public static final String USER_TYPE         = "userType";
 	  
 	/**
