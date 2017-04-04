@@ -34,7 +34,7 @@ public class LoginController extends BaseVerificationController {
 
 	private final static Logger log = LoggerFactory.getLogger(LoginController.class);
 	
-	@Resource(name = "userService")      //byName装配,并指定别名; 默认首字母转小写其他不变的规则
+	@Resource //byName装配,并指定别名; 默认首字母转小写其他不变的规则
 	//@Resource(type = UserService.class)//byType装配
 	private UserService userService;
 
