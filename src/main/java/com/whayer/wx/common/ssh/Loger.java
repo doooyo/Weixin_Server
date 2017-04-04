@@ -48,6 +48,7 @@ public class Loger {
 
       InputStream stdout = new StreamGobbler(sess.getStdout());
 
+      @SuppressWarnings("resource")
       BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
 
       while (true) {

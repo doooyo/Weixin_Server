@@ -1,7 +1,7 @@
 package com.whayer.wx.login.vo;
 
 import java.io.Serializable;
-import java.sql.Blob;
+//import java.sql.Blob;
 import java.util.Arrays;
 
 public class SkUser implements Serializable{

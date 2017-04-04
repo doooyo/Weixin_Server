@@ -10,5 +10,5 @@ public interface UserDao extends DAO{
 	
 	public SkUser findUserByName(@Param("username") String userName);
 	
-	
+	public SkUser findUser(SkUser user);
 }

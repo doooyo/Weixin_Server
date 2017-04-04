@@ -15,8 +15,8 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public SkUser findUser(SkUser user) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return userDao.findUser(user);
 	}
 
 	@Override

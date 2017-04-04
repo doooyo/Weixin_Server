@@ -55,7 +55,6 @@ public class BaseController {
 	   * @param request
 	   * @param bean
 	   */
-	  @SuppressWarnings("unchecked")
 	  protected void loadAttribute(HttpServletRequest request, Box box) {
 	    log.debug("BaseController.loadAttribute()");
 	    Enumeration<String> names = request.getAttributeNames();
@@ -72,7 +71,6 @@ public class BaseController {
 	   * @param request
 	   * @param bean
 	   */
-	  @SuppressWarnings("unchecked")
 	  protected void loadParameter(HttpServletRequest request, Box box) {
 	    log.debug("BaseController.loadParameter()");
 	    Enumeration<String> names = request.getParameterNames();

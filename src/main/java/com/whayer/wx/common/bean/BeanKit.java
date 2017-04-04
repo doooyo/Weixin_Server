@@ -6,13 +6,10 @@ import java.util.Map;
 
 import javax.servlet.ServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.whayer.wx.common.X;
 
 public class BeanKit {
-	private static Logger log = LoggerFactory.getLogger(BeanKit.class);
+	//private static Logger log = LoggerFactory.getLogger(BeanKit.class);
 	private static final String SET = "set";
 
 	/**
@@ -84,6 +81,7 @@ public class BeanKit {
 	 * @param source
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private static Object getValue(String key, Object source) {
 		Object value = null;
 		if (source instanceof Map<?, ?>) {

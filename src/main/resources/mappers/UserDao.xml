@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.go2plus.core.userCenter.dao.UserDao">
+
+  <!-- 一对一关系 -->
+  <sql id="userFields">
+    id,
+    type,
+    username,
+    password,
+    mobile,
+    is_mobile_verified,
+    mobile_verified_time,
+    last_login_time,
+    last_login_ip,
+    is_auto_wireless,
+    STATE,
+    create_time,
+    create_ip,
+    update_time,
+    last_session,
+    last_session_time
+  </sql>
+
+  <!-- 查询用户的有用user_meta信息 -->
+  <select id="findUseMeta" parameterType="int" resultType="UserMeta">
+    select
+    user_id,
+    title,
+    email,
+    qq,
+    shop_url,
+    phone
+    from user_meta
+    where
+    user_meta.user_id=#{userId}
+  </select>
+
+  <!-- 查询用户的所有信息 -->
+  <select id="findFullUserInfo" parameterType="int" resultMap="userFullResult">
+    select
+    username,
+    qq
+    from user
+    join
+    user_meta
+    on
+    user.id=user_meta.user_id
+    where
+    user.id=#{userId}
+  </select>
+
+  <resultMap type="User" id="userFullResult">
+    <result property="userMeta.qq" column="qq" />
+    <result property="userMeta.id" column="usermetaid" />
+  </resultMap>
+
+  <resultMap id="supplierproductResultMap" type="User">
+    <result property="username" column="username" />
+    <result property="userMeta.qq" column="qq" />
+  </resultMap>
+
+  <!-- 更新卖家用户user_meta信息 -->
+  <update id="updateUserMeta" parameterType="UserMeta">
+    UPDATE user_meta SET
+    qq=#{qq},
+    email=#{email},
+    phone=#{phone},
+    title=#{title},
+    shop_url=#{shopUrl}
+    WHERE
+    user_id=#{userId}
+  </update>
+
+  <!-- 登录更新用户 -->
+  <update id="updateUser" parameterType="User">
+    update user
+    set
+    last_login_ip = #{lastLoginIp},
+    last_login_time = #{lastLoginTime},
+    last_session
+    = #{lastSession},
+    last_session_time = #{lastSessionTime}
+    where id = #{id}
+  </update>
+
+  <!-- 更新用户手机 -->
+  <update id="updateUserMobile" parameterType="User">
+    update user
+    set
+    mobile=#{mobile}
+    where id=#{id}
+  </update>
+
+  <!-- 更新用户密码 -->
+  <update id="updateUserPassword" parameterType="User">
+    update user set
+    password=#{password}
+    where
+    id=#{id}
+  </update>
+
+  <!--根据用户id查询厂家认证状态 -->
+  <select id="findSupplierCertifiedTypeById" parameterType="int" resultType="String">
+    select certified_type
+    from supplier
+    where user_id =
+    #{userId}
+  </select>
+
+
+  <!--根据用户id查找厂家最近一周发布新款数量 -->
+  <select id="findWeekPublishById" parameterType="int" resultType="int">
+    select count(*)
+    from product
+    where user_id = #{userId} and
+    date(create_time)>=DATE_SUB(CURDATE(), INTERVAL 18 DAY)
+    <!--and DATE_SUB(CURDATE(), INTERVAL 18 DAY) <= create_time -->
+  </select>
+
+  <select id="findUser" parameterType="User" resultType="User">
+    select
+    <include refid="userFields" />
+    from user
+    where state>=0
+    <if test="id >0">
+      and id = #{id}
+    </if>
+    <if test="username >''">
+      and username = #{username}
+    </if>
+    <if test="password > ''">
+      and password = #{password}
+    </if>
+  </select>
+
+  <!--根据url地址找用户id -->
+  <select id="queryUserIdByUrl" parameterType="String" resultType="int">
+    select user_id
+    from site
+    where subdomain =#{shopUrl}
+    and state=1;
+  </select>
+  
+  <select id="findUserNameByUserName"  resultType="User">
+    select
+    username
+    from user
+    where 1=1
+    <if test="userName !='' and userName!=null">
+      and username = #{userName}
+    </if>
+    limit 1
+  </select>
+  
+  <select id="findMobileByMobile"  resultType="User">
+    select
+    mobile
+    from user
+    where 1=1
+    <if test="mobile !='' and mobile!=null">
+      and mobile = #{mobile}
+    </if>
+    limit 1
+  </select>
+  
+  
+  <select id="findEmailByEmail" resultType="java.lang.String">
+      select email from user_meta where email=#{email} limit 1
+  </select>
+  <!--根据userid查询邮箱  -->
+  <select id="findEmailByUserId" resultType="java.lang.String">
+      select email from user_meta where user_id=#{userId} limit 1
+  </select>
+  
+  <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+      insert into user(type,username,password,mobile,create_ip,create_time) values(#{type},#{username},#{password},#{mobile},#{createIp},#{createTime})
+  </insert>
+  <insert id="insertMeta" parameterType="UserMeta" useGeneratedKeys="true" keyProperty="id">
+      insert into user_meta(user_id,email,qq,stores) values(#{userId},#{email},#{qq},#{stores})
+  </insert>
+  
+</mapper>
