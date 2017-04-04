@@ -1,4 +1,4 @@
-package com.whayer.wx.util;
+package com.whayer.wx.common.wechart;
 
 import java.util.Arrays;
 

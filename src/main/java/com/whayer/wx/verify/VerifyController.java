@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.whayer.wx.util.VerifyUtil;
+import com.whayer.wx.common.wechart.VerifyUtil;
 
 /**
  * 验证微信token
