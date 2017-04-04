@@ -16,6 +16,7 @@ public class SkUser implements Serializable{
 	private byte[] photo;    //头像
 	private Integer auditState; //审核状态    0:未审核   1:已审核
 	private Integer isAgent;    //是否区域代理 0:普通用户 1:区域代理
+	private String mobile;      //手机
 	
 	@Override
 	public String toString() {
@@ -73,7 +74,11 @@ public class SkUser implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 
 }

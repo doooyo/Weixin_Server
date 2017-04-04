@@ -4,27 +4,45 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.go2plus.core.userCenter.dao.UserDao">
+<mapper namespace="com.whayer.wx.login.dao.UserDao">
 
   <!-- 一对一关系 -->
   <sql id="userFields">
     id,
-    type,
     username,
     password,
-    mobile,
-    is_mobile_verified,
-    mobile_verified_time,
-    last_login_time,
-    last_login_ip,
-    is_auto_wireless,
-    STATE,
-    create_time,
-    create_ip,
-    update_time,
-    last_session,
-    last_session_time
+    pid,
+    points,
+    photo,
+    audit_state,
+    is_agent,
+    mobile
   </sql>
+  
+  <!-- 根据用户名查询用户 -->
+  <select id="findUserByName" parameterType="String" resultType="SKUser">
+    select
+    <include refid="userFields" />
+    from sk_user 
+    where username=#{username}
+  </select>
+  
+  <!-- 根据用户名/密码查询用户 -->
+  <select id="findUser" parameterType="User" resultType="User">
+    select
+    <include refid="userFields" />
+    from sk_user
+    where 1=1
+    <if test="id >''">
+      and id = #{id}
+    </if>
+    <if test="username >''">
+      and username = #{username}
+    </if>
+    <if test="password > ''">
+      and password = #{password}
+    </if>
+  </select>
 
   <!-- 查询用户的有用user_meta信息 -->
   <select id="findUseMeta" parameterType="int" resultType="UserMeta">
@@ -53,7 +71,7 @@
     where
     user.id=#{userId}
   </select>
-
+  
   <resultMap type="User" id="userFullResult">
     <result property="userMeta.qq" column="qq" />
     <result property="userMeta.id" column="usermetaid" />
@@ -120,22 +138,6 @@
     where user_id = #{userId} and
     date(create_time)>=DATE_SUB(CURDATE(), INTERVAL 18 DAY)
     <!--and DATE_SUB(CURDATE(), INTERVAL 18 DAY) <= create_time -->
-  </select>
-
-  <select id="findUser" parameterType="User" resultType="User">
-    select
-    <include refid="userFields" />
-    from user
-    where state>=0
-    <if test="id >0">
-      and id = #{id}
-    </if>
-    <if test="username >''">
-      and username = #{username}
-    </if>
-    <if test="password > ''">
-      and password = #{password}
-    </if>
   </select>
 
   <!--根据url地址找用户id -->
