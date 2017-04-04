@@ -154,16 +154,18 @@ public class LoginController extends BaseVerificationController {
 	@RequestMapping("/logout")
 	public ResponseCondition signOut(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Box box = loadNewBox(request);
-		Cookie cu = new Cookie(X.USER, null);
+		Cookie cu = new Cookie(X.USERID, null);
 		Cookie ct = new Cookie(X.USER_TYPE, null);
+		Cookie cs = new Cookie(X.SESSION_ID, null);
 		cu.setMaxAge(0);
 		ct.setMaxAge(0);
-		box.getCookie().put(X.USER, cu);
+		cs.setMaxAge(0);
+		box.getCookie().put(X.USERID, cu);
 		box.getCookie().put(X.USER_TYPE, ct);
+		box.getCookie().put(X.SESSION_ID, cs);
 		writeCookies(box, response);
 		request.getSession().setAttribute(X.USER, null);
-		request.getSession().setAttribute(X.USER_TYPE, null);
-		request.getSession().setAttribute(X.USER_NAME, null);
+		request.getSession().setAttribute(X.SESSION_ID, null);
 		return new ResponseCondition();
 	}
 
