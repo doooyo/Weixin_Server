@@ -21,6 +21,6 @@ public class TestController {
 		//TestBean bean = (TestBean)BeanFactory.getBean("testBean");
 		TestBean bean = (TestBean)SpringFactory.getBean("testBean");
 		bean.hello();
-		return "test controller";
+		return "test";
 	}
 }

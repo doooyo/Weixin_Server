@@ -23,7 +23,8 @@
 			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 	</context:component-scan>
 	
-	<mvc:resources mapping="/static/**" location="/WEB-INF/static/" />
+	<!-- <mvc:resources mapping="/static/**" location="/WEB-INF/static/" /> -->
+	<mvc:default-servlet-handler default-servlet-name="default"/>
 
 	<bean id="aes" class="com.whayer.wx.common.encrypt.AES">
 		<constructor-arg value="2017.03_duyu_chengdu_china" />
@@ -105,5 +106,21 @@
 			</property>
 		</bean>
 	</mvc:interceptors>
-
+	
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	
 </beans>   
