@@ -1,7 +1,7 @@
 package com.whayer.wx.common.mvc;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class ResponseCondition implements Serializable{
@@ -12,7 +12,7 @@ public class ResponseCondition implements Serializable{
 	private Integer httpCode = 200;    
 	private String errorMsg = "";
 	private Boolean isSuccess = true;
-	private ArrayList<?> result;
+	private List<?> result;
 	
 	
 	
@@ -40,13 +40,16 @@ public class ResponseCondition implements Serializable{
 	public void setIsSuccess(Boolean isSuccess) {
 		this.isSuccess = isSuccess;
 	}
-	public ArrayList<?> getResult() {
+	
+	public List<?> getResult() {
 		return result;
 	}
-	public void setResult(ArrayList<?> result) {
+	public void setResult(List<?> result) {
 		this.result = result;
 	}
-	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	@Override
 	public String toString() {
 		return "ResponseCondition [errorCode=" + errorCode + ", errorMsg=" + errorMsg + ", isSuccess=" + isSuccess + ", result="

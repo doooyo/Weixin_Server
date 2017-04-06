@@ -47,6 +47,7 @@ public class LoginController extends BaseVerificationController {
 	
 	@RequestMapping(value = "/login/verify", method = RequestMethod.GET)
 	public void getVerifyCodeImg(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("LoginController.getVerifyCodeImg()");
 		Box box = loadNewBox(request);
 		response.setHeader("Progma", "No-cache");
 		response.setHeader("Cache-Control", "no-cache");
@@ -58,6 +59,8 @@ public class LoginController extends BaseVerificationController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition login(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("LoginController.login()");
+		
 		Box box = loadNewBox(request);
 		ResponseCondition res = new ResponseCondition();
 		if (!X.POST.equalsIgnoreCase(request.getMethod())) {
