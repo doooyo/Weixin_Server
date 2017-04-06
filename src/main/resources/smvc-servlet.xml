@@ -91,6 +91,7 @@
 		</property>
 	</bean>
 	
+	<!--  
 	<mvc:interceptors>
 		<bean class="com.whayer.wx.common.mvc.CommonInterceptor">
 			<property name="aes" ref="aes"/>
@@ -106,6 +107,7 @@
 			</property>
 		</bean>
 	</mvc:interceptors>
+	-->
 	
 	<bean id="mappingJacksonHttpMessageConverter"
 		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">

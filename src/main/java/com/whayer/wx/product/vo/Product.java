@@ -11,7 +11,7 @@ public class Product implements Serializable{
 	private String name;     //产品名
 	private String imgUrl;   //产品图片相对路径
 	private BigDecimal price;//产品价格
-	private String decription;//产品描述
+	private String description;//产品描述
 	
 	
 	public String getId() {
@@ -38,11 +38,11 @@ public class Product implements Serializable{
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
-	public String getDecription() {
-		return decription;
+	public String getDescription() {
+		return description;
 	}
-	public void setDecription(String decription) {
-		this.decription = decription;
+	public void setDescription(String decription) {
+		this.description = decription;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;

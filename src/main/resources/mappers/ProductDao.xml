@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whayer.wx.product.dao.ProductDao">
+
+	<!-- 一对一关系 -->
+	<sql id="productFields">
+		id,
+		name,
+		img_url,
+		price,
+		description
+	</sql>
+	
+	<resultMap id="productListMap" type="Product">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="imgUrl" property="img_url" />
+        <result column="price" property="price" />
+        <result column="description" property="description" />
+    </resultMap>
+	
+	<select id="getProductList"  resultMap="productListMap" >
+        select 
+        <include refid="productFields" /> 
+        from sk_product
+    </select>
+</mapper>

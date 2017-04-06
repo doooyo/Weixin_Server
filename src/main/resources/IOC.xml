@@ -59,6 +59,7 @@
 		<property name="typeAliasesPackage" 
 			value="
 	    			com.whayer.wx.login.vo;
+	    			com.whayer.wx.product.vo;
 	    		  " />
 		<property name="plugins">
 			<array>
