@@ -26,4 +26,23 @@
         <include refid="productFields" /> 
         from sk_product
     </select>
+    
+    <insert id="saveProduct" parameterType="Product">
+		insert into sk_product(
+			id,
+			name,
+			img_url,
+			price,
+			description,
+			create_time
+			)
+			values(
+			#{id},
+			#{name},
+			#{imgUrl},
+			#{price},
+			#{description},
+			now()
+		)
+	</insert>
 </mapper>

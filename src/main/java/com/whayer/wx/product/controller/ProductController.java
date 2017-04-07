@@ -1,6 +1,8 @@
 package com.whayer.wx.product.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,40 @@ public class ProductController extends BaseController{
 		
 		res.setResult(list);
 		
+		return res;
+	}
+	
+	@RequestMapping(value = "/save", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition save(HttpServletRequest request, HttpServletResponse response){
+		log.info("ProductController.save()");
+		Box box = loadNewBox(request);
+		
+		ResponseCondition res = new ResponseCondition();
+		
+		String id = UUID.randomUUID().toString();
+		String name = box.$p("name");
+		String imgUrl = box.$p("imgUrl");
+		BigDecimal price = new BigDecimal(box.$p("price"));
+		String description = box.$p("description");
+		
+		if(null == name || null == imgUrl || null == price){
+			res.setHttpCode(400);
+			res.setIsSuccess(false);
+			return res;
+		}
+		Product product = new Product();
+		product.setId(id);
+		product.setImgUrl(imgUrl);
+		product.setName(name);
+		product.setPrice(price);
+		product.setDescription(description);
+		
+		int result = productService.saveProduct(product);
+		if(result > 0){
+			res.setHttpCode(200);
+			res.setIsSuccess(true);
+		}
 		return res;
 	}
 }

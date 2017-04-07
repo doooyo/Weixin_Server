@@ -11,7 +11,7 @@
  Target Server Version : 50717
  File Encoding         : utf-8
 
- Date: 04/07/2017 00:00:10 AM
+ Date: 04/08/2017 00:35:09 AM
 */
 
 SET NAMES utf8;
@@ -87,7 +87,7 @@ CREATE TABLE `sk_order` (
   `vouchers_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '代金劵(可以无限张, 使用逗号分隔id)',
   `examinee_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '体检人id',
   `amount` decimal(10,0) unsigned zerofill DEFAULT '0000000000' COMMENT '金额',
-  `state` tinyint(1) unsigned zerofill DEFAULT '0' COMMENT '订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)',
+  `state` int(1) unsigned zerofill DEFAULT '0' COMMENT '订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)',
   `is_invoice` tinyint(1) unsigned zerofill DEFAULT '0' COMMENT '是否需要发票(0: 无需发票1:需要发票)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单信息表';
@@ -110,8 +110,19 @@ DROP TABLE IF EXISTS `sk_product`;
 CREATE TABLE `sk_product` (
   `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '产品id',
   `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '产品名字',
+  `img_url` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '产品图片相对路径',
+  `price` decimal(10,2) DEFAULT NULL COMMENT '产品价格',
+  `description` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '产品描述',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品表';
+
+-- ----------------------------
+--  Records of `sk_product`
+-- ----------------------------
+BEGIN;
+INSERT INTO `sk_product` VALUES ('001', '产品A', '/xxx/xxx/1.jpg', '15.00', '产品A测试', null), ('002', '产品B', '/xxx/xxx/2.jpg', '16.00', '产品B测试', null), ('7e8779bb-5a0e-4197-9a68-db2be52fb51a', '产品D', '/user/xxx/4.jpg', '30.52', '产品D的描述......', '2017-04-08 00:34:03'), ('f1366c77-b2f4-4edf-aaf5-a4b863a9417a', '产品C', '/user/xxx/3.jpg', '31.00', '产品C的描述......', '2017-04-08 00:24:53');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `sk_user`
