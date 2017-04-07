@@ -12,10 +12,16 @@ public class ResponseCondition implements Serializable{
 	private Integer httpCode = 200;    
 	private String errorMsg = "";
 	private Boolean isSuccess = true;
-	private List<?> result;
+	private List<?> list;
+	private Object result;
 	
 	
-	
+	public Object getResult() {
+		return result;
+	}
+	public void setResult(Object result) {
+		this.result = result;
+	}
 	public Integer getErrorCode() {
 		return errorCode;
 	}
@@ -40,19 +46,20 @@ public class ResponseCondition implements Serializable{
 	public void setIsSuccess(Boolean isSuccess) {
 		this.isSuccess = isSuccess;
 	}
-	
-	public List<?> getResult() {
-		return result;
+	public List<?> getList() {
+		return list;
 	}
-	public void setResult(List<?> result) {
-		this.result = result;
+	public void setList(List<?> list) {
+		this.list = list;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
 	@Override
 	public String toString() {
-		return "ResponseCondition [errorCode=" + errorCode + ", errorMsg=" + errorMsg + ", isSuccess=" + isSuccess + ", result="
-				+ result + "]";
+		return "ResponseCondition [errorCode=" + errorCode + ", httpCode=" + httpCode + ", errorMsg=" + errorMsg
+				+ ", isSuccess=" + isSuccess + ", list=" + list + "]";
 	}
+	
 }

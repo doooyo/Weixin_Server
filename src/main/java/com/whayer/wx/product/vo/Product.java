@@ -54,4 +54,11 @@ public class Product implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", imgUrl=" + imgUrl + ", price=" + price + ", description="
+				+ description + ", createTime=" + createTime + "]";
+	}
+	
 }

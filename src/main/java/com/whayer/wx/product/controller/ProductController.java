@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.product.service.ProductService;
 import com.whayer.wx.product.vo.Product;
+
 
 @Controller
 @RequestMapping("/product")
@@ -35,22 +37,59 @@ public class ProductController extends BaseController{
 	public ResponseCondition getList(HttpServletRequest request, HttpServletResponse response){
 		log.info("ProductController.getList()");
 		Box box = loadNewBox(request);
-		ResponseCondition res = new ResponseCondition();
 		
 		List<Product> list = productService.getProductList();
 		
-		res.setResult(list);
+		ResponseCondition res = getResponse(200, true);
+		res.setList(list);
 		
 		return res;
 	}
 	
-	@RequestMapping(value = "/save", method = RequestMethod.GET)
+	@RequestMapping(value = "/findById", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition findById(HttpServletRequest request, HttpServletResponse response){
+		log.info("ProductController.findById()");
+		Box box = loadNewBox(request);
+		
+		
+		String id = box.$p("id");
+		if(null == id){
+			return getResponse(400, false);
+		}
+		Product product = productService.getProductById(id);
+		
+		ResponseCondition res = getResponse(200, true);
+		res.setResult(product);
+		
+		return res;
+	}
+	
+	@RequestMapping(value = "/deleteById", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition deleteById(HttpServletRequest request, HttpServletResponse response){
+		log.info("ProductController.deleteById()");
+		Box box = loadNewBox(request);
+		
+		
+		String id = box.$p("id");
+		if(null == id){
+			return getResponse(400, false);
+		}
+		
+		productService.deleteProductById(id);
+		
+		ResponseCondition res = getResponse(200, true);
+		
+		return res;
+	}
+	
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition save(HttpServletRequest request, HttpServletResponse response){
 		log.info("ProductController.save()");
 		Box box = loadNewBox(request);
 		
-		ResponseCondition res = new ResponseCondition();
 		
 		String id = UUID.randomUUID().toString();
 		String name = box.$p("name");
@@ -59,9 +98,7 @@ public class ProductController extends BaseController{
 		String description = box.$p("description");
 		
 		if(null == name || null == imgUrl || null == price){
-			res.setHttpCode(400);
-			res.setIsSuccess(false);
-			return res;
+			return getResponse(400, false);
 		}
 		Product product = new Product();
 		product.setId(id);
@@ -70,11 +107,8 @@ public class ProductController extends BaseController{
 		product.setPrice(price);
 		product.setDescription(description);
 		
-		int result = productService.saveProduct(product);
-		if(result > 0){
-			res.setHttpCode(200);
-			res.setIsSuccess(true);
-		}
-		return res;
+		productService.saveProduct(product);
+		
+		return getResponse(200, true);
 	}
 }

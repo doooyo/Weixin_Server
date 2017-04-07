@@ -22,27 +22,46 @@
     </resultMap>
 	
 	<select id="getProductList"  resultMap="productListMap" >
-        select 
-        <include refid="productFields" /> 
-        from sk_product
+		<![CDATA[
+	        select 
+	        <include refid="productFields" /> 
+	        from sk_product
+        ]]>
     </select>
     
     <insert id="saveProduct" parameterType="Product">
-		insert into sk_product(
-			id,
-			name,
-			img_url,
-			price,
-			description,
-			create_time
+		<![CDATA[
+			insert into sk_product(
+				id,
+				name,
+				img_url,
+				price,
+				description,
+				create_time
+				)
+				values(
+				#{id},
+				#{name},
+				#{imgUrl},
+				#{price},
+				#{description},
+				now()
 			)
-			values(
-			#{id},
-			#{name},
-			#{imgUrl},
-			#{price},
-			#{description},
-			now()
-		)
+		]]>
 	</insert>
+	
+	<select id="getProductById" parameterType="String" resultType="Product">
+		<![CDATA[
+			select
+			<include refid="productFields" />
+			from sk_product
+			where id=#{id}
+		]]>
+	</select>
+	
+	<delete id="deleteProductById" parameterType="String">
+		<![CDATA[
+			DELETE FROM sk_product WHERE id=#{id}
+		]]>
+	</delete>
 </mapper>

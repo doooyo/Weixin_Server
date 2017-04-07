@@ -273,6 +273,18 @@ public class BaseController {
 	      e.printStackTrace();
 	    }
 	  }
+	  
+	  protected ResponseCondition getResponse(Integer code, boolean isOk) {
+		  ResponseCondition res = new ResponseCondition();
+		  if(isOk){
+			  res.setHttpCode(code);
+			  res.setIsSuccess(true);
+		  }else{
+			  res.setHttpCode(code);
+			  res.setIsSuccess(false);
+		  }
+		  return res;
+	  }
 
 	  // --------------------- Getter & Setter ------------------------
 
