@@ -44,6 +44,10 @@ public interface Constant {
 	public static final String  KEY      = "key";
 	public static final String  EMPTY    = "";
 	
+	public static final String  PAGE_NUMBER          = "_pn";
+	public static final String  PAGE_SIZE            = "_ps";
+	public static final String  PAGE_NAVIGATION_SIZE = "_pns";
+	
 	//================FOR SK==============================
 	public static final String  USER_PASS_PREFIX = "_sk_";
 	public static final String  TIME             = "time";
