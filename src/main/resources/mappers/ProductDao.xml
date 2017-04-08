@@ -10,7 +10,8 @@
 		name,
 		img_url,
 		price,
-		description
+		description,
+		create_time
 	</sql>
 	
 	<resultMap id="productListMap" type="Product">
