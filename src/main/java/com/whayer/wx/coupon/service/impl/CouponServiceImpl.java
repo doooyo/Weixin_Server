@@ -39,7 +39,7 @@ public class CouponServiceImpl implements CouponService{
 	}
 
 	@Override
-	public Integer deleteCoupontById(String id) {
+	public Integer deleteCouponById(String id) {
 		return couponDao.deleteCoupontById(id);
 	}
 

@@ -40,7 +40,7 @@ public class LoginController extends BaseVerificationController {
 
 	private ResponseCondition getErrorBean(ResponseCondition res, Integer errorCode) {
 		res.setErrorCode(errorCode);
-		res.setHttpCode(500);
+		res.setHttpCode(400);
 		res.setIsSuccess(false);
 		return res;
 	}
@@ -119,7 +119,7 @@ public class LoginController extends BaseVerificationController {
 					return getErrorBean(res, errorCode);
 				} else {
 					// TODO update login time /IP /last_session
-					String ip = HtmlParser.GetClientIp(request);
+					HtmlParser.GetClientIp(request);
 		            String sessionid = MD5.md5Encode(X.uuid());
 
 					Cookie uidc = new Cookie(X.USERID, user.getId().toString());

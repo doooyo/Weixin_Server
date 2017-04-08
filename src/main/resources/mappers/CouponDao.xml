@@ -73,7 +73,7 @@
     	]]>
     </insert>
     
-    <delete id="deleteCoupontById" parameterType="String">
+    <delete id="deleteCouponById" parameterType="String">
    		<![CDATA[
    			DELETE FROM sk_coupon WHERE id=#{id}
    		]]>

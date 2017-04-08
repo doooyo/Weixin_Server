@@ -1,7 +1,7 @@
 package com.whayer.wx.product.service;
 
-import java.util.List;
-
+import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.product.vo.Product;
 
 public interface ProductService {
@@ -10,7 +10,7 @@ public interface ProductService {
 	 * 获取产品列表
 	 * @return
 	 */
-	public List<Product> getProductList();
+	public PageInfo<Product> getProductList(Pagination pagination);
 	
 	/**
 	 * 通过产品ID获取产品详情

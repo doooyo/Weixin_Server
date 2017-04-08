@@ -1,7 +1,6 @@
 package com.whayer.wx.product.controller;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
@@ -37,12 +37,9 @@ public class ProductController extends BaseController{
 		log.info("ProductController.getList()");
 		Box box = loadNewBox(request);
 		
-		List<Product> list = productService.getProductList();
+		PageInfo<Product> pi = productService.getProductList(box.getPagination());
 		
-		ResponseCondition res = getResponse(200, true);
-		res.setList(list);
-		
-		return res;
+		return pagerResponse(pi);
 	}
 	
 	@RequestMapping(value = "/findById", method = RequestMethod.GET)

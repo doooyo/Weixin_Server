@@ -30,5 +30,5 @@ public interface CouponService {
 	 * @param id
 	 * @return
 	 */
-	public Integer deleteCoupontById(String id);
+	public Integer deleteCouponById(String id);
 }
