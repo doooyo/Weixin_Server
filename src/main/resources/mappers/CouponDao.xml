@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whayer.wx.coupon.dao.CouponDao">
+	<!-- 一对一关系 -->
+	<sql id="couponFields">
+		id,
+		user_id,
+		create_user_id,
+		amount,
+		is_effect,
+		is_expired,
+		create_date,
+		use_date
+	</sql>
+	
+	<resultMap id="couponListMap" type="Coupon">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="amount" property="amount" />
+        <result column="is_effect" property="isEffect" />
+        <result column="is_expired" property="isExpired" />
+        <result column="create_date" property="createDate" />
+        <result column="use_date" property="useDate" />
+    </resultMap>
+
+	<select id="getCouponListByUid" parameterType="String" resultMap="couponListMap" >
+		<![CDATA[
+	        select 
+	        id,
+			user_id,
+			create_user_id,
+			amount,
+			is_effect,
+			is_expired,
+			create_date,
+			use_date 
+	        from sk_coupon 
+	        where user_id = #{userId} 
+        ]]>
+    </select>
+    
+    <select id="getCouponById"  parameterType="String" resultType="Coupon">
+    	<![CDATA[
+    		select
+			<include refid="couponFields" />
+			from sk_coupon
+			where id=#{id}
+    	]]>
+    </select>
+    
+    <insert id="saveCoupon" parameterType="Coupon">
+    	<![CDATA[
+    		INSERT INTO sk_coupon(
+				id,
+				user_id,
+				create_user_id,
+				amount,
+				is_effect,
+				is_expired,
+				create_date
+				)
+			VALUES(
+				#{id},
+				#{createUserId},
+				#{amount},
+				1,
+				0,
+				now()
+			)
+    	]]>
+    </insert>
+    
+    <delete id="deleteCoupontById" parameterType="String">
+   		<![CDATA[
+   			DELETE FROM sk_coupon WHERE id=#{id}
+   		]]>
+    </delete>
+</mapper>

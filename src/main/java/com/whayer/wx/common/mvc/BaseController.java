@@ -2,7 +2,9 @@ package com.whayer.wx.common.mvc;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
+import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.AES;
 
@@ -290,6 +293,41 @@ public class BaseController {
 		}
 	}
 
+	protected boolean isNullOrEmpty(String value) {
+        return (value == null || value.trim().length() == 0); 
+    }
+	
+	@SuppressWarnings("rawtypes")
+	protected boolean isNullOrEmpty(Object obj){
+        if (obj == null)  
+            return true;  
+  
+        if (obj instanceof CharSequence)  
+            return ((CharSequence) obj).length() == 0;  
+  
+        if (obj instanceof Collection)  
+            return ((Collection) obj).isEmpty();  
+  
+        if (obj instanceof Map)  
+            return ((Map) obj).isEmpty();  
+  
+        if (obj instanceof Object[]) {  
+            Object[] object = (Object[]) obj;  
+            if (object.length == 0) {  
+                return true;  
+            }  
+            boolean empty = true;  
+            for (int i = 0; i < object.length; i++) {  
+                if (!isNullOrEmpty(object[i])) {  
+                    empty = false;  
+                    break;  
+                }  
+            }  
+            return empty;  
+        }  
+        return false;  
+    }
+	
 	protected ResponseCondition getResponse(Integer code, boolean isOk) {
 		ResponseCondition res = new ResponseCondition();
 		if (isOk) {
@@ -299,6 +337,16 @@ public class BaseController {
 			res.setHttpCode(code);
 			res.setIsSuccess(false);
 		}
+		return res;
+	}
+	
+	protected ResponseCondition pagerResponse(PageInfo<?> pi){
+		ResponseCondition res = getResponse(200, true);
+		res.setList(pi.getList());
+		res.setPageIndex(pi.getPageNum());
+		res.setPageSize(pi.getPageSize());
+		res.setTotal(pi.getTotal());
+		res.setPages(pi.getPages());
 		return res;
 	}
 

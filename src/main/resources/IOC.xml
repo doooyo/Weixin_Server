@@ -60,6 +60,7 @@
 			value="
 	    			com.whayer.wx.login.vo;
 	    			com.whayer.wx.product.vo;
+	    			com.whayer.wx.coupon.vo;
 	    		  " />
 		<property name="plugins">
 			<array>

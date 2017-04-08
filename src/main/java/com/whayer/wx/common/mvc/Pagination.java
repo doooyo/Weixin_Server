@@ -1,7 +1,7 @@
 package com.whayer.wx.common.mvc;
 
 /**
- * 请参考 https://github.com/pagehelper/Mybatis-PageHelper
+ * https://github.com/pagehelper/Mybatis-PageHelper
  * @author duyu
  *
  */
