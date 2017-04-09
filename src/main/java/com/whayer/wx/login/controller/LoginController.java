@@ -28,7 +28,7 @@ import com.whayer.wx.login.vo.SkUser;
  * @author duyu
  * @since  20-03-17
  */
-
+@RequestMapping(value = "/user")
 @Controller
 public class LoginController extends BaseVerificationController {
 
@@ -169,6 +169,31 @@ public class LoginController extends BaseVerificationController {
 		writeCookies(box, response);
 		request.getSession().setAttribute(X.USER, null);
 		request.getSession().setAttribute(X.SESSION_ID, null);
+		return new ResponseCondition();
+	}
+	
+	@RequestMapping("/register")
+	public ResponseCondition register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.register()");
+		
+		Box box = loadNewBox(request);
+		String id = X.uuidPure();
+		
+//		private String id;
+//		private String pId;      //父级代理ID
+//		private String username; //用户名
+//		private String password; //用户密码
+//		private Long points = 0L;//积分
+//		private byte[] photo;    //头像
+//		private Integer auditState = 0; //审核状态    0:未审核   1:已审核
+//		private Integer isAgent = 0;    //是否区域代理 0:普通用户 1:区域代理
+//		private String mobile;      //手机
+		
+		String username = box.$p(X.USER_NAME);
+		String password = box.$p(X.PASSWORD);
+		String mobile = box.$p("mobile");
+		
+		SkUser user = new SkUser();
 		return new ResponseCondition();
 	}
 

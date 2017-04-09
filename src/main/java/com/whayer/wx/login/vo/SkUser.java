@@ -12,10 +12,10 @@ public class SkUser implements Serializable{
 	private String pId;      //父级代理ID
 	private String username; //用户名
 	private String password; //用户密码
-	private Long points;     //积分
+	private Long points = 0L;//积分
 	private byte[] photo;    //头像
-	private Integer auditState; //审核状态    0:未审核   1:已审核
-	private Integer isAgent;    //是否区域代理 0:普通用户 1:区域代理
+	private Integer auditState = 0; //审核状态    0:未审核   1:已审核
+	private Integer isAgent = 0;    //是否区域代理 0:普通用户 1:区域代理
 	private String mobile;      //手机
 	
 	@Override

@@ -1,6 +1,7 @@
 package com.whayer.wx.order.vo;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 体检人
@@ -17,6 +18,8 @@ public class Examinee implements Serializable{
 	private String address; //体检人地址
 	private Boolean gender; //性别(0: 男1:女)
 	private String mobile;  //体检人电话
+	private String identityId; //身份证ID
+	private Date birthday;     //出生日期
 	
 	public String getId() {
 		return id;
@@ -57,10 +60,21 @@ public class Examinee implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	public String getIdentityId() {
+		return identityId;
+	}
+	public void setIdentityId(String identityId) {
+		this.identityId = identityId;
+	}
+	public Date getBirthday() {
+		return birthday;
+	}
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
 	@Override
 	public String toString() {
 		return "Examinee [id=" + id + ", name=" + name + ", age=" + age + ", address=" + address + ", gender=" + gender
-				+ ", mobile=" + mobile + "]";
+				+ ", mobile=" + mobile + ", identityId=" + identityId + ", birthday=" + birthday + "]";
 	}
-	
 }

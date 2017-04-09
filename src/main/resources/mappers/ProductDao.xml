@@ -23,11 +23,9 @@
     </resultMap>
 	
 	<select id="getProductList"  resultMap="productListMap" >
-		<![CDATA[
-	        select 
-	        <include refid="productFields" /> 
-	        from sk_product
-        ]]>
+        select 
+        <include refid="productFields" /> 
+        from sk_product
     </select>
     
     <insert id="saveProduct" parameterType="Product">

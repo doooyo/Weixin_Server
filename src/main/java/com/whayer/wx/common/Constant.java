@@ -44,8 +44,8 @@ public interface Constant {
 	public static final String  KEY      = "key";
 	public static final String  EMPTY    = "";
 	
-	public static final String  PAGE_NUMBER          = "_pn";
-	public static final String  PAGE_SIZE            = "_ps";
+	public static final String  PAGE_NUMBER          = "pageIndex"; //"_pn";
+	public static final String  PAGE_SIZE            = "pageSize";  //"_ps";
 	public static final String  PAGE_NAVIGATION_SIZE = "_pns";
 	
 	//================FOR SK==============================

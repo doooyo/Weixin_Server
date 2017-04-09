@@ -1,8 +1,17 @@
 package com.whayer.wx.login.service;
 
+import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.login.vo.SkUser;
 
 public interface UserService {
+	
+	/**
+	 * 根据用户类型查找用户列表
+	 * @param type (0:普通用户 1:区域代理)
+	 * @return
+	 */
+	public PageInfo<SkUser> getUserListByType(Integer type, Pagination pagination);
 
 	/**
 	 * 根据条件查询用户信息
@@ -26,7 +35,7 @@ public interface UserService {
 	 * @param user
 	 * @return
 	 */
-	public int updateUser(SkUser user);
+	public int updateUserById(SkUser user);
 
 	/**
 	 * 检测用户名是否存在
@@ -50,6 +59,6 @@ public interface UserService {
 	 * @param user
 	 * @return
 	 */
-	public boolean saveUser(SkUser user);
+	public int saveUser(SkUser user);
 
 }

@@ -1,7 +1,6 @@
 package com.whayer.wx.product.controller;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
@@ -87,7 +87,7 @@ public class ProductController extends BaseController{
 		Box box = loadNewBox(request);
 		
 		
-		String id = UUID.randomUUID().toString();
+		String id = X.uuidPure();
 		String name = box.$p("name");
 		String imgUrl = box.$p("imgUrl");
 		BigDecimal price = new BigDecimal(box.$p("price"));
@@ -103,8 +103,12 @@ public class ProductController extends BaseController{
 		product.setPrice(price);
 		product.setDescription(description);
 		
-		productService.saveProduct(product);
-		
-		return getResponse(200, true);
+		int count = productService.saveProduct(product);
+		if(count > 0){
+			ResponseCondition res = getResponse(200, true);
+			res.setResult(product);
+			return res;
+		}
+		else  return getResponse(500, false);
 	}
 }

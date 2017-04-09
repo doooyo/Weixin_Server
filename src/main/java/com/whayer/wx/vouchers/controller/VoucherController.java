@@ -1,7 +1,6 @@
 package com.whayer.wx.vouchers.controller;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -87,7 +86,7 @@ public class VoucherController extends BaseController{
 		String uid = box.$cv(X.USERID);
 		uid = isNullOrEmpty(uid) ? ((SkUser)request.getSession().getAttribute(X.USER)).getId() : uid;
 		
-		String id = UUID.randomUUID().toString();
+		String id = X.uuidPure();
 		String userId = box.$p("userId");
 		String createUserId = uid;
 		BigDecimal amount = new BigDecimal(box.$p("amount"));
@@ -103,8 +102,12 @@ public class VoucherController extends BaseController{
 		
 		
 		int count = voucherService.saveVoucher(voucher);
-		
-		if(count > 0) return getResponse(200, true);
-		else return getResponse(400, false);
+		 
+		if(count > 0) {
+			ResponseCondition res = getResponse(200, true);
+			res.setResult(voucher);
+			return res;
+		}
+		else return getResponse(500, false);
 	}
 }

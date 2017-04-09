@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.whayer.wx.base.UnitTestBase;
+import com.whayer.wx.common.X;
 import com.whayer.wx.product.vo.Product;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -48,6 +49,20 @@ public class ProductServiceTest extends UnitTestBase{
 		String id = "001";
 		int i = productService.deleteProductById(id);
 		System.out.println(i);
+	}
+	
+	@Test
+	public void testCreateRows(){
+		ProductService productService = super.getBean("productServiceImpl");
+		for(int i = 1; i <= 16; i++){
+			Product p = new Product();
+			p.setId(X.uuidPure());
+			p.setImgUrl("/image/icon_"+ i +".jpg");
+			p.setName("产品" + i + "~");
+			p.setPrice(new BigDecimal(100.55 + i*6));
+			p.setDescription("产品"+ i +"的描述......");
+			productService.saveProduct(p);
+		}
 	}
 
 }

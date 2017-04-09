@@ -43,5 +43,96 @@
 			and password = #{password}
 		</if>
 	</select>
+	
+	<update id="updateUserById" parameterType="SkUser">
+		
+			UPDATE sk_user 
+		    <trim prefix="SET" suffixOverrides=",">
+			    <if test="username != null and username != ''">
+			      username = #{username},
+			    </if>
+			    <if test="password != null and password != ''">
+			      password = #{password},
+			    </if>
+			    <if test="pId != null and pId != ''">
+			      p_id = #{pId},
+			    </if>
+			    <if test="points != null">
+			      points = #{points},
+			    </if>
+			    <if test="photo != null">
+			      photo = #{photo},
+			    </if>
+			    <if test="auditState != null">
+			      audit_state = #{auditState},
+			    </if>
+			    <if test="isAgent != null">
+			      is_agent = #{isAgent},
+			    </if>
+			    <if test="mobile != null and mobile != ''">
+			      mobile = #{mobile},
+			    </if>
+		    </trim>
+			<where>
+		      id=#{id}
+		    </where>
+	</update>
   
+  	<select id="isUserNameExist" parameterType="String" resultType="SkUser">
+		select 
+		<include refid="userFields" />
+		from sk_user
+		where username=#{username}
+		limit 1
+  	</select>
+  	
+  	<select id="isMobileExist" parameterType="String" resultType="SkUser">
+		select 
+		<include refid="userFields" />
+		from sk_user
+		where mobile=#{mobile}
+		limit 1
+  	</select>
+  	
+  	<insert id="saveUser" parameterType="SkUser">
+  		insert into sk_user(
+  			<include refid="userFields" />
+  		) 
+  		values(
+  		#{id},
+  		#{username},
+  		#{password},
+  		#{pId},
+  		0,
+  		#{photo},
+  		0,
+  		0,
+  		#{mobile}
+  		)
+  	</insert>
+  	
+  	<resultMap id="userMap" type="SkUser">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="p_id" property="pId" />
+        <result column="points" property="points" />
+        <result column="photo" property="photo" />
+        <result column="audit_state" property="auditState" />
+        <result column="is_agent" property="isAgent" />
+        <result column="mobile" property="mobile" />
+    </resultMap>
+    
+  	<select id="getUserListByType" parameterType="Integer" resultMap="userMap">
+  		<![CDATA[
+	        select 
+	        <include refid="userFields" /> 
+	        from sk_user
+	        <where>
+	        	<if test="type != null">  
+		            is_agent = #{type}  
+		        </if>  
+	        </where>
+        ]]>
+  	</select>
 </mapper>

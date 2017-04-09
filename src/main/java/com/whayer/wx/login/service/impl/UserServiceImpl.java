@@ -1,9 +1,14 @@
 package com.whayer.wx.login.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.login.dao.UserDao;
 import com.whayer.wx.login.service.UserService;
 import com.whayer.wx.login.vo.SkUser;
@@ -26,27 +31,39 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public int updateUser(SkUser user) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int updateUserById(SkUser user) {
+		return userDao.updateUserById(user);
 	}
 
 	@Override
 	public boolean isUserNameExist(String userName) {
-		// TODO Auto-generated method stub
+		SkUser user = userDao.isUserNameExist(userName);
+		if(null != user){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean isMobileExist(String mobile) {
-		// TODO Auto-generated method stub
+		SkUser user = userDao.isMobileExist(mobile);
+		if(null != user){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
-	public boolean saveUser(SkUser user) {
-		// TODO Auto-generated method stub
-		return false;
+	public int saveUser(SkUser user) {
+		return userDao.saveUser(user);
+	}
+
+	@Override
+	public PageInfo<SkUser> getUserListByType(Integer type, Pagination pagination) {
+		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
+		List<SkUser> list = userDao.getUserListByType(type);
+		PageInfo<SkUser> pageInfo = new PageInfo<SkUser>(list, pagination.getNavigationSize());
+		return pageInfo;
 	}
 
 }

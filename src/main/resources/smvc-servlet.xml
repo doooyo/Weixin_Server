@@ -98,8 +98,8 @@
 			<property name="excludeUrlPatterns">
 				<array>
 					<value>/index</value>
-					<value>/login</value>
-					<value>/logout </value>
+					<value>/user/login/**</value>
+					<value>/user/logout </value>
 					<value>/upload </value>
 					<value>/facade/** </value>
 					<value>/static/**</value>

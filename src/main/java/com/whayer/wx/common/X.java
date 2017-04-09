@@ -536,14 +536,14 @@ public final class X implements Constant{
 	    if (null == str || str.isEmpty()) {
 	      return null;
 	    }
-	    // TODO 后期做一键发布的时候再完善java版本的加密规则,当前请使用聚石塔版本规则
+	    // TODO 
 	    // isEncrypt ?
 	    return null;
 	  }
 
 
 	  public static String getTimeout() {
-	    return X.getConfig("com.go2plus.globle.core.timeout");
+	    return X.getConfig("com.skyg.globle.core.timeout");
 	  }
 
 	  public static Map<String, String> Propertites2Json(String s) throws IOException {
