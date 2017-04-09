@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.MD5;
 import com.whayer.wx.common.mvc.BaseVerificationController;
@@ -173,7 +174,7 @@ public class LoginController extends BaseVerificationController {
 	}
 	
 	@RequestMapping("/register")
-	public ResponseCondition register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ResponseCondition register(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("LoginController.register()");
 		
 		Box box = loadNewBox(request);
@@ -193,8 +194,45 @@ public class LoginController extends BaseVerificationController {
 		String password = box.$p(X.PASSWORD);
 		String mobile = box.$p("mobile");
 		
+		if(isNullOrEmpty(username) || isNullOrEmpty(password) || isNullOrEmpty(mobile)){
+			return getResponse(400, X.FALSE);
+		}
+		
 		SkUser user = new SkUser();
-		return new ResponseCondition();
+		user.setId(id);
+		user.setUsername(username.trim());
+		user.setPassword(MD5.md5Encode(password.trim()));
+		
+		int count = userService.saveUser(user);
+		if(count > 0){
+			ResponseCondition res = getResponse(200, true);
+			res.setResult(user);
+			return res;
+		}
+		else  return getResponse(500, false);
+	}
+	
+	
+	@RequestMapping("/getListByType")
+	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.getListByType()");
+		
+		Box box = loadNewBox(request);
+		
+		/**
+		 * userType  0:普通用户 1:区域代理
+		 */
+		Integer type = null;
+		String u = box.$p(X.USER_TYPE);
+		if(isNullOrEmpty(u)){
+			type = null;
+		}else {
+			Integer.parseInt(u);
+		}
+		
+		PageInfo<SkUser> pi = userService.getUserListByType(type, box.getPagination());
+		
+		return pagerResponse(pi);
 	}
 
 }
