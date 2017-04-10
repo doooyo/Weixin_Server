@@ -39,8 +39,8 @@
 		<if test="username >''">
 			and username = #{username}
 		</if>
-		<if test="password > ''">
-			and password = #{password}
+		<if test="mobile > ''">
+			and mobile = #{mobile}
 		</if>
 	</select>
 	
@@ -124,15 +124,13 @@
     </resultMap>
     
   	<select id="getUserListByType" parameterType="Integer" resultMap="userMap">
-  		<![CDATA[
-	        select 
-	        <include refid="userFields" /> 
-	        from sk_user
-	        <where>
-	        	<if test="type != null">  
-		            is_agent = #{type}  
-		        </if>  
-	        </where>
-        ]]>
+        select 
+        <include refid="userFields" /> 
+        from sk_user
+        <where>
+        	<if test="type != null">  
+	            is_agent = #{type}  
+	        </if>  
+        </where>
   	</select>
 </mapper>

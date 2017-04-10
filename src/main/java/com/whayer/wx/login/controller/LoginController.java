@@ -156,6 +156,7 @@ public class LoginController extends BaseVerificationController {
 	 * @throws IOException
 	 */
 	@RequestMapping("/logout")
+	@ResponseBody
 	public ResponseCondition signOut(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Box box = loadNewBox(request);
 		Cookie cu = new Cookie(X.USERID, null);
@@ -174,6 +175,7 @@ public class LoginController extends BaseVerificationController {
 	}
 	
 	@RequestMapping("/register")
+	@ResponseBody
 	public ResponseCondition register(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("LoginController.register()");
 		
@@ -202,18 +204,28 @@ public class LoginController extends BaseVerificationController {
 		user.setId(id);
 		user.setUsername(username.trim());
 		user.setPassword(MD5.md5Encode(password.trim()));
+		user.setMobile(mobile);
 		
-		int count = userService.saveUser(user);
-		if(count > 0){
-			ResponseCondition res = getResponse(200, true);
-			res.setResult(user);
+		SkUser u = userService.findUser(user);
+		if(isNullOrEmpty(u)){
+			int count = userService.saveUser(user);
+			if(count > 0){
+				ResponseCondition res = getResponse(200, true);
+				res.setResult(user);
+				return res;
+			}
+			else  return getResponse(500, false);
+		}
+		else{
+			ResponseCondition res = getResponse(400, X.FALSE);
+			res.setErrorMsg("用户已存在!");
 			return res;
 		}
-		else  return getResponse(500, false);
 	}
 	
 	
 	@RequestMapping("/getListByType")
+	@ResponseBody
 	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("LoginController.getListByType()");
 		
@@ -227,7 +239,7 @@ public class LoginController extends BaseVerificationController {
 		if(isNullOrEmpty(u)){
 			type = null;
 		}else {
-			Integer.parseInt(u);
+			type = Integer.parseInt(u);
 		}
 		
 		PageInfo<SkUser> pi = userService.getUserListByType(type, box.getPagination());

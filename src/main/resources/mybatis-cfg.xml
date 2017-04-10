@@ -4,7 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-  <!-- 驼峰命名与下划线命名转换 -->
   <settings>
     <setting name="mapUnderscoreToCamelCase" value="true" />
     <setting name="cacheEnabled" value="false" />

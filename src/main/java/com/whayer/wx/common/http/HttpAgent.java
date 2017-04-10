@@ -141,7 +141,7 @@ public class HttpAgent {
 	}
 
 	/**
-	 * 测试GET获取七牛云图片
+	 * 测试GET获取网络图片
 	 * @param args
 	 */
 	public static void main(String[] args) {
