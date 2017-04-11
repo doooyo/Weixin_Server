@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.whayer.wx.order.dao.ExamineeDao">
+
+	<sql id="examineeFields">
+		id,
+		name,
+		age,
+		address,
+		gender,
+		mobile,
+		identity_id,
+		birthday
+	</sql>
+	
+	<resultMap id="examineeListMap" type="Examinee">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="age" property="age" />
+        <result column="address" property="address" />
+        <result column="gender" property="gender" />
+        <result column="mobile" property="mobile" />
+        <result column="identity_id" property="identityId" />
+        <result column="birthday" property="birthday" />
+    </resultMap>
+
+	<select id="getExamineeList" parameterType="String" resultMap="examineeListMap" >
+        select 
+        <include refid="examineeFields" />
+        from sk_examinee 
+    </select>
+
+	<select id="getExamineeById" parameterType="String" resultType="Examinee">
+		select
+		<include refid="examineeFields" />
+		from sk_examinee
+		where id=#{id}
+	</select>
+	
+	<insert id="saveExaminee" parameterType="Examinee">
+		insert into sk_examinee(
+  			id,
+			name,
+			address,
+			gender,
+			mobile,
+			identity_id,
+			birthday
+  		) 
+  		values(
+  		#{id},
+  		#{name},
+  		#{address},
+  		#{gender},
+  		#{mobile},
+  		#{identityId},
+  		#{birthday}
+  		)
+	</insert>
+	
+	<delete id="deleteExamineeById" parameterType="String">
+   		<![CDATA[
+   			DELETE FROM sk_examinee WHERE id=#{id}
+   		]]>
+    </delete>
+</mapper>

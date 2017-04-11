@@ -62,6 +62,7 @@
 	    			com.whayer.wx.product.vo;
 	    			com.whayer.wx.coupon.vo;
 	    			com.whayer.wx.vouchers.vo;
+	    			com.whayer.wx.order.vo;
 	    		  " />
 		<property name="plugins">
 			<array>

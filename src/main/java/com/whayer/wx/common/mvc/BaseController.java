@@ -336,6 +336,7 @@ public class BaseController {
 		} else {
 			res.setHttpCode(code);
 			res.setIsSuccess(false);
+			res.setErrorMsg("参数错误");
 		}
 		return res;
 	}

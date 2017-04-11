@@ -43,12 +43,10 @@
     </select>
     
     <select id="getCouponById"  parameterType="String" resultType="Coupon">
-    	<![CDATA[
-    		select
-			<include refid="couponFields" />
-			from sk_coupon
-			where id=#{id}
-    	]]>
+   		select
+		<include refid="couponFields" />
+		from sk_coupon
+		where id=#{id}
     </select>
     
     <insert id="saveCoupon" parameterType="Coupon">
