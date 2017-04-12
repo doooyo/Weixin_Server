@@ -19,7 +19,6 @@ public class VoucherServiceTest extends UnitTestBase{
 		VoucherService voucherService = super.getBean("voucherServiceImpl");
 		PageInfo<Voucher> pi = voucherService.getVoucherListByUid("00010102", new Pagination());
 		ResponseCondition res = new ResponseCondition();
-		res.setHttpCode(200);
 		res.setIsSuccess(true);
 		res.setList(pi.getList());
 		res.setPageIndex(pi.getPageNum());

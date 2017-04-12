@@ -24,7 +24,6 @@ public class CouponServiceTest extends UnitTestBase{
 		CouponService couponService = super.getBean("couponServiceImpl");
 		PageInfo<Coupon> pi = couponService.getCouponListByUid("00010102", new Pagination());
 		ResponseCondition res = new ResponseCondition();
-		res.setHttpCode(200);
 		res.setIsSuccess(true);
 		res.setList(pi.getList());
 		res.setPageIndex(pi.getPageNum());
@@ -74,12 +73,14 @@ public class CouponServiceTest extends UnitTestBase{
 	@Test
 	public void testValidate(){
 		CouponService couponService = super.getBean("couponServiceImpl");
+		ResponseCondition res = new ResponseCondition();
+		res.setIsSuccess(true);
 		//验证优惠卷
-		boolean isvalide1 = couponService.validate("be9e9b0c-39df-456b-9223-c03fe0f3e77c", "0", "8ZF66dIr");
+		res = couponService.validate(res, "be9e9b0c-39df-456b-9223-c03fe0f3e77c", "0", "8ZF66dIr");
 		//验证代金劵
-		boolean isvalide2 = couponService.validate("be9e9b0c-39df-456b-9223-c03fe0f3e77c", "1", "8ZF66dIr");
+		res = couponService.validate(res, "be9e9b0c-39df-456b-9223-c03fe0f3e77c", "1", "8ZF66dIr");
 		
-		System.out.println(isvalide1 ? "优惠卷有效" : "优惠卷无效");
-		System.out.println(isvalide2 ? "代金劵有效" : "代金劵无效");
+		System.out.println(res.toString());
+		System.out.println(res.toString());
 	}
 }

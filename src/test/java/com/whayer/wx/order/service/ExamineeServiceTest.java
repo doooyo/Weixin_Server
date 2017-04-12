@@ -23,7 +23,6 @@ public class ExamineeServiceTest extends UnitTestBase{
 		examineeService.getExamineeList(new Pagination());
 		PageInfo<Examinee> pi = examineeService.getExamineeList(new Pagination());
 		ResponseCondition res = new ResponseCondition();
-		res.setHttpCode(200);
 		res.setIsSuccess(true);
 		res.setList(pi.getList());
 		res.setPageIndex(pi.getPageNum());
