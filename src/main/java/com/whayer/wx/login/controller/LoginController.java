@@ -35,16 +35,9 @@ public class LoginController extends BaseVerificationController {
 
 	private final static Logger log = LoggerFactory.getLogger(LoginController.class);
 	
-	@Resource //byName装配,并指定别名; 默认首字母转小写其他不变的规则
-	//@Resource(type = UserService.class)//byType装配
+	@Resource 
 	private UserService userService;
 
-	private ResponseCondition getErrorBean(ResponseCondition res, Integer errorCode) {
-		res.setErrorCode(errorCode);
-		res.setHttpCode(400);
-		res.setIsSuccess(false);
-		return res;
-	}
 	
 	@RequestMapping(value = "/login/verify", method = RequestMethod.GET)
 	public void getVerifyCodeImg(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -63,9 +56,8 @@ public class LoginController extends BaseVerificationController {
 		log.info("LoginController.login()");
 		
 		Box box = loadNewBox(request);
-		ResponseCondition res = new ResponseCondition();
 		if (!X.POST.equalsIgnoreCase(request.getMethod())) {
-			return getErrorBean(res, null);
+			return getResponse(false);
 		}
 		String userName = box.$p(X.USER_NAME);
 		String passWord = box.$p(X.PASSWORD);
@@ -102,7 +94,9 @@ public class LoginController extends BaseVerificationController {
 		if (userName.isEmpty() || userName.isEmpty()) {
 			log.info("账号密码不能为空");
 			errorCode = 1;
-			return getErrorBean(res, errorCode);
+			ResponseCondition res = getResponse(false);
+			res.setErrorMsg("账号密码不能为空");
+			return res;
 		} else {
 			SkUser u = new SkUser();
 			u.setUsername(userName);
@@ -111,13 +105,17 @@ public class LoginController extends BaseVerificationController {
 			if (null == user) {
 				log.info("没有此用户");
 				errorCode = 2;
-				return getErrorBean(res, errorCode);
+				ResponseCondition res = getResponse(false);
+				res.setErrorMsg("没有此用户");
+				return res;
 			} else {
 				user = userService.findUser(u);
 				if (null == user) {
 					log.info("密码错误");
 					errorCode = 3;
-					return getErrorBean(res, errorCode);
+					ResponseCondition res = getResponse(false);
+					res.setErrorMsg("密码错误");
+					return res;
 				} else {
 					// TODO update login time /IP /last_session
 					HtmlParser.GetClientIp(request);
@@ -141,7 +139,7 @@ public class LoginController extends BaseVerificationController {
 					//request.getSession().setAttribute(X.USER_TYPE, user.getIsAgent().toString());
 					//request.getSession().setAttribute(X.USER_NAME, user.getUsername());
 
-					return res;
+					return getResponse(true);
 				}
 			}
 		}
@@ -197,7 +195,7 @@ public class LoginController extends BaseVerificationController {
 		String mobile = box.$p("mobile");
 		
 		if(isNullOrEmpty(username) || isNullOrEmpty(password) || isNullOrEmpty(mobile)){
-			return getResponse(400, X.FALSE);
+			return getResponse(X.FALSE);
 		}
 		
 		SkUser user = new SkUser();
@@ -208,16 +206,11 @@ public class LoginController extends BaseVerificationController {
 		
 		SkUser u = userService.findUser(user);
 		if(isNullOrEmpty(u)){
-			int count = userService.saveUser(user);
-			if(count > 0){
-				ResponseCondition res = getResponse(200, true);
-				res.setResult(user);
-				return res;
-			}
-			else  return getResponse(500, false);
+			userService.saveUser(user);
+			return getResponse(X.TRUE);
 		}
 		else{
-			ResponseCondition res = getResponse(400, X.FALSE);
+			ResponseCondition res = getResponse(X.FALSE);
 			res.setErrorMsg("用户已存在!");
 			return res;
 		}

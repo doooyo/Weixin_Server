@@ -62,6 +62,7 @@
 				)
 			VALUES(
 				#{id},
+				#{userId},
 				#{createUserId},
 				#{amount},
 				1,
@@ -76,4 +77,30 @@
    			DELETE FROM sk_coupon WHERE id=#{id}
    		]]>
     </delete>
+    
+    <select id="validate" resultType="Coupon">
+    	SELECT 
+		<include refid="couponFields" />
+    	FROM sk_coupon 
+    	WHERE 1=1
+    	<if test="userId != null and userId != ''"> 
+    		AND user_id = #{userId}
+    	</if> 
+    	<if test="code != null and code != ''"> 
+    		AND id = #{code}
+    	</if> 
+    </select>
+    
+    <!-- 验证有效性与用户 -->
+    <select id="validate_old" resultType="Coupon">
+    	SELECT 
+    	<include refid="couponFields" />
+    	FROM sk_coupon t
+    	<trim prefix="WHERE" prefixOverrides="AND|OR">
+    		<if test="code != null and code != ''"> t.id=#{code} </if>
+	　　　　  <if test="userId != null and userId != ''"> AND t.user_id=#{userId} </if>
+			<if test="1==1"> AND t.is_effect = 1 </if>
+			<if test="1==1"> AND t.is_expired = 0 </if>
+		</trim>
+    </select>
 </mapper>

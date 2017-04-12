@@ -37,7 +37,7 @@
 			is_expired,
 			create_date,
 			use_date 
-	        from sk_coupon 
+	        from sk_voucher 
 	        where user_id = #{userId} 
         ]]>
     </select>
@@ -45,15 +45,15 @@
     <select id="getVoucherById"  parameterType="String" resultType="Voucher">
     	<![CDATA[
     		select
-			<include refid="couponFields" />
-			from sk_coupon
+			<include refid="voucherFields" />
+			from sk_voucher
 			where id=#{id}
     	]]>
     </select>
     
     <insert id="saveVoucher" parameterType="Voucher">
     	<![CDATA[
-    		INSERT INTO sk_coupon(
+    		INSERT INTO sk_voucher(
 				id,
 				user_id,
 				create_user_id,
@@ -64,6 +64,7 @@
 				)
 			VALUES(
 				#{id},
+				#{userId},
 				#{createUserId},
 				#{amount},
 				1,
@@ -75,7 +76,33 @@
     
     <delete id="deleteVoucherById" parameterType="String">
    		<![CDATA[
-   			DELETE FROM sk_coupon WHERE id=#{id}
+   			DELETE FROM sk_voucher WHERE id=#{id}
    		]]>
     </delete>
+    
+    <select id="validate" resultType="Voucher">
+    	SELECT 
+		<include refid="voucherFields" />
+    	FROM sk_voucher 
+    	WHERE 1=1
+    	<if test="userId != null and userId != ''"> 
+    		AND user_id = #{userId}
+    	</if> 
+    	<if test="code != null and code != ''"> 
+    		AND id = #{code}
+    	</if> 
+    </select>
+    
+    <!-- 验证有效性与用户 -->
+    <select id="validate_old" resultType="Voucher">
+    	SELECT 
+		<include refid="voucherFields" />
+    	FROM sk_voucher t
+    	<trim prefix="WHERE" prefixOverrides="AND|OR">
+    		<if test="code != null and code != ''"> t.id=#{code} </if>
+	　　　　  <if test="userId != null and userId != ''"> AND t.user_id=#{userId} </if>
+			<if test="1==1"> AND t.is_effect = 1 </if>
+			<if test="1==1"> AND t.is_expired = 0 </if>
+		</trim>
+    </select>
 </mapper>

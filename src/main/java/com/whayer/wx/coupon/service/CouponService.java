@@ -2,6 +2,7 @@ package com.whayer.wx.coupon.service;
 
 import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.mvc.Pagination;
+import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.coupon.vo.Coupon;
 
 public interface CouponService {
@@ -31,4 +32,13 @@ public interface CouponService {
 	 * @return
 	 */
 	public Integer deleteCouponById(String id);
+	
+	/**
+	 * 
+	 * @param userId  所属用户
+	 * @param type    0:优惠卷 1:代金劵
+	 * @param code    劵编码
+	 * @return
+	 */
+	public ResponseCondition validate(ResponseCondition res, String userId, String type, String code);
 }

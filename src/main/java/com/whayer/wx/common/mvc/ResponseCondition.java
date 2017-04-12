@@ -8,35 +8,35 @@ public class ResponseCondition implements Serializable{
 
 	private static final long serialVersionUID = -8173852245814158731L;
 	
-	private Integer errorCode;         //业务错误码
-	private Integer httpCode = 200;    //HTTP状态码
+	//private Integer errorCode;         //业务错误码
+	//private Integer httpCode = 200;    //HTTP状态码
 	private String  errorMsg = "";     //错误堆栈
 	private Boolean isSuccess = true;  //是否成功
 	private List<?> list;              //返回集合
-	private Object  result;            //返回单个对象
+	//private Object  result;            //返回单个对象
 	private int pageSize;       //分页大小        
 	private int pageIndex;      //页码
 	private long total;         //总数
 	private int pages;          //总页数
 	
-	public Object getResult() {
-		return result;
-	}
-	public void setResult(Object result) {
-		this.result = result;
-	}
-	public Integer getErrorCode() {
-		return errorCode;
-	}
-	public void setErrorCode(Integer errorCode) {
-		this.errorCode = errorCode;
-	}
-	public Integer getHttpCode() {
-		return httpCode;
-	}
-	public void setHttpCode(Integer httpCode) {
-		this.httpCode = httpCode;
-	}
+//	public Object getResult() {
+//		return result;
+//	}
+//	public void setResult(Object result) {
+//		this.result = result;
+//	}
+//	public Integer getErrorCode() {
+//		return errorCode;
+//	}
+//	public void setErrorCode(Integer errorCode) {
+//		this.errorCode = errorCode;
+//	}
+//	public Integer getHttpCode() {
+//		return httpCode;
+//	}
+//	public void setHttpCode(Integer httpCode) {
+//		this.httpCode = httpCode;
+//	}
 	public String getErrorMsg() {
 		return errorMsg;
 	}
@@ -84,8 +84,8 @@ public class ResponseCondition implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "ResponseCondition [errorCode=" + errorCode + ", httpCode=" + httpCode + ", errorMsg=" + errorMsg
-				+ ", isSuccess=" + isSuccess + ", list=" + list + ", result=" + result + ", pageSize=" + pageSize
-				+ ", pageIndex=" + pageIndex + ", total=" + total + ", pages=" + pages + "]";
+		return "ResponseCondition [errorMsg=" + errorMsg + ", isSuccess=" + isSuccess + ", list=" + list + ", pageSize="
+				+ pageSize + ", pageIndex=" + pageIndex + ", total=" + total + ", pages=" + pages + "]";
 	}
+	
 }

@@ -1,6 +1,8 @@
 package com.whayer.wx.product.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,13 +53,14 @@ public class ProductController extends BaseController{
 		
 		String id = box.$p("id");
 		if(null == id){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		Product product = productService.getProductById(id);
 		
-		ResponseCondition res = getResponse(200, true);
-		res.setResult(product);
-		
+		ResponseCondition res = getResponse(true);
+		List<Product> list = new ArrayList<>();
+		list.add(product);
+		res.setList(list);
 		return res;
 	}
 	
@@ -70,14 +73,12 @@ public class ProductController extends BaseController{
 		
 		String id = box.$p("id");
 		if(null == id){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		
 		productService.deleteProductById(id);
 		
-		ResponseCondition res = getResponse(200, true);
-		
-		return res;
+		return getResponse(true);
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -94,7 +95,7 @@ public class ProductController extends BaseController{
 		String description = box.$p("description");
 		
 		if(null == name || null == imgUrl || null == price){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		Product product = new Product();
 		product.setId(id);
@@ -103,12 +104,7 @@ public class ProductController extends BaseController{
 		product.setPrice(price);
 		product.setDescription(description);
 		
-		int count = productService.saveProduct(product);
-		if(count > 0){
-			ResponseCondition res = getResponse(200, true);
-			res.setResult(product);
-			return res;
-		}
-		else  return getResponse(500, false);
+		productService.saveProduct(product);
+		return getResponse(true);
 	}
 }

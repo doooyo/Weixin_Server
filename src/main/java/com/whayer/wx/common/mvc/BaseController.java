@@ -328,13 +328,13 @@ public class BaseController {
         return false;  
     }
 	
-	protected ResponseCondition getResponse(Integer code, boolean isOk) {
+	protected ResponseCondition getResponse(boolean isOk) {
 		ResponseCondition res = new ResponseCondition();
 		if (isOk) {
-			res.setHttpCode(code);
+			//res.setHttpCode(code);
 			res.setIsSuccess(true);
 		} else {
-			res.setHttpCode(code);
+			//res.setHttpCode(code);
 			res.setIsSuccess(false);
 			res.setErrorMsg("参数错误");
 		}
@@ -342,7 +342,7 @@ public class BaseController {
 	}
 	
 	protected ResponseCondition pagerResponse(PageInfo<?> pi){
-		ResponseCondition res = getResponse(200, true);
+		ResponseCondition res = getResponse(true);
 		res.setList(pi.getList());
 		res.setPageIndex(pi.getPageNum());
 		res.setPageSize(pi.getPageSize());

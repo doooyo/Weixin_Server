@@ -1,6 +1,8 @@
 package com.whayer.wx.vouchers.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +40,7 @@ public class VoucherController extends BaseController{
 		Box box = loadNewBox(request);
 		String userId = box.$p("userId");
 		if(isNullOrEmpty(userId)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		PageInfo<Voucher> pi = voucherService.getVoucherListByUid(userId, box.getPagination());
 		
@@ -52,11 +54,13 @@ public class VoucherController extends BaseController{
 		Box box = loadNewBox(request);
 		String id = box.$p("id");
 		if(isNullOrEmpty(id)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		Voucher voucher = voucherService.getVoucherById(id);
-		ResponseCondition res = getResponse(200, true);
-		res.setResult(voucher);
+		ResponseCondition res = getResponse(true);
+		List<Voucher> list = new ArrayList<>();
+		list.add(voucher);
+		res.setList(list);
 		return res;
 	}
 	
@@ -69,12 +73,11 @@ public class VoucherController extends BaseController{
 		
 		String id = box.$p("id");
 		if(null == id){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		
-		int count = voucherService.deleteVoucherById(id);
-		if(count > 0) return getResponse(200, true);
-		else return getResponse(400, false);
+		voucherService.deleteVoucherById(id);
+		return getResponse(true);
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -92,7 +95,7 @@ public class VoucherController extends BaseController{
 		BigDecimal amount = new BigDecimal(box.$p("amount"));
 
 		if(isNullOrEmpty(userId) || isNullOrEmpty(amount)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		Voucher voucher = new Voucher();
 		voucher.setId(id);
@@ -101,13 +104,8 @@ public class VoucherController extends BaseController{
 		voucher.setAmount(amount);
 		
 		
-		int count = voucherService.saveVoucher(voucher);
+		voucherService.saveVoucher(voucher);
 		 
-		if(count > 0) {
-			ResponseCondition res = getResponse(200, true);
-			res.setResult(voucher);
-			return res;
-		}
-		else return getResponse(500, false);
+		return getResponse(true);
 	}
 }

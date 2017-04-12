@@ -1,6 +1,8 @@
 package com.whayer.wx.coupon.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +39,7 @@ public class CouponController extends BaseController{
 		Box box = loadNewBox(request);
 		String userId = box.$p("userId");
 		if(isNullOrEmpty(userId)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		PageInfo<Coupon> pi = couponService.getCouponListByUid(userId, box.getPagination());
 		
@@ -51,11 +53,13 @@ public class CouponController extends BaseController{
 		Box box = loadNewBox(request);
 		String id = box.$p("id");
 		if(isNullOrEmpty(id)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		Coupon coupon = couponService.getCouponById(id);
-		ResponseCondition res = getResponse(200, true);
-		res.setResult(coupon);
+		ResponseCondition res = getResponse(true);
+		List<Coupon> list = new ArrayList<>();
+		list.add(coupon);
+		res.setList(list);
 		return res;
 	}
 	
@@ -68,12 +72,11 @@ public class CouponController extends BaseController{
 		
 		String id = box.$p("id");
 		if(null == id){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		
-		int count = couponService.deleteCouponById(id);
-		if(count > 0) return getResponse(200, true);
-		else return getResponse(400, false);
+		couponService.deleteCouponById(id);
+		return getResponse(true);
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -91,7 +94,7 @@ public class CouponController extends BaseController{
 		BigDecimal amount = new BigDecimal(box.$p("amount"));
 
 		if(isNullOrEmpty(userId) || isNullOrEmpty(amount)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		Coupon coupon = new Coupon();
 		coupon.setId(id);
@@ -99,14 +102,33 @@ public class CouponController extends BaseController{
 		coupon.setCreateUserId(createUserId);
 		coupon.setAmount(amount);
 		
+		couponService.saveCoupon(coupon);
 		
-		int count = couponService.saveCoupon(coupon);
-		
-		if(count > 0) {
-			ResponseCondition res = getResponse(200, true);
-			res.setResult(coupon);
-			return res;
-		}
-		else return getResponse(500, false);
+		return getResponse(true);
 	}
+	
+	/**
+	 * 验证优惠卷与代金劵的有效性
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/validate", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition validate(HttpServletRequest request, HttpServletResponse response){
+		log.info("CouponController.validate()");
+		Box box = loadNewBox(request);
+		
+		String userId = box.$p("userId");
+		String type = box.$p("type");
+		String code = box.$p("code");
+		if(isNullOrEmpty(code) || isNullOrEmpty(type)){
+			return getResponse(false);
+		}
+		
+		ResponseCondition res = couponService.validate(getResponse(true), userId, type, code);
+		
+		return res;
+	}
+	
 }

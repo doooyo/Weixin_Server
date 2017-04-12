@@ -15,7 +15,9 @@ public interface CouponDao extends DAO {
 	
 	public Coupon getCouponById(@Param("id") String id);
 	
-	public Integer saveCoupon(Coupon coupon);
+	public int saveCoupon(Coupon coupon);
 	
-	public Integer deleteCoupontById(@Param("id") String id);
+	public int deleteCoupontById(@Param("id") String id);
+	
+	public Coupon validate(@Param("userId") String userId, @Param("code") String code);
 }

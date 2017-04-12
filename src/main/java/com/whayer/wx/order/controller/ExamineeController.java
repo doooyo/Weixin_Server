@@ -1,6 +1,8 @@
 package com.whayer.wx.order.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -48,14 +50,15 @@ public class ExamineeController extends BaseController{
 		
 		String id = box.$p("id");
 		if(null == id){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		
 		Examinee examinee = examineeService.getExamineeById(id);
 		
-		ResponseCondition res = getResponse(200, true);
-		res.setResult(examinee);
-		
+		ResponseCondition res = getResponse(true);
+		List<Examinee> list = new ArrayList<>();
+		list.add(examinee);
+		res.setList(list);
 		return res;
 	}
 	
@@ -68,14 +71,12 @@ public class ExamineeController extends BaseController{
 		
 		String id = box.$p("id");
 		if(null == id){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		
 		examineeService.deleteExamineeById(id);
 		
-		ResponseCondition res = getResponse(200, true);
-		
-		return res;
+		return getResponse(true);
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -95,7 +96,7 @@ public class ExamineeController extends BaseController{
 		
 		if(isNullOrEmpty(name) || isNullOrEmpty(gender) || isNullOrEmpty(address) 
 				|| isNullOrEmpty(mobile) || isNullOrEmpty(identityId) || isNullOrEmpty(birthday)){
-			return getResponse(400, false);
+			return getResponse(false);
 		}
 		boolean sex = gender.equals("0") ? false : true; // 0:男 1:女
 		Examinee examinee = new Examinee();
@@ -110,13 +111,8 @@ public class ExamineeController extends BaseController{
 			examinee.setAge(X.string2int(age));
 		}
 		
-		int count = examineeService.saveExaminee(examinee);
-		if(count > 0){
-			ResponseCondition res = getResponse(200, true);
-			res.setResult(examinee);
-			return res;
-		}
-		else  return getResponse(500, false);
+		examineeService.saveExaminee(examinee);
+		return getResponse(true);
 	}
 
 }
