@@ -66,4 +66,16 @@ public class UserServiceImpl implements UserService{
 		return pageInfo;
 	}
 
+	@Override
+	public int approveAuditBatch(String... ids) {
+		
+		return userDao.approveAuditBatch(ids);
+	}
+
+	@Override
+	public int approveAgentBatch(String... ids) {
+		
+		return userDao.approveAgentBatch(ids);
+	}
+
 }

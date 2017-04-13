@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.whayer.wx.base.UnitTestBase;
+import com.whayer.wx.common.X;
 import com.whayer.wx.login.vo.SkUser;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -33,13 +34,13 @@ public class UserServiceTest extends UnitTestBase{
 		SkUser user = new SkUser();
 		user.setId(UUID.randomUUID().toString());
 		user.setpId("");
-		user.setIsAgent(0);
+		user.setIsAgent(X.FALSE);
 		user.setUsername("tom");
 		user.setPassword("e10adc3949ba59abbe56e057f20f883e");
 		user.setPhoto(null);
 		user.setPoints(100L);
 		user.setMobile("15828645446");
-		user.setAuditState(0);
+		user.setIsAudit(X.FALSE);
 		int count = userService.saveUser(user);
 		System.out.println(count);
 	}
@@ -50,13 +51,13 @@ public class UserServiceTest extends UnitTestBase{
 		SkUser user = new SkUser();
 		user.setId("00010102");
 		user.setpId("be9e9b0c-39df-456b-9223-c03fe0f3e77c");
-		user.setIsAgent(1);
+		user.setIsAgent(X.FALSE);
 		user.setUsername(null);
 		user.setPassword(null);
 		user.setPhoto(null);
 		user.setPoints(100L);
 		user.setMobile("15828645447");
-		user.setAuditState(1);
+		user.setIsAudit(X.FALSE);
 		int count = userService.updateUserById(user);
 		System.out.println(count);
 	}

@@ -16,6 +16,16 @@ $(function(){
           console.log(data);          
         }
     });
+	
+	/* $.ajax({
+		type: "POST",
+        url: "/login/approval/audit",
+        data: {ids: []},
+        dataType: "json",
+        success: function(data){
+          console.log(data);          
+        }
+	}) */
 })
 </script>
 </head>

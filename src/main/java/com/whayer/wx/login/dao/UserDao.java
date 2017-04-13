@@ -33,4 +33,18 @@ public interface UserDao extends DAO{
 	public Integer saveUser(SkUser user);
 	
 	public List<SkUser> getUserListByType(@Param("type") Integer type);
+	
+	/**
+	 * 批量审核账号
+	 * @param ids
+	 * @return
+	 */
+	public int approveAuditBatch(@Param("ids") String... ids);
+	
+	/**
+	 * 批量审核区域代理
+	 * @param ids
+	 * @return
+	 */
+	public int approveAgentBatch(@Param("ids") String... ids);
 }

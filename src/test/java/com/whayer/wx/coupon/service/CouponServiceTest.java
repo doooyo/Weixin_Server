@@ -73,14 +73,16 @@ public class CouponServiceTest extends UnitTestBase{
 	@Test
 	public void testValidate(){
 		CouponService couponService = super.getBean("couponServiceImpl");
-		ResponseCondition res = new ResponseCondition();
-		res.setIsSuccess(true);
+		ResponseCondition res1 = new ResponseCondition();
+		res1.setIsSuccess(true);
+		ResponseCondition res2 = new ResponseCondition();
+		res2.setIsSuccess(true);
 		//验证优惠卷
-		res = couponService.validate(res, "be9e9b0c-39df-456b-9223-c03fe0f3e77c", "0", "8ZF66dIr");
+		res1 = couponService.validate(res1, "be9e9b0c-39df-456b-9223-c03fe0f3e77c", "0", "8ZF66dIr");
 		//验证代金劵
-		res = couponService.validate(res, "be9e9b0c-39df-456b-9223-c03fe0f3e77c", "1", "8ZF66dIr");
+		res2 = couponService.validate(res2, "be9e9b0c-39df-456b-9223-c03fe0f3e77c", "1", "8ZF66dIr");
 		
-		System.out.println(res.toString());
-		System.out.println(res.toString());
+		System.out.println(res1.toString());
+		System.out.println(res2.toString());
 	}
 }

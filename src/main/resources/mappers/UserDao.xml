@@ -13,9 +13,11 @@
 		p_id,
 		points,
 		photo,
-		audit_state,
+		is_audit,
 		is_agent,
-		mobile
+		mobile,
+		user_type,
+		nick_name
 	</sql>
 
 	<!-- 根据用户名查询用户 -->
@@ -62,14 +64,20 @@
 			    <if test="photo != null">
 			      photo = #{photo},
 			    </if>
-			    <if test="auditState != null">
-			      audit_state = #{auditState},
+			    <if test="isAudit != null">
+			      is_audit = #{isAudit},
 			    </if>
 			    <if test="isAgent != null">
 			      is_agent = #{isAgent},
 			    </if>
 			    <if test="mobile != null and mobile != ''">
 			      mobile = #{mobile},
+			    </if>
+			    <if test="userType != null">
+			      user_type = #{userType},
+			    </if>
+			    <if test="nickName != null and nickName != ''">
+			      nick_name = #{nickName},
 			    </if>
 		    </trim>
 			<where>
@@ -93,6 +101,7 @@
 		limit 1
   	</select>
   	
+  	<!-- 注册代理用户 -->
   	<insert id="saveUser" parameterType="SkUser">
   		insert into sk_user(
   			<include refid="userFields" />
@@ -106,7 +115,8 @@
   		#{photo},
   		0,
   		0,
-  		#{mobile}
+  		#{mobile},
+  		#{userType} <!-- 默认只有代理用户(个代/区代)才会进行注册 -->
   		)
   	</insert>
   	
@@ -117,12 +127,14 @@
         <result column="p_id" property="pId" />
         <result column="points" property="points" />
         <result column="photo" property="photo" />
-        <result column="audit_state" property="auditState" />
+        <result column="is_audit" property="isAudit" />
         <result column="is_agent" property="isAgent" />
         <result column="mobile" property="mobile" />
+        <result column="user_type" property="userType" />
+        <result column="nick_name" property="nickName" />
     </resultMap>
     
-  	<select id="getUserListByType" parameterType="Integer" resultMap="userMap">
+  	<select id="getUserListByType" parameterType="Integer" resultType="SkUser">
         select 
         <include refid="userFields" /> 
         from sk_user
@@ -132,4 +144,28 @@
 	        </if>  
         </where>
   	</select>
+  	
+  	<!-- 批量审核注册用户 -->
+  	<update id="approveAuditBatch" parameterType="Map">   
+        UPDATE sk_user SET is_audit=1
+    	<where>
+	      	id IN
+	      	<!-- 可以使用#{param1} #{param2} 方式来赋值-->
+		    <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+		        #{id}
+		    </foreach>
+    	</where>  
+	</update>  
+	
+	<!-- 批量审核区域代理 -->
+	<update id="approveAgentBatch">
+		UPDATE sk_user SET is_agent=1
+    	<where>
+	      	id IN
+	      	<!-- 可以使用#{param1} #{param2} 方式来赋值-->
+		    <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+		        #{id}
+		    </foreach>
+    	</where>  
+	</update>
 </mapper>

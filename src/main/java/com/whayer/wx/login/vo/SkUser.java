@@ -14,14 +14,18 @@ public class SkUser implements Serializable{
 	private String password; //用户密码
 	private Long points = 0L;//积分
 	private byte[] photo;    //头像
-	private Integer auditState = 0; //审核状态    0:未审核   1:已审核
-	private Integer isAgent = 0;    //是否区域代理 0:普通用户 1:区域代理
+	private Boolean isAudit = false; //审核状态    0:未审核   1:已审核
+	private Boolean isAgent = false; //是否区域代理 0:个人代理 1:区域代理
+	private Integer userType;        //用户类型    0:代理用户 1:集团用户
 	private String mobile;      //手机
+	private String nickName;    //昵称(主要用于集团用户)
+	
 	
 	@Override
 	public String toString() {
-		return "SkUser [id=" + id + ", pId=" + pId + ", points=" + points + ", photo=" + Arrays.toString(photo)
-				+ ", auditState=" + auditState + ", isAgent=" + isAgent + "]";
+		return "SkUser [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
+				+ points + ", photo=" + Arrays.toString(photo) + ", isAudit=" + isAudit + ", isAgent=" + isAgent
+				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + "]";
 	}
 	public String getId() {
 		return id;
@@ -59,16 +63,16 @@ public class SkUser implements Serializable{
 	public void setPhoto(byte[] photo) {
 		this.photo = photo;
 	}
-	public Integer getAuditState() {
-		return auditState;
+	public Boolean getIsAudit() {
+		return isAudit;
 	}
-	public void setAuditState(Integer auditState) {
-		this.auditState = auditState;
+	public void setIsAudit(Boolean isAudit) {
+		this.isAudit = isAudit;
 	}
-	public Integer getIsAgent() {
+	public Boolean getIsAgent() {
 		return isAgent;
 	}
-	public void setIsAgent(Integer isAgent) {
+	public void setIsAgent(Boolean isAgent) {
 		this.isAgent = isAgent;
 	}
 	public static long getSerialversionuid() {
@@ -80,5 +84,16 @@ public class SkUser implements Serializable{
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-
+	public Integer getUserType() {
+		return userType;
+	}
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+	public String getNickName() {
+		return nickName;
+	}
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
 }

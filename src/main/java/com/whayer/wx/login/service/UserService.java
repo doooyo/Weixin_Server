@@ -60,5 +60,18 @@ public interface UserService {
 	 * @return
 	 */
 	public int saveUser(SkUser user);
+	
+	/**
+	 * 批量审批注册用户
+	 * @param ids
+	 * @return
+	 */
+	public int approveAuditBatch(String... ids);
 
+	/**
+	 * 批量审批区域代理
+	 * @param ids
+	 * @return
+	 */
+	public int approveAgentBatch(String... ids);
 }

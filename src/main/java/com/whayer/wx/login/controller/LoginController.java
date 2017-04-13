@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -124,7 +125,7 @@ public class LoginController extends BaseVerificationController {
 					Cookie uidc = new Cookie(X.USERID, user.getId().toString());
 					uidc.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.USERID, uidc);
-					Cookie userType = new Cookie(X.USER_TYPE, user.getIsAgent().toString());
+					Cookie userType = new Cookie(X.USER_TYPE, Boolean.toString(user.getIsAgent()));
 					userType.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.USER_TYPE, userType);
 					Cookie sessioncookie = new Cookie(X.SESSION_ID, user.getId().toString());
@@ -172,10 +173,10 @@ public class LoginController extends BaseVerificationController {
 		return new ResponseCondition();
 	}
 	
-	@RequestMapping("/register")
+	@RequestMapping("/register/agent")
 	@ResponseBody
-	public ResponseCondition register(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		log.info("LoginController.register()");
+	public ResponseCondition registerAgent(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("LoginController.registerAgent()");
 		
 		Box box = loadNewBox(request);
 		String id = X.uuidPure();
@@ -188,12 +189,29 @@ public class LoginController extends BaseVerificationController {
 //		private byte[] photo;    //头像
 //		private Integer auditState = 0; //审核状态    0:未审核   1:已审核
 //		private Integer isAgent = 0;    //是否区域代理 0:普通用户 1:区域代理
-//		private String mobile;      //手机
+//		private String mobile;          //手机
+//		private Integer userType;       //用户类型    0:代理用户 1:集团用户
 		
 		String username = box.$p(X.USER_NAME);
 		String password = box.$p(X.PASSWORD);
+		//String userType = box.$p("userType");
 		String mobile = box.$p("mobile");
 		
+		/*if(isNullOrEmpty(userType)){
+			return getResponse(X.FALSE);
+		}else{
+			int type = Integer.parseInt(userType);
+			//代理用户注册
+			if(0 == type){
+				if(isNullOrEmpty(username) || isNullOrEmpty(password) || isNullOrEmpty(mobile)){
+					return getResponse(X.FALSE);
+				}
+			}
+			//集团用户注册
+			else{
+				
+			}
+		}*/
 		if(isNullOrEmpty(username) || isNullOrEmpty(password) || isNullOrEmpty(mobile)){
 			return getResponse(X.FALSE);
 		}
@@ -203,6 +221,7 @@ public class LoginController extends BaseVerificationController {
 		user.setUsername(username.trim());
 		user.setPassword(MD5.md5Encode(password.trim()));
 		user.setMobile(mobile);
+		user.setUserType(0);
 		
 		SkUser u = userService.findUser(user);
 		if(isNullOrEmpty(u)){
@@ -216,6 +235,47 @@ public class LoginController extends BaseVerificationController {
 		}
 	}
 	
+	/**
+	 * 注册集团用户
+	 * 只需账号(集团编码) & 昵称
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/register/company")
+	@ResponseBody
+	public ResponseCondition registerItd(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("LoginController.registerItd()");
+		
+		Box box = loadNewBox(request);
+		String id = X.uuidPure();
+		
+		String username = box.$p(X.USER_NAME); //X.uuidPure8Bit();
+		String nickName = box.$p("nickName");
+		
+		
+		if(isNullOrEmpty(username) || isNullOrEmpty(nickName)){
+			return getResponse(X.FALSE);
+		}
+		
+		SkUser user = new SkUser();
+		user.setId(id);
+		user.setUsername(username.trim());
+		user.setNickName(nickName);
+		user.setUserType(1);
+		
+		SkUser u = userService.findUser(user);
+		if(isNullOrEmpty(u)){
+			userService.saveUser(user);
+			return getResponse(X.TRUE);
+		}
+		else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("用户已存在!");
+			return res;
+		}
+	}
 	
 	@RequestMapping("/getListByType")
 	@ResponseBody
@@ -225,7 +285,7 @@ public class LoginController extends BaseVerificationController {
 		Box box = loadNewBox(request);
 		
 		/**
-		 * userType  0:普通用户 1:区域代理
+		 * userType  0:普通用户 1:区域代理 null:所有用户(包括集团用户)
 		 */
 		Integer type = null;
 		String u = box.$p(X.USER_TYPE);
@@ -239,5 +299,50 @@ public class LoginController extends BaseVerificationController {
 		
 		return pagerResponse(pi);
 	}
+	
+	/**
+	 * 批量审批注册用户
+	 * @RequestParam("ids") String[] ids    处理简单类型
+	 * @see   http://blog.csdn.net/qq_27093465/article/details/50519444
+	 * @param ids
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/approval/audit", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition approvalAudit(@RequestBody String[] ids, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.approvalAudit()");
+		
+		if(isNullOrEmpty(ids)){
+			getResponse(X.FALSE);
+		}
+		
+		userService.approveAuditBatch(ids);
+		
+		return getResponse(X.TRUE);
+	}
 
+	/**
+	 * 批量审批区代
+	 * @param ids
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/approval/agent", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition approvalAgent(@RequestBody String[] ids, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.approvalAgent()");
+		
+		if(isNullOrEmpty(ids)){
+			getResponse(X.FALSE);
+		}
+		
+		userService.approveAgentBatch(ids);
+		
+		return getResponse(X.TRUE);
+	}
 }
