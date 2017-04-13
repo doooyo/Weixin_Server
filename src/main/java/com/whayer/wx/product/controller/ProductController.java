@@ -44,6 +44,29 @@ public class ProductController extends BaseController{
 		return pagerResponse(pi);
 	}
 	
+	@RequestMapping(value = "/getListByType", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response){
+		log.info("ProductController.getListByType()");
+		Box box = loadNewBox(request);
+		
+		/**
+		 * code: 用户类型
+		 * 1:  个人代理编码
+		 * 2:  区域代理编码
+		 * xxx:集团用户编码
+		 */
+		
+		String code = box.$p("code");
+		if(isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		PageInfo<Product> pi = productService.getProductListByUserType(code, box.getPagination());
+		
+		return pagerResponse(pi);
+	}
+	
 	@RequestMapping(value = "/findById", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition findById(HttpServletRequest request, HttpServletResponse response){

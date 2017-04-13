@@ -19,4 +19,6 @@ public interface ProductDao  extends DAO{
 	
 	public Integer deleteProductById(@Param("id") String id);
 	
+	public List<Product> getProductListByUserType(@Param("code") String code);
+	
 }

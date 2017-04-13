@@ -63,4 +63,17 @@
 			DELETE FROM sk_product WHERE id=#{id}
 		]]>
 	</delete>
+	
+	<select id="getProductListByUserType" resultType="Product">
+		<!-- 
+			code:  1:个人代理编码 2:区域代理编码 xxx:集团用户编码
+		 -->
+		select
+		<include refid="productFields" /> 
+		from sk_product t
+		where t.id in 
+		(
+		  select u.product_id from sk_product_user u where u.user_code=#{code}
+		)
+	</select>
 </mapper>

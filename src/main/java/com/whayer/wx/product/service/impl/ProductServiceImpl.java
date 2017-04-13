@@ -19,6 +19,9 @@ public class ProductServiceImpl implements ProductService{
 	@Resource
 	ProductDao productDao;
 
+	/**
+	 * 获取所有产品列表
+	 */
 	@Override
 	public PageInfo<Product> getProductList(Pagination pagination) {
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
@@ -40,6 +43,21 @@ public class ProductServiceImpl implements ProductService{
 	@Override
 	public Integer deleteProductById(String id) {
 		return productDao.deleteProductById(id);
+	}
+
+	/**
+	 * 根据用户类型获取产品列表
+	 */
+	@Override
+	public PageInfo<Product> getProductListByUserType(String code, Pagination pagination) {
+		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
+		
+		/**
+		 * type:  1:个人代理 2:区域代理 3:集团用户
+		 */
+		List<Product> list =  productDao.getProductListByUserType(code);
+		PageInfo<Product> pageInfo = new PageInfo<Product>(list, pagination.getNavigationSize());
+		return pageInfo;
 	}
 
 }

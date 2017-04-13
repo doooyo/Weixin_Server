@@ -22,7 +22,9 @@ import com.whayer.wx.common.mvc.BaseVerificationController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.common.page.HtmlParser;
+import com.whayer.wx.login.service.CompanyService;
 import com.whayer.wx.login.service.UserService;
+import com.whayer.wx.login.vo.Company;
 import com.whayer.wx.login.vo.SkUser;
 
 /**
@@ -38,6 +40,9 @@ public class LoginController extends BaseVerificationController {
 	
 	@Resource 
 	private UserService userService;
+	
+	@Resource
+	private CompanyService companyService;
 
 	
 	@RequestMapping(value = "/login/verify", method = RequestMethod.GET)
@@ -173,6 +178,13 @@ public class LoginController extends BaseVerificationController {
 		return new ResponseCondition();
 	}
 	
+	/**
+	 * 注册代理用户
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/register/agent")
 	@ResponseBody
 	public ResponseCondition registerAgent(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -237,7 +249,7 @@ public class LoginController extends BaseVerificationController {
 	
 	/**
 	 * 注册集团用户
-	 * 只需账号(集团编码) & 昵称
+	 * name & code
 	 * @param request
 	 * @param response
 	 * @return
@@ -249,30 +261,27 @@ public class LoginController extends BaseVerificationController {
 		log.info("LoginController.registerItd()");
 		
 		Box box = loadNewBox(request);
-		String id = X.uuidPure();
 		
-		String username = box.$p(X.USER_NAME); //X.uuidPure8Bit();
-		String nickName = box.$p("nickName");
+		String name = box.$p("name"); 
+		String code = box.$p("code");
 		
 		
-		if(isNullOrEmpty(username) || isNullOrEmpty(nickName)){
+		if(isNullOrEmpty(name) || isNullOrEmpty(code)){
 			return getResponse(X.FALSE);
 		}
 		
-		SkUser user = new SkUser();
-		user.setId(id);
-		user.setUsername(username.trim());
-		user.setNickName(nickName);
-		user.setUserType(1);
+		Company company = new Company();
+		company.setId(X.uuidPure());
+		company.setName(name.trim());
+		company.setCode(MD5.md5Encode(code.trim()));
 		
-		SkUser u = userService.findUser(user);
-		if(isNullOrEmpty(u)){
-			userService.saveUser(user);
+		Company c = companyService.findByCode(MD5.md5Encode(code.trim()));
+		if(isNullOrEmpty(c)){
+			companyService.save(company);
 			return getResponse(X.TRUE);
-		}
-		else{
+		}else{
 			ResponseCondition res = getResponse(X.FALSE);
-			res.setErrorMsg("用户已存在!");
+			res.setErrorMsg("集团用户已存在!");
 			return res;
 		}
 	}
@@ -285,7 +294,7 @@ public class LoginController extends BaseVerificationController {
 		Box box = loadNewBox(request);
 		
 		/**
-		 * userType  0:普通用户 1:区域代理 null:所有用户(包括集团用户)
+		 * userType  0:个人代理 1:区域代理 2:集团用户 null:所有用户
 		 */
 		Integer type = null;
 		String u = box.$p(X.USER_TYPE);
@@ -301,7 +310,7 @@ public class LoginController extends BaseVerificationController {
 	}
 	
 	/**
-	 * 批量审批注册用户
+	 * 批量审批注册用户(只有代理用户需要审批)
 	 * @RequestParam("ids") String[] ids    处理简单类型
 	 * @see   http://blog.csdn.net/qq_27093465/article/details/50519444
 	 * @param ids
