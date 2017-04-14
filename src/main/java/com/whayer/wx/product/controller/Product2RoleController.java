@@ -14,9 +14,9 @@ import com.whayer.wx.common.mvc.BaseController;
  */
 @Controller
 @RequestMapping("/product2user")
-public class Product2UserController extends BaseController{
+public class Product2RoleController extends BaseController{
 	
-	private final static Logger log = LoggerFactory.getLogger(Product2UserController.class);
+	private final static Logger log = LoggerFactory.getLogger(Product2RoleController.class);
 	
 	
 
