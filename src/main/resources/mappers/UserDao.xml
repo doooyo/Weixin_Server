@@ -21,7 +21,7 @@
 	</sql>
 
 	<!-- 根据用户名查询用户 -->
-	<select id="findUserByName" parameterType="String" resultType="SkUser">
+	<select id="findUserByName" parameterType="String" resultType="User">
 		select
 		<include refid="userFields" />
 		from sk_user
@@ -29,7 +29,7 @@
 	</select>
 
 	<!-- 根据用户名/密码查询用户 -->
-	<select id="findUser" parameterType="SkUser" resultType="SkUser">
+	<select id="findUser" parameterType="User" resultType="User">
 		select
 		<include refid="userFields" />
 		from sk_user
@@ -45,7 +45,7 @@
 		</if>
 	</select>
 	
-	<update id="updateUserById" parameterType="SkUser">
+	<update id="updateUserById" parameterType="User">
 		
 			UPDATE sk_user 
 		    <trim prefix="SET" suffixOverrides=",">
@@ -85,7 +85,7 @@
 		    </where>
 	</update>
   
-  	<select id="isUserNameExist" parameterType="String" resultType="SkUser">
+  	<select id="isUserNameExist" parameterType="String" resultType="User">
 		select 
 		<include refid="userFields" />
 		from sk_user
@@ -93,7 +93,7 @@
 		limit 1
   	</select>
   	
-  	<select id="isMobileExist" parameterType="String" resultType="SkUser">
+  	<select id="isMobileExist" parameterType="String" resultType="User">
 		select 
 		<include refid="userFields" />
 		from sk_user
@@ -102,7 +102,7 @@
   	</select>
   	
   	<!-- 注册代理用户 -->
-  	<insert id="saveUser" parameterType="SkUser">
+  	<insert id="saveUser" parameterType="User">
   		insert into sk_user(
   			<include refid="userFields" />
   		) 
@@ -120,7 +120,7 @@
   		)
   	</insert>
   	
-  	<resultMap id="userMap" type="SkUser">
+  	<resultMap id="userMap" type="User">
         <id column="id" property="id" />
         <result column="username" property="username" />
         <result column="password" property="password" />
@@ -134,7 +134,7 @@
         <result column="nick_name" property="nickName" />
     </resultMap>
     
-  	<select id="getUserListByType" parameterType="Integer" resultType="SkUser">
+  	<select id="getUserListByType" parameterType="Integer" resultType="User">
         select 
         <include refid="userFields" /> 
         from sk_user

@@ -33,6 +33,12 @@ public class ProductController extends BaseController{
 	@Resource
 	ProductService productService;
 	
+	/**
+	 * 获取所有产品
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "/getList", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition getList(HttpServletRequest request, HttpServletResponse response){
@@ -44,6 +50,12 @@ public class ProductController extends BaseController{
 		return pagerResponse(pi);
 	}
 	
+	/**
+	 * 根据角色(用户编码)获取具有权限的产品列表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "/getListByType", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response){
@@ -67,6 +79,12 @@ public class ProductController extends BaseController{
 		return pagerResponse(pi);
 	}
 	
+	/**
+	 * 获取产品详情
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "/findById", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition findById(HttpServletRequest request, HttpServletResponse response){

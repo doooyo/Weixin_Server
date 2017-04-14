@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.whayer.wx.login.dao.RoleDao">
+	
+	<sql id="roleFields">
+		id,
+		name,
+		code,
+		create_time
+	</sql>
+
+	<resultMap id="roleListMap" type="Role">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="code" property="code" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+    
+    <select id="getRoleList" resultMap="roleListMap">
+		select 
+        <include refid="roleFields" /> 
+        from sk_role
+	</select>
+	
+	<select id="findById" parameterType="String" resultType="Role">
+		select
+		<include refid="roleFields" />
+		from sk_role
+		where id=#{id}
+	</select>
+	
+	<select id="findByCode" parameterType="String" resultType="Role">
+		select
+		<include refid="roleFields" />
+		from sk_role
+		where code=#{code}
+	</select>
+    
+    <insert id="save" parameterType="Role">
+		insert into sk_role(
+  			<include refid="roleFields" />
+  		) 
+  		values(
+  		#{id},
+  		#{name},
+  		#{code},
+  		now()
+  		)
+	</insert>
+	
+	<!-- 业务上只允许更新name -->
+	<update id="update" parameterType="Role">
+		UPDATE sk_role 
+	    <trim prefix="SET" suffixOverrides=",">
+		    <if test="name != null and name != ''">
+		      name = #{name},
+		    </if>
+		    <if test="code != null and code != ''">
+		      code = #{code},
+		    </if>
+	    </trim>
+		<where>
+	      id=#{id}
+	    </where>
+	</update>
+    
+    <delete id="deleteById" parameterType="String">
+   		<![CDATA[
+   			DELETE FROM sk_role WHERE id=#{id}
+   		]]>
+    </delete>
+</mapper>

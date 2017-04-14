@@ -15,11 +15,11 @@ public interface CompanyDao extends DAO{
 	
 	public Company findById(@Param("id") String id);
 	
-	public int updateById(Company company);
+	public Company findByCode(@Param("code") String code);
+	
+	public int save(Company company);
+	
+	public int update(Company company);
 	
 	public int deleteById(@Param("id") String id);
-	
-	public Company save(Company company);
-	
-	public Company findByCode(@Param("code") String code);
 }

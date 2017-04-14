@@ -50,12 +50,10 @@
 	</insert>
 	
 	<select id="getProductById" parameterType="String" resultType="Product">
-		<![CDATA[
-			select
-			<include refid="productFields" />
-			from sk_product
-			where id=#{id}
-		]]>
+		select
+		<include refid="productFields" />
+		from sk_product
+		where id=#{id}
 	</select>
 	
 	<delete id="deleteProductById" parameterType="String">

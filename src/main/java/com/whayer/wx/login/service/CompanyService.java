@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.login.vo.Company;
+import com.whayer.wx.login.vo.Role;
 
 public interface CompanyService {
 	
@@ -14,11 +15,11 @@ public interface CompanyService {
 	
 	public Company findById(String id);
 	
-	public Company save(Company company);
+	public Company findByCode(String code);
 	
-	public int updateById(Company company);
+	public int save(Company company, Role role);
+	
+	public int update(Company company, Role role);
 	
 	public int deleteById(String id);
-	
-	public Company findByCode(String code);
 }

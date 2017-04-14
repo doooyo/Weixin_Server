@@ -8,7 +8,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.whayer.wx.base.UnitTestBase;
 import com.whayer.wx.common.X;
-import com.whayer.wx.login.vo.SkUser;
+import com.whayer.wx.login.vo.User;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class UserServiceTest extends UnitTestBase{
@@ -20,18 +20,18 @@ public class UserServiceTest extends UnitTestBase{
 	@Test
 	public void testUserService() {
 		UserService userService = super.getBean("userServiceImpl");
-		SkUser user = userService.findUserByName("test");
+		User user = userService.findUserByName("test");
 		
-		SkUser u = new SkUser();
+		User u = new User();
 		u.setPassword("e10adc3949ba59abbe56e057f20f883e");
-		SkUser user1 = userService.findUser(u);
+		User user1 = userService.findUser(u);
 		System.out.println(user1.toString());
 	}
 	
 	@Test
 	public void testSaveUser(){
 		UserService userService = super.getBean("userServiceImpl");
-		SkUser user = new SkUser();
+		User user = new User();
 		user.setId(UUID.randomUUID().toString());
 		user.setpId("");
 		user.setIsAgent(X.FALSE);
@@ -48,7 +48,7 @@ public class UserServiceTest extends UnitTestBase{
 	@Test
 	public void testUpdateUserById(){
 		UserService userService = super.getBean("userServiceImpl");
-		SkUser user = new SkUser();
+		User user = new User();
 		user.setId("00010102");
 		user.setpId("be9e9b0c-39df-456b-9223-c03fe0f3e77c");
 		user.setIsAgent(X.FALSE);
@@ -79,7 +79,7 @@ public class UserServiceTest extends UnitTestBase{
 	@Test
 	public void testFindUserByName(){
 		UserService userService = super.getBean("userServiceImpl");
-		SkUser user = userService.findUserByName("doyo");
+		User user = userService.findUserByName("doyo");
 		System.out.println(user);
 	}
 }

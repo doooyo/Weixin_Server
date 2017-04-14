@@ -12,7 +12,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.AES;
-import com.whayer.wx.login.vo.SkUser;
+import com.whayer.wx.login.vo.User;
 
 /**
  * 拦截器
@@ -49,7 +49,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		String sessioncookieid = aes.decrypt(box.$cv(X.SESSION_ID));
 		String userid = aes.decrypt(box.$cv(X.USERID));
 		String sessionid = (String)request.getSession().getAttribute(X.SESSION_ID);
-		SkUser user = (SkUser)request.getSession().getAttribute(X.USER);
+		User user = (User)request.getSession().getAttribute(X.USER);
 
 		if (null != user && sessioncookieid.equals(sessionid) && userid.equals(user.getId())) {
 			return true;

@@ -3,13 +3,18 @@ package com.whayer.wx.login.vo;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Company implements Serializable{
-	
-	private static final long serialVersionUID = 2435748129035120962L;
-	
+/**
+ * 新增集团时需要新增角色
+ * @author duyu
+ * @since  12-04-17
+ */
+public class Role implements Serializable{
+
+	private static final long serialVersionUID = 2182354355015210938L;
+
 	private String id;   
-	private String name; //集团名
-	private String code; //集团编码
+	private String code;  //角色编码(1:个人代理 2:区域代理 xx:集团)
+	private String name;  //角色名 
 	private Date createTime; //创建时间
 	
 	public String getId() {
@@ -18,17 +23,17 @@ public class Company implements Serializable{
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	public String getCode() {
 		return code;
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -41,7 +46,6 @@ public class Company implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "Company [id=" + id + ", name=" + name + ", code=" + code + ", createTime=" + createTime + "]";
+		return "Role [id=" + id + ", code=" + code + ", name=" + name + ", createTime=" + createTime + "]";
 	}
-	
 }

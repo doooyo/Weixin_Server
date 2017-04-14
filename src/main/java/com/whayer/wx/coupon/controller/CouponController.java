@@ -22,7 +22,7 @@ import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.coupon.service.CouponService;
 import com.whayer.wx.coupon.vo.Coupon;
-import com.whayer.wx.login.vo.SkUser;
+import com.whayer.wx.login.vo.User;
 
 @Controller
 @RequestMapping("/coupon")
@@ -86,7 +86,7 @@ public class CouponController extends BaseController{
 		Box box = loadNewBox(request);
 		
 		String uid = box.$cv(X.USERID);
-		uid = isNullOrEmpty(uid) ? ((SkUser)request.getSession().getAttribute(X.USER)).getId() : uid;
+		uid = isNullOrEmpty(uid) ? ((User)request.getSession().getAttribute(X.USER)).getId() : uid;
 		
 		String id = X.uuidPure();
 		String userId = box.$p("userId");

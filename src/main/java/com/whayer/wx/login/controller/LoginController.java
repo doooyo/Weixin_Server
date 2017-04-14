@@ -25,7 +25,8 @@ import com.whayer.wx.common.page.HtmlParser;
 import com.whayer.wx.login.service.CompanyService;
 import com.whayer.wx.login.service.UserService;
 import com.whayer.wx.login.vo.Company;
-import com.whayer.wx.login.vo.SkUser;
+import com.whayer.wx.login.vo.Role;
+import com.whayer.wx.login.vo.User;
 
 /**
  * 登陆与验证
@@ -96,21 +97,21 @@ public class LoginController extends BaseVerificationController {
 		 *                     
 		 */
 
-		int errorCode = 0;
+		//int errorCode = 0;
 		if (userName.isEmpty() || userName.isEmpty()) {
 			log.info("账号密码不能为空");
-			errorCode = 1;
+			//errorCode = 1;
 			ResponseCondition res = getResponse(false);
 			res.setErrorMsg("账号密码不能为空");
 			return res;
 		} else {
-			SkUser u = new SkUser();
+			User u = new User();
 			u.setUsername(userName);
 			u.setPassword(passWord);
-			SkUser user = userService.findUserByName(userName);
+			User user = userService.findUserByName(userName);
 			if (null == user) {
 				log.info("没有此用户");
-				errorCode = 2;
+				//errorCode = 2;
 				ResponseCondition res = getResponse(false);
 				res.setErrorMsg("没有此用户");
 				return res;
@@ -118,7 +119,7 @@ public class LoginController extends BaseVerificationController {
 				user = userService.findUser(u);
 				if (null == user) {
 					log.info("密码错误");
-					errorCode = 3;
+					//errorCode = 3;
 					ResponseCondition res = getResponse(false);
 					res.setErrorMsg("密码错误");
 					return res;
@@ -228,14 +229,14 @@ public class LoginController extends BaseVerificationController {
 			return getResponse(X.FALSE);
 		}
 		
-		SkUser user = new SkUser();
+		User user = new User();
 		user.setId(id);
 		user.setUsername(username.trim());
 		user.setPassword(MD5.md5Encode(password.trim()));
 		user.setMobile(mobile);
 		user.setUserType(0);
 		
-		SkUser u = userService.findUser(user);
+		User u = userService.findUser(user);
 		if(isNullOrEmpty(u)){
 			userService.saveUser(user);
 			return getResponse(X.TRUE);
@@ -248,7 +249,8 @@ public class LoginController extends BaseVerificationController {
 	}
 	
 	/**
-	 * 注册集团用户
+	 * 注册集团用户(同时需要添加角色)
+	 * 为了产品打标时能单独关联集团用户
 	 * name & code
 	 * @param request
 	 * @param response
@@ -270,14 +272,23 @@ public class LoginController extends BaseVerificationController {
 			return getResponse(X.FALSE);
 		}
 		
+		//MD5加密
+		code = MD5.md5Encode(code.trim());
+		
 		Company company = new Company();
 		company.setId(X.uuidPure());
 		company.setName(name.trim());
-		company.setCode(MD5.md5Encode(code.trim()));
+		company.setCode(code);
+		
+		Role role = new Role();
+		role.setId(X.uuidPure());
+		role.setName(name.trim());
+		role.setCode(code);
 		
 		Company c = companyService.findByCode(MD5.md5Encode(code.trim()));
 		if(isNullOrEmpty(c)){
-			companyService.save(company);
+			//注册集团用户时,需要添加此集团角色
+			companyService.save(company, role);
 			return getResponse(X.TRUE);
 		}else{
 			ResponseCondition res = getResponse(X.FALSE);
@@ -294,17 +305,17 @@ public class LoginController extends BaseVerificationController {
 		Box box = loadNewBox(request);
 		
 		/**
-		 * userType  0:个人代理 1:区域代理 2:集团用户 null:所有用户
+		 * isAgent  0:个人代理 1:区域代理 null:所有代理用户
 		 */
 		Integer type = null;
-		String u = box.$p(X.USER_TYPE);
-		if(isNullOrEmpty(u)){
+		String isAgent = box.$p("isAgent");
+		if(isNullOrEmpty(isAgent)){
 			type = null;
 		}else {
-			type = Integer.parseInt(u);
+			type = Integer.parseInt(isAgent);
 		}
 		
-		PageInfo<SkUser> pi = userService.getUserListByType(type, box.getPagination());
+		PageInfo<User> pi = userService.getUserListByType(type, box.getPagination());
 		
 		return pagerResponse(pi);
 	}

@@ -18,7 +18,7 @@ import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
-import com.whayer.wx.login.vo.SkUser;
+import com.whayer.wx.login.vo.User;
 import com.whayer.wx.vouchers.service.VoucherService;
 import com.whayer.wx.vouchers.vo.Voucher;
 
@@ -87,7 +87,7 @@ public class VoucherController extends BaseController{
 		Box box = loadNewBox(request);
 		
 		String uid = box.$cv(X.USERID);
-		uid = isNullOrEmpty(uid) ? ((SkUser)request.getSession().getAttribute(X.USER)).getId() : uid;
+		uid = isNullOrEmpty(uid) ? ((User)request.getSession().getAttribute(X.USER)).getId() : uid;
 		
 		String id = X.uuidPure();
 		String userId = box.$p("userId");

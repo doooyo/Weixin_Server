@@ -4,7 +4,7 @@ import java.io.Serializable;
 //import java.sql.Blob;
 import java.util.Arrays;
 
-public class SkUser implements Serializable{
+public class User implements Serializable{
 
 	private static final long serialVersionUID = -9040151004036751096L;
 	
@@ -23,7 +23,7 @@ public class SkUser implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "SkUser [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
+		return "User [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
 				+ points + ", photo=" + Arrays.toString(photo) + ", isAudit=" + isAudit + ", isAgent=" + isAgent
 				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + "]";
 	}
