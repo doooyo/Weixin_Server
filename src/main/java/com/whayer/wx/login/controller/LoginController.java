@@ -1,6 +1,8 @@
 package com.whayer.wx.login.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -55,6 +57,19 @@ public class LoginController extends BaseVerificationController {
 		response.setDateHeader("Expires", 0);
 		response.setContentType("image/jpeg");
 		outputVerification(box, response);
+	}
+	
+	@RequestMapping(value = "/getUUID", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getUUID(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.getUUID()");
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		
+		List<String> list = new ArrayList<>();
+		list.add(X.uuidPure8Bit());
+		res.setList(list);
+		return res;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -365,4 +380,5 @@ public class LoginController extends BaseVerificationController {
 		
 		return getResponse(X.TRUE);
 	}
+	
 }

@@ -41,4 +41,12 @@ public interface ProductService {
 	 */
 	public Integer deleteProductById(String id);
 	
+	/**
+	 * 角色关联产品
+	 * @param role  角色编码
+	 * @param ids   产品id数组
+	 * @return
+	 */
+	public Integer associate(String role, String... ids);
+	
 }

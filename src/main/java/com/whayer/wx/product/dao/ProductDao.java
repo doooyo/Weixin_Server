@@ -21,4 +21,6 @@ public interface ProductDao  extends DAO{
 	
 	public List<Product> getProductListByUserType(@Param("code") String code);
 	
+	public Integer associate(@Param("role") String role, @Param("ids") String... ids);
+	
 }

@@ -2,7 +2,7 @@ package com.whayer.wx.product.vo;
 
 import java.io.Serializable;
 
-public class Product2User implements Serializable {
+public class Product2Role implements Serializable {
 
 	private static final long serialVersionUID = -606518019946090455L;
 	
@@ -33,6 +33,6 @@ public class Product2User implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "Product2User [id=" + id + ", productId=" + productId + ", userCode=" + userCode + "]";
+		return "Product2Role [id=" + id + ", productId=" + productId + ", userCode=" + userCode + "]";
 	}
 }

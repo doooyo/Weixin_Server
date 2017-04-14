@@ -14,6 +14,12 @@
 		create_time
 	</sql>
 	
+	<sql id="product2RoleFields">
+		id,
+		product_id,
+		user_code
+	</sql>
+	
 	<resultMap id="productListMap" type="Product">
         <id column="id" property="id" />
         <result column="name" property="name" />
@@ -71,7 +77,23 @@
 		from sk_product t
 		where t.id in 
 		(
-		  select u.product_id from sk_product_user u where u.user_code=#{code}
+		  select u.product_id from sk_product_role u where u.user_code=#{code}
 		)
 	</select>
+	
+	<!-- 产品打标关联 -->
+	<insert id="associate">
+		insert into sk_product_role 
+		(
+			<include refid="product2RoleFields" /> 
+		)
+        values
+        <foreach collection="ids" item="item" index="index" separator=",">
+            (
+            	REPLACE(UUID(), '-', ''), 
+            	#{item},
+            	#{role} <!--可以使用param1 param2 -->
+            )
+        </foreach>
+	</insert>
 </mapper>

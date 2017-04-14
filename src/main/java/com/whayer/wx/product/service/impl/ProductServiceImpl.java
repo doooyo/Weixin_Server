@@ -53,11 +53,21 @@ public class ProductServiceImpl implements ProductService{
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
 		
 		/**
-		 * type:  1:个人代理 2:区域代理 3:集团用户
+		 * type:  1:个人代理 2:区域代理 xxx:集团用户
 		 */
 		List<Product> list =  productDao.getProductListByUserType(code);
 		PageInfo<Product> pageInfo = new PageInfo<Product>(list, pagination.getNavigationSize());
 		return pageInfo;
+	}
+
+	/**
+	 * 角色关联产品
+	 * @param ids 
+	 * @return
+	 */
+	@Override
+	public Integer associate(String role, String... ids) {
+		return productDao.associate(role, ids);
 	}
 
 }
