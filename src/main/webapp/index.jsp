@@ -26,7 +26,7 @@ $(function(){
     //                   其次必须使用 @RequestBody,默认接收的enctype (MIME编码)是application/json
     //                   最后必须将请求的json转为字符串JSON.stringify(params)
     //@see http://blog.csdn.net/moshenglv/article/details/51973325
-	$.ajax({
+	/* $.ajax({
 		type: "POST",
         url: "/user/approval/audit",
         data: {ids: ['002', 'be9e9b0c-39df-456b-9223-c03fe0f3e77c']},
@@ -35,19 +35,19 @@ $(function(){
         success: function(data){
           console.log(data);          
         }
-	}) 
+	})*/
 	
-	/* $.ajax({
+	$.ajax({
 		type: "POST",
         url: "/product2role/associate",
-        data: JSON.stringify({ids: ['D54CACEA241849AFBE2C5FD66545FAB5', '3FE2A699E16D4F05BCC34572DDD89BF5'], 
-        	role: 'pQ8wQqDt'}),
+        data: {ids: ['D54CACEA241849AFBE2C5FD66545FAB5', '3FE2A699E16D4F05BCC34572DDD89BF5'], 
+        	role: 'pQ8wQqDt'},
         dataType: "json",
-        contentType : 'application/json;charset=utf-8',
+        //contentType : 'application/json;charset=utf-8',
         success: function(data){
           console.log(data);          
         }
-	})  */
+	})  
 })
 </script>
 </head>

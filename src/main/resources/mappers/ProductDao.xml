@@ -19,6 +19,7 @@
 		product_id,
 		user_code
 	</sql>
+
 	
 	<resultMap id="productListMap" type="Product">
         <id column="id" property="id" />
@@ -76,6 +77,29 @@
 		<include refid="productFields" /> 
 		from sk_product t
 		where t.id in 
+		(
+		  select u.product_id from sk_product_role u where u.user_code=#{code}
+		)
+	</select>
+	
+	<select id="getProductList2Role" resultType="ProductIsSelected">
+		<!-- 
+			code:  1:个人代理编码 2:区域代理编码 xxx:集团用户编码
+		 -->
+		select
+			<include refid="productFields" />,
+			1 as is_selected 
+		from sk_product 
+		where id in 
+		(
+		  select u.product_id from sk_product_role u where u.user_code=#{code}
+		)
+		union all
+		select
+			<include refid="productFields" />,
+			0 as is_selected
+		from sk_product 
+		where id not in 
 		(
 		  select u.product_id from sk_product_role u where u.user_code=#{code}
 		)

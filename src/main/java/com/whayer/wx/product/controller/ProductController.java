@@ -80,6 +80,35 @@ public class ProductController extends BaseController{
 	}
 	
 	/**
+	 * 获取所有产品,并指明和当前角色是否有关联(标识哪些产品是以做关联)
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/getList2Role", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getList2Role(HttpServletRequest request, HttpServletResponse response){
+		log.info("ProductController.getList2Role()");
+		Box box = loadNewBox(request);
+		
+		/**
+		 * code: 用户类型
+		 * 1:  个人代理编码
+		 * 2:  区域代理编码
+		 * xxx:集团用户编码
+		 */
+		
+		String code = box.$p("code");
+		if(isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		PageInfo<Product> pi = productService.getProductList2Role(code, box.getPagination());
+		
+		return pagerResponse(pi);
+	}
+	
+	/**
 	 * 获取产品详情
 	 * @param request
 	 * @param response

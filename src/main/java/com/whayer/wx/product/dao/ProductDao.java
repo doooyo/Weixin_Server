@@ -13,13 +13,15 @@ public interface ProductDao  extends DAO{
 	
 	public List<Product> getProductList();
 	
+	public List<Product> getProductListByUserType(@Param("code") String code);
+	
+	public List<Product> getProductList2Role(@Param("code") String code);
+	
 	public Product getProductById(@Param("id") String id);
 	
 	public Integer saveProduct(Product product);
 	
 	public Integer deleteProductById(@Param("id") String id);
-	
-	public List<Product> getProductListByUserType(@Param("code") String code);
 	
 	public Integer associate(@Param("role") String role, @Param("ids") String... ids);
 	

@@ -13,12 +13,20 @@ public interface ProductService {
 	public PageInfo<Product> getProductList(Pagination pagination);
 	
 	/**
-	 * 通过编码获取产品列表
+	 * 通过角色编码获取产品列表
 	 * @param Code
 	 * @param pagination
 	 * @return
 	 */
 	public PageInfo<Product> getProductListByUserType(String Code, Pagination pagination);
+	
+	/**
+	 * 获取所有产品列表(指明和当前角色的关联关系)
+	 * @param Code
+	 * @param pagination
+	 * @return
+	 */
+	public PageInfo<Product> getProductList2Role(String Code, Pagination pagination);
 	
 	/**
 	 * 通过产品ID获取产品详情
