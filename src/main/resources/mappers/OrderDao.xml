@@ -59,13 +59,13 @@
 	    
 	    <collection property="vouchers" column="v_id" ofType="Voucher">
 	    	<id property="id" column="v_id" />
-		    <result property="coupon.userId" column="v_user_id" />
-		    <result property="coupon.amount" column="v_amount" />
-		    <result property="coupon.isEffect" column="v_is_effect" />
-		    <result property="coupon.isExpired" column="v_is_expired" />
-		    <result property="coupon.createDate" column="v_create_date" />
-		    <result property="coupon.useDate" column="v_use_date" />
-		    <result property="coupon.createUserId" column="v_create_user_id" />
+		    <result property="userId" column="v_user_id" />
+		    <result property="amount" column="v_amount" />
+		    <result property="isEffect" column="v_is_effect" />
+		    <result property="isExpired" column="v_is_expired" />
+		    <result property="createDate" column="v_create_date" />
+		    <result property="useDate" column="v_use_date" />
+		    <result property="createUserId" column="v_create_user_id" />
 	    </collection>
 	</resultMap>
 
@@ -91,7 +91,7 @@
 		c.use_date as c_use_date,
 		c.create_user_id as c_create_user_id,
 		
-		e.is as e_id,
+		e.id as e_id,
 		e.name as e_name,
 		e.age as e_age,
 		e.address as e_address,
@@ -108,7 +108,7 @@
 		p.create_time as p_create_time,
 		
 		v.id as v_id,
-		v.user_id as v_user_id
+		v.user_id as v_user_id,
 		v.amount as v_amount,
 		v.is_effect as v_is_effect,
 		v.is_expired as v_is_expired,
@@ -118,17 +118,17 @@
 		
 		from sk_order o
 		left join sk_coupon c    
-		     on o.o_coupon_id = c.c_id
+		     on o.coupon_id = c.id
 		left join sk_examinee e
-		     on o.o_examinee_id = e.e_id
+		     on o.examinee_id = e.id
 		left join sk_order_voucher ov
-		     on o.o_id = ov.order_id
+		     on o.id = ov.order_id
 		left join sk_order_product op
-		     on o.o_id = op.order_id
+		     on o.id = op.order_id
 	    left join sk_voucher v
-		     on v.v_id = ov.voucher_id
+		     on v.id = ov.voucher_id
 		left join sk_product p
-		     on p.p_id = op.product_id 
+		     on p.id = op.product_id 
 			
 	</select>
 	

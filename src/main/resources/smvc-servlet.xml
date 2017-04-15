@@ -3,18 +3,49 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans   
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd   
         http://www.springframework.org/schema/tx   
-        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd  
+        http://www.springframework.org/schema/tx/spring-tx-3.2.xsd  
         http://www.springframework.org/schema/context  
-        http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd  
         http://www.springframework.org/schema/mvc  
-        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
         
     <context:property-placeholder location="classpath:x.properties" />
     
-    <mvc:annotation-driven />
-
+    
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">  
+	        <!-- default StringHttpMessageConverter, solve encoding problem -->  
+	        <bean class="org.springframework.http.converter.StringHttpMessageConverter">  
+	            <constructor-arg value="UTF-8" />  
+	            <property name="writeAcceptCharset" value="false" />  
+	        </bean>
+	        <!-- <bean id="jsonConverter" class="com.alibaba.fastjson.spring.support.MappingFastJsonHttpMessageConverter"> 
+	            <property name="supportedMediaTypes" value="application/json" /> 
+	            <property name="serializerFeature"> 
+	                <list> 
+	                    <value>WriteMapNullValue</value> 
+	                    <value>QuoteFieldNames</value> 
+	                </list> 
+	            </property> 
+	        </bean>  -->
+	        <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">  
+                <property name="objectMapper">  
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">  
+                        <property name="dateFormat">  
+                            <bean class="java.text.SimpleDateFormat">  
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />  
+                            </bean>  
+                        </property>  
+                    </bean>  
+                </property>  
+            </bean> 
+	    </mvc:message-converters>
+    </mvc:annotation-driven>
+    
+     
+	
 	<context:component-scan base-package="com.whayer.wx.**.controller"
 		use-default-filters="false">
 		<context:include-filter type="annotation"
