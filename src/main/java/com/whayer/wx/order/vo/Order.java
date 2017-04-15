@@ -2,6 +2,7 @@ package com.whayer.wx.order.vo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.whayer.wx.coupon.vo.Coupon;
@@ -25,6 +26,7 @@ public class Order implements Serializable{
 	private BigDecimal amount;    //总金额
 	private Integer state;        //订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)
 	private Boolean isInvoice;    //是否需要发票(0: 无需发票1:需要发票)
+	private Date creareTime;      //创建时间
 	
 	private List<Product> products;  //订单的产品列表
 	private List<Voucher> vouchers;  //订单的代金劵列表
@@ -107,11 +109,18 @@ public class Order implements Serializable{
 	public void setExaminee(Examinee examinee) {
 		this.examinee = examinee;
 	}
+	public Date getCreareTime() {
+		return creareTime;
+	}
+	public void setCreareTime(Date creareTime) {
+		this.creareTime = creareTime;
+	}
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", productIdList=" + productIdList + ", couponId=" + couponId + ", vouchersId="
 				+ vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state=" + state + ", isInvoice="
-				+ isInvoice + ", products=" + products + ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee="
-				+ examinee + "]";
+				+ isInvoice + ", creareTime=" + creareTime + ", products=" + products + ", vouchers=" + vouchers
+				+ ", coupon=" + coupon + ", examinee=" + examinee + "]";
 	}
+	
 }

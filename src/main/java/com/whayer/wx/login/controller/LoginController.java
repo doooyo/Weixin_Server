@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageInfo;
@@ -312,7 +312,7 @@ public class LoginController extends BaseVerificationController {
 		}
 	}
 	
-	@RequestMapping("/getListByType")
+	@RequestMapping("/getUserListByType")
 	@ResponseBody
 	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("LoginController.getListByType()");
@@ -347,7 +347,8 @@ public class LoginController extends BaseVerificationController {
 	 */
 	@RequestMapping(value = "/approval/audit", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition approvalAudit(@RequestBody String[] ids, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	//@RequestParam("ids[]") List<String>也可以
+	public ResponseCondition approvalAudit(@RequestParam("ids[]") String[] ids, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("LoginController.approvalAudit()");
 		
 		if(isNullOrEmpty(ids)){
@@ -369,7 +370,7 @@ public class LoginController extends BaseVerificationController {
 	 */
 	@RequestMapping(value = "/approval/agent", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition approvalAgent(@RequestBody String[] ids, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ResponseCondition approvalAgent(@RequestParam("ids[]") String[] ids, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("LoginController.approvalAgent()");
 		
 		if(isNullOrEmpty(ids)){

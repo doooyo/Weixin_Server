@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.whayer.wx.common.X;
@@ -37,6 +38,7 @@ public class Product2RoleController extends BaseController{
 	/**
 	 * 角色关联产品
 	 * @param ids      产品id数组
+	 * @param role     角色编码
 	 * @param request
 	 * @param response
 	 * @return
@@ -44,12 +46,12 @@ public class Product2RoleController extends BaseController{
 	 */
 	@RequestMapping(value = "/associate", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition associate(@RequestBody String[] ids, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseCondition associate(@RequestParam("ids[]") String[] ids, String role, HttpServletRequest request, HttpServletResponse response) {
 		log.info("Product2RoleController.associate()");
 		
-		Box box = loadNewBox(request);
+		//Box box = loadNewBox(request);
 		
-		String role = box.$p("role");
+		//String role = box.$p("role");
 		
 		if(isNullOrEmpty(ids) || isNullOrEmpty(role)){
 			getResponse(X.FALSE);

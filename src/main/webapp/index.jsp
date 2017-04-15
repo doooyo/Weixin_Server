@@ -7,25 +7,47 @@
 <script type="text/javascript" src="static/jquery-3.2.0.js"></script>
 <script>
 $(function(){
-	$.ajax({
+	//注意get参数本质是username=test&password=123456
+	//   post参数如何使用{} 或 $.param({}) 其本质也是转为了username=test&password=123456
+	//若使用JSON.stringify({}) 转化为了json字符串,后台就不能以request.getParameter来获取值
+	//即使request.getParameter能获取get或post提交的参数,但实际上也只能获取上述类型的参数
+	/* $.ajax({
         type: "POST",
-        url: "/login",
-        data: {username: 'test', password: '123456'},
+        url: "/user/login",
+        data: $.param({username: 'test', password: '123456'}),//{username: 'test', password: '123456'}也可
         dataType: "json",
         success: function(data){
           console.log(data);          
         }
-    });
+    });  */
+	
+    //注意POST 如果传递的是json对象,则不能使用'application/json;charset=utf-8',直接传递对象
+    //如果传递的是json字符串:首先必须设置请求头'application/json;charset=utf-8'
+    //                   其次必须使用 @RequestBody,默认接收的enctype (MIME编码)是application/json
+    //                   最后必须将请求的json转为字符串JSON.stringify(params)
+    //@see http://blog.csdn.net/moshenglv/article/details/51973325
+	$.ajax({
+		type: "POST",
+        url: "/user/approval/audit",
+        data: {ids: ['002', 'be9e9b0c-39df-456b-9223-c03fe0f3e77c']},
+        dataType: "json",
+        //contentType : 'application/json;charset=utf-8',
+        success: function(data){
+          console.log(data);          
+        }
+	}) 
 	
 	/* $.ajax({
 		type: "POST",
-        url: "/login/approval/audit",
-        data: {ids: []},
+        url: "/product2role/associate",
+        data: JSON.stringify({ids: ['D54CACEA241849AFBE2C5FD66545FAB5', '3FE2A699E16D4F05BCC34572DDD89BF5'], 
+        	role: 'pQ8wQqDt'}),
         dataType: "json",
+        contentType : 'application/json;charset=utf-8',
         success: function(data){
           console.log(data);          
         }
-	}) */
+	})  */
 })
 </script>
 </head>
