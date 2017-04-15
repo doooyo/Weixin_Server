@@ -1,6 +1,8 @@
 package com.whayer.wx.order.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +32,14 @@ public class OrderController extends BaseController{
 	@Resource
 	private OrderService orderService;
 	
+	/**
+	 * 提交订单
+	 * @param order
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition save(@RequestBody Order order, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -40,9 +50,13 @@ public class OrderController extends BaseController{
 			return getResponse(X.FALSE);
 		}
 		
-		orderService.save(order);
+		String orderId = orderService.save(order);
 		
-		return getResponse(X.TRUE);
+		ResponseCondition res = getResponse(X.TRUE);
+		List<String> list = new ArrayList<>();
+		list.add(orderId);
+		res.setList(list);
+		return res;
 	}
 	
 	@RequestMapping(value = "/getList", method = RequestMethod.GET)
@@ -60,13 +74,20 @@ public class OrderController extends BaseController{
 		return pagerResponse(pi);
 	}
 	
+	/**
+	 * 取消订单
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/cancle", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition cancle(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("OrderController.cancle()");
 		
 		Box box = loadNewBox(request);
-		
+		//订单id
 		String id = box.$p("id");
 		if(isNullOrEmpty(id)){
 			return getResponse(X.FALSE);

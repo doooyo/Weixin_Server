@@ -53,17 +53,17 @@ $(function(){
 		type: "POST",
         url: "/order/save",
         data: JSON.stringify({
-        	productIdList:['2FC0791BAC744601893E78F1EA599FEB', '3FE2A699E16D4F05BCC34572DDD89BF5',
-        	               '4DFFB6884C12438DBE2694230E27EE22', '6F8F18D75BB84833BBC54DE379CC5F55'].join(','),
-			couponId:'5WR8ZUml',
-			vouchersId:['8ZF66dIr', '9OePRmio', 'BctTVjRq'].join(','),
+        	productIdList:'FE13F756DA374B099C20E27E4F93CBF4,E7491E5B907547A7970C1830830EFCC6',
+        		//['2FC0791BAC744601893E78F1EA599FEB', '3FE2A699E16D4F05BCC34572DDD89BF5','4DFFB6884C12438DBE2694230E27EE22', '6F8F18D75BB84833BBC54DE379CC5F55'].join(','),
+			couponId:'lMoumzDQ',//'5WR8ZUml',
+			vouchersId:'ClHfxTMh',//['8ZF66dIr', '9OePRmio', 'BctTVjRq'].join(','),
 			examinee:{
 				name:'李某',
 				age:20,
 				address:'成都高新区天府大道5段',
 				gender:0,//	0/false:男，1/true：女 
 				mobile:'18236524578',
-				identityId:'500225198911055674',
+				identityId:'500225198911055',
 				birthday:'1988-01-05'
 			},
 			amount:2500,
@@ -75,7 +75,10 @@ $(function(){
         success: function(data){
           console.log(data);          
         }
-	})
+	}) 
+	
+	
+	
 })
 </script>
 </head>

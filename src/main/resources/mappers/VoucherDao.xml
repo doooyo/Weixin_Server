@@ -111,4 +111,11 @@
 	        #{item}
 	    </foreach>
     </update>
+    
+    <update id="updateStateRollBackById">
+    	UPDATE sk_voucher SET is_effect = 1, use_date = null WHERE id IN
+	    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+    </update>
 </mapper>

@@ -25,7 +25,7 @@ public class Order implements Serializable{
 	private String couponId;      //优惠卷id(优惠卷只能一张)
 	private String vouchersId;    //代金劵(可以无限张, 使用逗号分隔id)
 	private String examineeId;    //体检人id
-	private BigDecimal amount = new BigDecimal(0);    //总金额
+	private BigDecimal amount= new BigDecimal(0);    //总金额
 	private Integer state = 0;        //订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)
 	private Boolean isInvoice = false;    //是否需要发票(0: 无需发票1:需要发票)
 	private Date creareTime;      //创建时间

@@ -22,4 +22,6 @@ public interface CouponDao extends DAO {
 	public Coupon validate(@Param("userId") String userId, @Param("code") String code);
 	
 	public int updateStateByIds(@Param("ids") String... ids);
+	
+	public int updateStateRollBackById(@Param("ids") String... ids);
 }

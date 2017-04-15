@@ -34,15 +34,15 @@ public class OrderServiceImpl implements OrderService{
 	private VoucherDao voucherDao;
 	
 	@Override
-	public PageInfo<Order> getOrderList(String id, Pagination pagination) {
+	public PageInfo<Order> getOrderList(String uid, Pagination pagination) {
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
-		List<Order> list =  orderDao.getOrderList(id);
+		List<Order> list =  orderDao.getOrderList(uid);
 		PageInfo<Order> pageInfo = new PageInfo<Order>(list, pagination.getNavigationSize());
 		return pageInfo;
 	}
 
 	@Override
-	public int save(Order order) {
+	public String save(Order order) {
 		/**
 		 * 1.保存体检人(设置id)
 		 * 2.拿到体检人id并保存订单(设置订单id)
@@ -57,7 +57,8 @@ public class OrderServiceImpl implements OrderService{
 		int e = examineeDao.saveExaminee(examinee);
 		
 		//保存订单
-		order.setId(X.uuidPure());
+		String orderId = X.uuidPure();
+		order.setId(orderId);
 		order.setExamineeId(examineeId);
 		int o = orderDao.save(order);
 		
@@ -85,14 +86,34 @@ public class OrderServiceImpl implements OrderService{
 		if(vids.length > 0){
 			vus = voucherDao.updateStateByIds(vids);
 		}
-		System.out.println(e + o + op + vp + cus + vus);
-		return e + o + op + vp + cus + vus; //6次数据库操作,AOP保证事物
+		System.out.println(e + o + op + vp + cus + vus); //6次数据库操作,AOP保证事物
+		return orderId; 
 	}
 
 	@Override
 	public int cancelOrder(String id) {
 		//state 0:未付款, 1:已付款 2:已结算 3:已取消
-		return orderDao.updateOrderStatusById(id, 3);
+		
+		Order order = orderDao.getOrderById(id);
+		String cIds = order.getCouponId();
+		String vIds = order.getVouchersId();
+		
+		//同时将代金劵 与 优惠卷 的状态进行重置
+		if(cIds.length() > 0){
+			String[] ids = cIds.split(",");
+			couponDao.updateStateRollBackById(ids);
+		} 
+		
+		if(vIds.length() > 0){
+			String[] ids = vIds.split(",");
+			voucherDao.updateStateRollBackById(ids);
+		}
+		
+		//取消订单
+		orderDao.updateOrderStatusById(id, 3);
+		
+		return 1;
+		
 	}
 
 }
