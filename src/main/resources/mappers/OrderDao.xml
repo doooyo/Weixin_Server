@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.whayer.wx.order.dao.OrderDao">
+
+	<sql id="orderFields">
+		id,
+		product_id_list,
+		user_id,
+		coupon_id,
+		vouchers_id,<!-- 多个,用逗号分割 -->
+		examinee_id,
+		amount,
+		state,
+		is_invoice，
+		creare_time
+	</sql>
+	
+	<resultMap type="Order" id="allOrderMap">
+		<result property="id" column="o_id" /> <!-- 若关联对象有重名,则必须要重命名 -->
+	    <result property="productIdList" column="o_product_id_list" />
+	    <result property="userId" column="o_user_id" />
+	    <result property="couponId" column="o_coupon_id" />
+	    <result property="vouchersId" column="o_vouchers_id" />
+	    <result property="examineeId" column="o_examinee_id" />
+	    <result property="amount" column="o_amount" />
+	    <result property="state" column="o_state" />
+	    <result property="isInvoice" column="o_is_invoice" />
+	    <result property="creareTime" column="o_creare_time" />
+	    
+	    <result property="coupon.id" column="c_id" />
+	    <result property="coupon.userId" column="c_user_id" />
+	    <result property="coupon.amount" column="c_amount" />
+	    <result property="coupon.isEffect" column="c_is_effect" />
+	    <result property="coupon.isExpired" column="c_is_expired" />
+	    <result property="coupon.createDate" column="c_create_date" />
+	    <result property="coupon.useDate" column="c_use_date" />
+	    <result property="coupon.createUserId" column="c_create_user_id" />
+	    
+	    <result property="examinee.id" column="e_id" />
+	    <result property="examinee.name" column="e_name" />
+	    <result property="examinee.age" column="e_age" />
+	    <result property="examinee.address" column="e_address" />
+	    <result property="examinee.gender" column="e_gender" />
+	    <result property="examinee.mobile" column="e_mobile" />
+	    <result property="examinee.identityId" column="e_identity_id" />
+	    <result property="examinee.birthday" column="e_birthday" />
+	    
+	    <collection property="products" column="p_id" ofType="Product">
+	    	<id property="id" column="p_id" />
+		    <result property="name" column="p_name" />
+		    <result property="imgUrl" column="p_img_url" />
+		    <result property="price" column="p_price" />
+		    <result property="description" column="p_description" />
+		    <result property="createTime" column="p_create_time" />
+	    </collection>
+	    
+	    <collection property="vouchers" column="v_id" ofType="Voucher">
+	    	<id property="id" column="v_id" />
+		    <result property="coupon.userId" column="v_user_id" />
+		    <result property="coupon.amount" column="v_amount" />
+		    <result property="coupon.isEffect" column="v_is_effect" />
+		    <result property="coupon.isExpired" column="v_is_expired" />
+		    <result property="coupon.createDate" column="v_create_date" />
+		    <result property="coupon.useDate" column="v_use_date" />
+		    <result property="coupon.createUserId" column="v_create_user_id" />
+	    </collection>
+	</resultMap>
+
+	<select id="getOrderList" resultMap="allOrderMap">
+		select 
+		o.id as o_id,
+		o.product_id_list as o_product_id_list,
+		o.user_id as o_user_id,
+		o.coupon_id as o_coupon_id,
+		o.vouchers_id as o_vouchers_id,
+		o.examinee_id as o_examinee_id,
+		o.amount as o_amount,
+		o.state as o_state,
+		o.is_invoice as o_is_invoice,
+		o.creare_time as o_creare_time,
+		
+		c.id as c_id,
+		c.user_id as c_user_id,
+		c.amount as c_amount,
+		c.is_effect as c_is_effect,
+		c.is_expired as c_is_expired,
+		c.create_date as c_create_date,
+		c.use_date as c_use_date,
+		c.create_user_id as c_create_user_id,
+		
+		e.is as e_id,
+		e.name as e_name,
+		e.age as e_age,
+		e.address as e_address,
+		e.gender as e_gender,
+		e.mobile as e_mobile,
+		e.identity_id as e_identity_id,
+		e.birthday as e_birthday,
+		
+		p.id as p_id,
+		p.name as p_name,
+		p.img_url as p_img_url,
+		p.price as p_price,
+		p.description as p_description,
+		p.create_time as p_create_time,
+		
+		v.id as v_id,
+		v.user_id as v_user_id
+		v.amount as v_amount,
+		v.is_effect as v_is_effect,
+		v.is_expired as v_is_expired,
+		v.create_date as v_create_date,
+		v.use_date as v_use_date,
+		v.create_user_id as v_create_user_id
+		
+		from sk_order o
+		left join sk_coupon c    
+		     on o.o_coupon_id = c.c_id
+		left join sk_examinee e
+		     on o.o_examinee_id = e.e_id
+		left join sk_order_voucher ov
+		     on o.o_id = ov.order_id
+		left join sk_order_product op
+		     on o.o_id = op.order_id
+	    left join sk_voucher v
+		     on v.v_id = ov.voucher_id
+		left join sk_product p
+		     on p.p_id = op.product_id 
+			
+	</select>
+	
+	<insert id="save" parameterType="Order">
+		insert into sk_order(
+  			id,
+			product_id_list,
+			user_id,
+			coupon_id,
+			vouchers_id,<!-- 多个,用逗号分割 -->
+			examinee_id,
+			amount,
+			state,
+			is_invoice,
+			creare_time
+  		) 
+  		values(
+  		#{id},
+  		#{productIdList},
+  		#{userId},
+  		#{couponId},
+  		#{vouchersId},
+  		#{examineeId},
+  		#{amount},
+  		0,
+  		#{isInvoice},
+  		now()
+  		)
+	</insert>
+	
+	<!-- 通过订单id更新订单状态 -->
+	<update id="updateOrderStatusById">
+		UPDATE sk_order SET state=#{state}
+    	WHERE id=#{id}
+	</update>
+
+	<insert id="saveOrder2Product">
+		insert into sk_order_product 
+		(
+			id,
+			order_id,
+			product_id
+		)
+        values
+        <foreach collection="pids" item="item" index="index" separator=",">
+            (
+            	REPLACE(UUID(), '-', ''), 
+            	#{orderId},
+            	#{item} 
+            )
+        </foreach>
+	</insert>
+	
+	<insert id="saveOrder2Voucher">
+		insert into sk_order_voucher 
+		(
+			id,
+			order_id,
+			voucher_id
+		)
+        values
+        <foreach collection="vids" item="item" index="index" separator=",">
+            (
+            	REPLACE(UUID(), '-', ''), 
+            	#{orderId},
+            	#{item} 
+            )
+        </foreach>
+	</insert>
+</mapper>

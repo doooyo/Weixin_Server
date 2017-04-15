@@ -20,4 +20,6 @@ public interface CouponDao extends DAO {
 	public int deleteCoupontById(@Param("id") String id);
 	
 	public Coupon validate(@Param("userId") String userId, @Param("code") String code);
+	
+	public int updateStateByIds(@Param("ids") String... ids);
 }

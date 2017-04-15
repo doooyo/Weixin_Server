@@ -20,4 +20,6 @@ public interface VoucherDao extends DAO{
 	public int deleteVoucherById(@Param("id") String id);
 	
 	public Voucher validate(@Param("userId") String userId, @Param("code") String code);
+	
+	public int updateStateByIds(@Param("ids") String... ids);
 }

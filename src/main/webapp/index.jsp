@@ -37,7 +37,7 @@ $(function(){
         }
 	})*/
 	
-	$.ajax({
+	/* $.ajax({
 		type: "POST",
         url: "/product2role/associate",
         data: {ids: ['D54CACEA241849AFBE2C5FD66545FAB5', '3FE2A699E16D4F05BCC34572DDD89BF5'], 
@@ -47,7 +47,35 @@ $(function(){
         success: function(data){
           console.log(data);          
         }
-	})  
+	}) */
+	
+	$.ajax({
+		type: "POST",
+        url: "/order/save",
+        data: JSON.stringify({
+        	productIdList:['2FC0791BAC744601893E78F1EA599FEB', '3FE2A699E16D4F05BCC34572DDD89BF5',
+        	               '4DFFB6884C12438DBE2694230E27EE22', '6F8F18D75BB84833BBC54DE379CC5F55'].join(','),
+			couponId:'5WR8ZUml',
+			vouchersId:['8ZF66dIr', '9OePRmio', 'BctTVjRq'].join(','),
+			examinee:{
+				name:'李某',
+				age:20,
+				address:'成都高新区天府大道5段',
+				gender:0,//	0/false:男，1/true：女 
+				mobile:'18236524578',
+				identityId:'500225198911055674',
+				birthday:'1988-01-05'
+			},
+			amount:2500,
+			isInvoice:true,
+			userId:'be9e9b0c-39df-456b-9223-c03fe0f3e77c'
+        }),
+        dataType: "json",
+        contentType : 'application/json;charset=utf-8',
+        success: function(data){
+          console.log(data);          
+        }
+	})
 })
 </script>
 </head>

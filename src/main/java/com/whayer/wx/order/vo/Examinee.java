@@ -16,7 +16,7 @@ public class Examinee implements Serializable{
 	private String name;    //体检人姓名
 	private Integer age;    //体检人年龄
 	private String address; //体检人地址
-	private Boolean gender; //性别(0: 男1:女)
+	private Boolean gender; //性别(0:男 1:女)
 	private String mobile;  //体检人电话
 	private String identityId; //身份证ID
 	private Date birthday;     //出生日期

@@ -103,4 +103,12 @@
 			<if test="1==1"> AND t.is_expired = 0 </if>
 		</trim>
     </select>
+    
+    
+    <update id="updateStateByIds">
+    	 UPDATE sk_voucher SET is_effect = 0, use_date = NOW() WHERE id IN
+	    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+    </update>
 </mapper>

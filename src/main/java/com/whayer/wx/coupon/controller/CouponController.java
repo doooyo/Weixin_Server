@@ -24,6 +24,12 @@ import com.whayer.wx.coupon.service.CouponService;
 import com.whayer.wx.coupon.vo.Coupon;
 import com.whayer.wx.login.vo.User;
 
+
+/**
+ * TODO  优惠卷 代金劵 添加截止日期
+ * @author duyu
+ *
+ */
 @Controller
 @RequestMapping("/coupon")
 public class CouponController extends BaseController{

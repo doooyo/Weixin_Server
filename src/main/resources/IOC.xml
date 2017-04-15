@@ -87,7 +87,7 @@
 	    <property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<tx:advice id="userTxAdvice" transaction-manager="transactionManager">
+	<tx:advice id="doyoTxAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 			<tx:method name="save*" propagation="REQUIRED" read-only="false"
 				rollback-for="java.lang.Exception" />
@@ -105,7 +105,7 @@
 	<aop:config> <!-- proxy-target-class="true" -->
 		<aop:pointcut id="pc"
 			expression="execution(public * com.whayer.wx..*Service.*(..))" />
-		<aop:advisor pointcut-ref="pc" advice-ref="userTxAdvice" />
+		<aop:advisor pointcut-ref="pc" advice-ref="doyoTxAdvice" />
 	</aop:config>
 
 	<!-- only for test 

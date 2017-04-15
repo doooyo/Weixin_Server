@@ -2,6 +2,7 @@ package com.whayer.wx.order.vo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,17 +20,18 @@ public class Order implements Serializable{
 	private static final long serialVersionUID = 8755264381998274388L;
 	
 	private String id;            //订单id
+	private String userId;        //订单所属用户id
 	private String productIdList; //订单商品id(以','逗号分隔, 这是一个冗余字段, 有一个order_products表)
 	private String couponId;      //优惠卷id(优惠卷只能一张)
 	private String vouchersId;    //代金劵(可以无限张, 使用逗号分隔id)
 	private String examineeId;    //体检人id
-	private BigDecimal amount;    //总金额
-	private Integer state;        //订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)
-	private Boolean isInvoice;    //是否需要发票(0: 无需发票1:需要发票)
+	private BigDecimal amount = new BigDecimal(0);    //总金额
+	private Integer state = 0;        //订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)
+	private Boolean isInvoice = false;    //是否需要发票(0: 无需发票1:需要发票)
 	private Date creareTime;      //创建时间
 	
-	private List<Product> products;  //订单的产品列表
-	private List<Voucher> vouchers;  //订单的代金劵列表
+	private List<Product> products = new ArrayList<>();  //订单的产品列表
+	private List<Voucher> vouchers = new ArrayList<>();  //订单的代金劵列表
 	private Coupon coupon;           //订单的优惠卷(限一个)
 	private Examinee examinee;       //订单的体检人
 	
@@ -115,12 +117,18 @@ public class Order implements Serializable{
 	public void setCreareTime(Date creareTime) {
 		this.creareTime = creareTime;
 	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", productIdList=" + productIdList + ", couponId=" + couponId + ", vouchersId="
-				+ vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state=" + state + ", isInvoice="
-				+ isInvoice + ", creareTime=" + creareTime + ", products=" + products + ", vouchers=" + vouchers
-				+ ", coupon=" + coupon + ", examinee=" + examinee + "]";
+		return "Order [id=" + id + ", userId=" + userId + ", productIdList=" + productIdList + ", couponId=" + couponId
+				+ ", vouchersId=" + vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state="
+				+ state + ", isInvoice=" + isInvoice + ", creareTime=" + creareTime + ", products=" + products
+				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + "]";
 	}
 	
 }
