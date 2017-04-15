@@ -129,7 +129,16 @@
 		     on v.id = ov.voucher_id
 		left join sk_product p
 		     on p.id = op.product_id 
-			
+		<!-- <where>
+			<if test="id != null and id != ''">
+				id=#{id}
+			</if>
+		</where> -->    
+		<trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <if test="id != null and id !='' ">  
+		        o.user_id =#{id}   
+		    </if>  
+		</trim>	
 	</select>
 	
 	<insert id="save" parameterType="Order">
