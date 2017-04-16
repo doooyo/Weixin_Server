@@ -9,8 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import com.github.pagehelper.PageInfo;
 import com.whayer.wx.base.UnitTestBase;
 import com.whayer.wx.common.X;
+import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.gift.vo.Gift;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -60,5 +62,17 @@ public class GiftServiceTest extends UnitTestBase{
 		giftService.update(gift);
 	}
 	
-
+	@Test
+	public void testDeleteById(){
+		GiftService giftService = super.getBean("giftServiceImpl");
+		int count = giftService.deleteById("6594923A14B847D09548991634906A72");
+		System.out.println(count);
+	}
+	
+	@Test
+	public void testGetList(){
+		GiftService giftService = super.getBean("giftServiceImpl");
+		PageInfo<Gift> pageInfo = giftService.getGiftList(1, new Pagination());
+		System.out.println(pageInfo.getList());
+	}
 }
