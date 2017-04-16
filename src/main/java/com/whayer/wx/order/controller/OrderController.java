@@ -81,10 +81,10 @@ public class OrderController extends BaseController{
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/cancle", method = RequestMethod.POST)
+	@RequestMapping(value = "/cancel", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition cancle(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("OrderController.cancle()");
+	public ResponseCondition cancel(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("OrderController.cancel()");
 		
 		Box box = loadNewBox(request);
 		//订单id

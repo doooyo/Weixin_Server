@@ -14,7 +14,7 @@
 		examinee_id,
 		amount,
 		state,
-		is_invoice，
+		is_invoice,
 		creare_time
 	</sql>
 	
