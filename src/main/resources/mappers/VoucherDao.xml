@@ -9,10 +9,11 @@
 		user_id,
 		create_user_id,
 		amount,
-		is_effect,
+		is_effect, <!-- 是否已使用 -->
 		is_expired,
 		create_date,
-		use_date
+		use_date,
+		deadline
 	</sql>
 	
 	<resultMap id="voucherListMap" type="Voucher">
@@ -24,6 +25,7 @@
         <result column="is_expired" property="isExpired" />
         <result column="create_date" property="createDate" />
         <result column="use_date" property="useDate" />
+        <result column="deadline" property="deadline" />
     </resultMap>
 
 	<select id="getVoucherListByUid" parameterType="String" resultMap="voucherListMap" >
@@ -36,7 +38,9 @@
 			is_effect,
 			is_expired,
 			create_date,
-			use_date 
+			use_date,
+			deadline
+			
 	        from sk_voucher 
 	        where user_id = #{userId} 
         ]]>
@@ -58,7 +62,8 @@
 				amount,
 				is_effect,
 				is_expired,
-				create_date
+				create_date,
+				deadline
 				)
 			VALUES(
 				#{id},
@@ -67,7 +72,8 @@
 				#{amount},
 				1,
 				0,
-				now()
+				now(),
+				#{deadline}
 			)
     	]]>
     </insert>
@@ -117,5 +123,10 @@
 	    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
 	        #{item}
 	    </foreach>
+    </update>
+    
+    <update id="updateExpired">
+    	UPDATE sk_voucher SET is_expired = 1
+    	WHERE id = #{id}
     </update>
 </mapper>

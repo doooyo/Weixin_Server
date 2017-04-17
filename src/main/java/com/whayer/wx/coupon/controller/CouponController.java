@@ -96,10 +96,11 @@ public class CouponController extends BaseController{
 		
 		String id = X.uuidPure();
 		String userId = box.$p("userId");
+		String deadline = box.$p("deadline");
 		String createUserId = uid;
 		BigDecimal amount = new BigDecimal(box.$p("amount"));
 
-		if(isNullOrEmpty(userId) || isNullOrEmpty(amount)){
+		if(isNullOrEmpty(userId) || isNullOrEmpty(amount) || isNullOrEmpty(deadline)){
 			return getResponse(false);
 		}
 		Coupon coupon = new Coupon();
@@ -107,6 +108,7 @@ public class CouponController extends BaseController{
 		coupon.setUserId(userId);
 		coupon.setCreateUserId(createUserId);
 		coupon.setAmount(amount);
+		coupon.setDeadline(X.string2date(deadline, X.TIMEA));
 		
 		couponService.saveCoupon(coupon);
 		

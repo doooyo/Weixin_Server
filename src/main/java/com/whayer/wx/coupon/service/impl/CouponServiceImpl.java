@@ -1,6 +1,7 @@
 package com.whayer.wx.coupon.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.coupon.dao.CouponDao;
@@ -53,8 +55,8 @@ public class CouponServiceImpl implements CouponService{
 	@Override
 	public ResponseCondition validate(ResponseCondition res, String userId, String type, String code) {
 		/**
-		 * 用户Id为空,代表为散客户
-		 * 用户Id不为空,代表为集团用户 or 代理人(个代/区代)
+		 * userId为空,代表为散客户
+		 * userId不为空,代表为集团用户 or 代理人(个代/区代)
 		 * type  0:优惠卷 1:代金劵
 		 */
 		if("0".equals(type)){
@@ -64,11 +66,17 @@ public class CouponServiceImpl implements CouponService{
 				res.setErrorMsg("不存在此优惠劵");
 				return res;
 			}else{
+				
+				Date deadline = coupon.getDeadline();
+				
 				if(!coupon.isEffect()){
 					res.setIsSuccess(false);
 					res.setErrorMsg("优惠劵已使用");
 					return res;
-				}else if(coupon.isExpired()){
+				}else if(coupon.isExpired() || X.now().compareTo(deadline) > 0){
+					//更新为已过期
+					if(!coupon.isExpired())
+						couponDao.updateExpired(coupon.getId());
 					res.setIsSuccess(false);
 					res.setErrorMsg("优惠劵已过期");
 					return res;
@@ -87,11 +95,17 @@ public class CouponServiceImpl implements CouponService{
 				res.setErrorMsg("不存在此代金劵");
 				return res;
 			}else{
+				
+				Date deadline = voucher.getDeadline();
+				
 				if(!voucher.isEffect()){
 					res.setIsSuccess(false);
 					res.setErrorMsg("代金劵已使用");
 					return res;
-				}else if(voucher.isExpired()){
+				}else if(voucher.isExpired() || X.now().compareTo(deadline) > 0){
+					//更新为已过期
+					if(!voucher.isExpired())
+						voucherDao.updateExpired(voucher.getId());
 					res.setIsSuccess(false);
 					res.setErrorMsg("代金劵已过期");
 					return res;

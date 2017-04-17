@@ -40,12 +40,13 @@ public class CouponServiceTest extends UnitTestBase{
 			Coupon coupon = new Coupon();
 			coupon.setId(X.uuidPure8Bit());
 			coupon.setUserId("be9e9b0c-39df-456b-9223-c03fe0f3e77c");
-			coupon.setAmount(new BigDecimal(168.88));
+			coupon.setAmount(new BigDecimal(100.00));
 			coupon.setEffect(X.TRUE);
 			coupon.setExpired(X.FALSE);
 			coupon.setCreateDate(null);
 			coupon.setUseDate(null);
 			coupon.setCreateUserId("be9e9b0c-39df-456b-9223-c03fe0f3e77c");
+			coupon.setDeadline(X.string2date("2017-05-01 23:59:59", X.TIMEA));
 			
 			couponService.saveCoupon(coupon);
 		}
@@ -59,12 +60,13 @@ public class CouponServiceTest extends UnitTestBase{
 			Voucher voucher = new Voucher();
 			voucher.setId(X.uuidPure8Bit());
 			voucher.setUserId("be9e9b0c-39df-456b-9223-c03fe0f3e77c");
-			voucher.setAmount(new BigDecimal(168.88));
+			voucher.setAmount(new BigDecimal(100.00));
 			voucher.setEffect(X.TRUE);
 			voucher.setExpired(X.FALSE);
 			voucher.setCreateDate(null);
 			voucher.setUseDate(null);
 			voucher.setCreateUserId("be9e9b0c-39df-456b-9223-c03fe0f3e77c");
+			voucher.setDeadline(X.string2date("2017-05-01 23:59:59", X.TIMEA));
 			
 			voucherService.saveVoucher(voucher);
 		}

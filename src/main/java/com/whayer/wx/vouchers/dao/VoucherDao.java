@@ -24,4 +24,11 @@ public interface VoucherDao extends DAO{
 	public int updateStateByIds(@Param("ids") String... ids);
 	
 	public int updateStateRollBackById(@Param("ids") String... ids);
+	
+	/**
+	 * 更新为已过期
+	 * @param id
+	 * @return
+	 */
+	public int updateExpired(@Param("id") String id);
 }

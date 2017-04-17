@@ -161,7 +161,12 @@ public class LoginController extends BaseVerificationController {
 					//request.getSession().setAttribute(X.USER_TYPE, user.getIsAgent().toString());
 					//request.getSession().setAttribute(X.USER_NAME, user.getUsername());
 
-					return getResponse(true);
+					ResponseCondition res = getResponse(X.TRUE);
+					List<User> list = new ArrayList<>();
+					list.add(user);
+					res.setList(list);
+					
+					return res;
 				}
 			}
 		}

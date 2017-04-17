@@ -21,6 +21,7 @@ public class Coupon implements Serializable{
 	private Date createDate;      //创建日期
 	private Date useDate;         //使用日期
 	private String createUserId;  //创建人id
+	private Date deadline;        //过期时间
 	
 	public String getId() {
 		return id;
@@ -73,10 +74,16 @@ public class Coupon implements Serializable{
 	public void setCreateUserId(String createUserId) {
 		this.createUserId = createUserId;
 	}
+	public Date getDeadline() {
+		return deadline;
+	}
+	public void setDeadline(Date deadline) {
+		this.deadline = deadline;
+	}
 	@Override
 	public String toString() {
 		return "Coupon [id=" + id + ", userId=" + userId + ", amount=" + amount + ", isEffect=" + isEffect
-				+ ", isExpired=" + isExpired + ", createDate=" + createDate + ", useDate=" + useDate + "]";
+				+ ", isExpired=" + isExpired + ", createDate=" + createDate + ", useDate=" + useDate + ", createUserId="
+				+ createUserId + ", deadline=" + deadline + "]";
 	}
-	
 }
