@@ -1,13 +1,12 @@
 package com.whayer.wx.pay;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.whayer.wx.pay.vo.PayInfo;
+import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.BaseController;
+import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.pay.util.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,54 +29,73 @@ public class PayController extends BaseController{
 	
 	
 	
+	/**
+	 * 预支付
+	 * @param code
+	 * @param model
+	 * @param request
+	 * @return {prepayId:预支付Id nonceStr:定长的随机纯字母字符串}
+	 */
 	@ResponseBody
     @RequestMapping(value = "/prepay", produces = "text/html;charset=UTF-8")
-    public String prePay(String code, ModelMap model, HttpServletRequest request) {
+    public ResponseCondition prePay(String code, ModelMap model, HttpServletRequest request) {
 
-        String content = null;
         Map<String, Object> map = new HashMap<String, Object>();
-        ObjectMapper mapper = new ObjectMapper();
+        //ObjectMapper mapper = new ObjectMapper();
 
-        boolean result = true;
-        String info = "";
 
-        log.error("\n======================================================");
-        log.error("code: " + code);
+        if(isNullOrEmpty(code)){
+        	log.error("\n======================================================");
+            log.error("code: " + code);
+            return getResponse(X.FALSE);
+        }
 
+        //code 换取 openid 和 session_key
         String openId = getOpenId(code);
+        
         if(StringUtils.isBlank(openId)) {
-            result = false;
-            info = "获取到openId为空";
+        	log.error("openId: " + openId);
+            ResponseCondition res = getResponse(X.FALSE);
+            res.setErrorMsg("获取到openId为空");
+            return res;
         } else {
             openId = openId.replace("\"", "").trim();
 
             String clientIP = CommonUtil.getClientIp(request);
 
-            log.error("openId: " + openId + ", clientIP: " + clientIP);
+            log.debug("openId: " + openId + ", clientIP: " + clientIP);
 
+            //随机字符串(32字符以下)
             String randomNonceStr = RandomUtils.generateMixString(32);
             String prepayId = unifiedOrder(openId, clientIP, randomNonceStr);
 
-            log.error("prepayId: " + prepayId);
+            log.debug("prepayId: " + prepayId);
 
             if(StringUtils.isBlank(prepayId)) {
-                result = false;
-                info = "出错了，未获取到prepayId";
+            	ResponseCondition res = getResponse(X.FALSE);
+                res.setErrorMsg("出错了，未获取到prepayId");
+                return res;
             } else {
                 map.put("prepayId", prepayId);
                 map.put("nonceStr", randomNonceStr);
+                
+                ResponseCondition res = getResponse(X.TRUE);
+                List<Map<String, Object>> list = new ArrayList<>();
+                list.add(map);
+                res.setList(list);
+                return res;
             }
         }
 
-        try {
-            map.put("result", result);
-            map.put("info", info);
-            content = mapper.writeValueAsString(map);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            map.put("result", result);
+//            map.put("info", info);
+//            content = mapper.writeValueAsString(map);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        return content;
+//        return content;
     }
 	
 	
@@ -89,7 +107,7 @@ public class PayController extends BaseController{
 
         try {
 
-            String url = Constant.URL_UNIFIED_ORDER;
+            String url = Constant.URL_UNIFIED_ORDER;//https://api.mch.weixin.qq.com/pay/unifiedorder 统一下单地址
 
             PayInfo payInfo = createPayInfo(openId, clientIP, randomNonceStr);
             String md5 = getSign(payInfo);
@@ -103,7 +121,7 @@ public class PayController extends BaseController{
             log.error(xml);
 
             StringBuffer buffer = HttpUtil.httpsRequest(url, "POST", xml);
-            log.error("unifiedOrder request return body: \n" + buffer.toString());
+            log.debug("unifiedOrder request return body: \n" + buffer.toString());
             Map<String, String> result = CommonUtil.parseXml(buffer.toString());
 
 
@@ -112,7 +130,7 @@ public class PayController extends BaseController{
 
                 String return_msg = result.get("return_msg");
                 if(StringUtils.isNotBlank(return_msg) && !return_msg.equals("OK")) {
-                    //log.error("统一下单错误！");
+                    log.error("统一下单错误！");
                     return "";
                 }
 
@@ -133,9 +151,13 @@ public class PayController extends BaseController{
     private PayInfo createPayInfo(String openId, String clientIP, String randomNonceStr) {
 
         Date date = new Date();
+        //订单生成时间
         String timeStart = TimeUtils.getFormatTime(date, Constant.TIME_FORMAT);
+        
+        //2天后订单过期
         String timeExpire = TimeUtils.getFormatTime(TimeUtils.addDay(date, Constant.TIME_EXPIRE), Constant.TIME_FORMAT);
 
+        //订单号
         String randomOrderId = CommonUtil.getRandomOrderId();
 
         PayInfo payInfo = new PayInfo();
@@ -144,7 +166,7 @@ public class PayController extends BaseController{
         payInfo.setDevice_info("WEB");
         payInfo.setNonce_str(randomNonceStr);
         payInfo.setSign_type("MD5");  //默认即为MD5
-        payInfo.setBody("JSAPI支付测试");
+        payInfo.setBody("尚康阳光-病原检测");
         payInfo.setAttach("支付测试4luluteam");
         payInfo.setOut_trade_no(randomOrderId);
         payInfo.setTotal_fee(1);
@@ -161,6 +183,7 @@ public class PayController extends BaseController{
 
     private String getSign(PayInfo payInfo) throws Exception {
         StringBuffer sb = new StringBuffer();
+        //按字典序列,TODO 注意值为空则不参与签名/sign不参与签名
         sb.append("appid=" + payInfo.getAppid())
                 .append("&attach=" + payInfo.getAttach())
                 .append("&body=" + payInfo.getBody())
@@ -179,13 +202,14 @@ public class PayController extends BaseController{
                 .append("&trade_type=" + payInfo.getTrade_type())
                 .append("&key=" + Constant.APP_KEY);
 
-        log.error("排序后的拼接参数：" + sb.toString());
+        log.debug("排序后的拼接参数：" + sb.toString());
 
-        return CommonUtil.getMD5(sb.toString().trim()).toUpperCase();
+        return CommonUtil.getMD5(sb.toString().trim()).toUpperCase();//注意大写
     }
 	
 	
 	private String getOpenId(String code) {
+		////https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + Constant.APP_ID +
                 "&secret=" + Constant.APP_SECRET + "&js_code=" + code + "&grant_type=authorization_code";
 
@@ -199,7 +223,7 @@ public class PayController extends BaseController{
                 JsonParser jsonParser = new JsonParser();
                 JsonObject obj = (JsonObject) jsonParser.parse(httpResult.getBody());
 
-                log.error("getOpenId: " + obj.toString());
+                log.debug("getOpenId: " + obj.toString());
 
                 if(obj.get("errcode") != null) {
                     log.error("getOpenId returns errcode: " + obj.get("errcode"));

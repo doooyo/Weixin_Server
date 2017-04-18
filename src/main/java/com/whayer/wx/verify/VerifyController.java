@@ -29,7 +29,7 @@ public class VerifyController {
 	@ResponseBody
 	public void verify(String signature, String nonce, String echostr, String timestamp,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("VerifyController.verify()");
+		log.debug("VerifyController.verify()");
 		
 		PrintWriter pw = response.getWriter();
 		if(VerifyUtil.verifySignature(signature, timestamp, nonce)){

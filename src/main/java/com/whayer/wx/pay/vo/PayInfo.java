@@ -2,28 +2,51 @@ package com.whayer.wx.pay.vo;
 
 import java.io.Serializable;
 
+/**
+ * @see https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=9_1
+ * @author duyu
+ *
+ */
 public class PayInfo implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
 	private String appid;
     private String mch_id;
-    private String device_info; //设备号，小程序传"WEB"
-    private String nonce_str;
-    private String sign;
-    private String sign_type;  //签名类型
-    private String body;
-    //private String detail;
-    private String attach;
-    private String out_trade_no;
+    private String device_info; //终端设备号，手机与PC传"WEB"
+    private String nonce_str;   //随机字符串，不长于32位
+    /**
+     * 签名:
+     */
+    private String sign;         
+    private String sign_type;  //签名类型(非必须,默认MD5)
+    private String body;       //商品描述(尚康阳光-检测商品)
+    //private String detail;   //商品详情,非必须
+    private String attach;     //订单自定义原样返回的数据(非必须	)
+    /**
+     * 商户支付的订单号由商户自定义生成，微信支付要求商户订单号保持唯一性（建议根据当前系统时间加随机序列来生成订单号）。
+     * 重新发起一笔支付要使用原订单号，避免重复支付；已支付过或已调用关单、撤销（请见后文的API列表）的订单号不能重新发起支付。
+     * String(32) 字母&数字
+     */
+    private String out_trade_no; 
+    
+    private String fee_type;  //默认支持人名币 CNY
+    /**
+     * 交易金额默认为人民币交易，接口中参数支付金额单位为【分】，参数值不能带小数。对账单中的交易金额单位为【元】。
+	 * 外币交易的支付金额精确到币种的最小单位，参数值不能带小数点。
+     */
     private int total_fee;
-    private String spbill_create_ip;
-    private String time_start;
-    private String time_expire;
+    private String spbill_create_ip; //终端IP
+    private String time_start;       //订单生成时间，格式为yyyyMMddHHmmss
+    private String time_expire;      //订单失效时间，格式为yyyyMMddHHmmss,最短失效时间间隔必须大于5分钟
+    //private String goods_tag;  //商品标记，代金券或立减优惠功能的参数
+    /**
+     * 接收微信支付异步通知回调地址，通知url必须为直接可访问，不能携带参数
+     */
     private String notify_url;
     private String trade_type; //交易类型,JSAPI
-    private String limit_pay;  //指定支付方式，no_credit
-    private String openid;
+    private String limit_pay;  //指定支付方式，no_credit  指定不能使用信用卡支付
+    private String openid;     //登陆code换取openid 和 session_key
 
     public String getAppid() {
         return appid;
@@ -161,14 +184,22 @@ public class PayInfo implements Serializable{
         this.openid = openid;
     }
 
+	public String getFee_type() {
+		return fee_type;
+	}
+
+	public void setFee_type(String fee_type) {
+		this.fee_type = fee_type;
+	}
+
 	@Override
 	public String toString() {
 		return "PayInfo [appid=" + appid + ", mch_id=" + mch_id + ", device_info=" + device_info + ", nonce_str="
 				+ nonce_str + ", sign=" + sign + ", sign_type=" + sign_type + ", body=" + body + ", attach=" + attach
-				+ ", out_trade_no=" + out_trade_no + ", total_fee=" + total_fee + ", spbill_create_ip="
-				+ spbill_create_ip + ", time_start=" + time_start + ", time_expire=" + time_expire + ", notify_url="
-				+ notify_url + ", trade_type=" + trade_type + ", limit_pay=" + limit_pay + ", openid=" + openid + "]";
+				+ ", out_trade_no=" + out_trade_no + ", fee_type=" + fee_type + ", total_fee=" + total_fee
+				+ ", spbill_create_ip=" + spbill_create_ip + ", time_start=" + time_start + ", time_expire="
+				+ time_expire + ", notify_url=" + notify_url + ", trade_type=" + trade_type + ", limit_pay=" + limit_pay
+				+ ", openid=" + openid + "]";
 	}
-
     
 }
