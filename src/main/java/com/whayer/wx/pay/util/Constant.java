@@ -13,7 +13,7 @@ public class Constant {
 
     public static final String URL_UNIFIED_ORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
-    public static final String URL_NOTIFY = Constant.DOMAIN + "/wxpay/views/payInfo.jsp"; 
+    public static final String URL_NOTIFY = Constant.DOMAIN + "/pay/callback"; 
 
     public static final String TIME_FORMAT = "yyyyMMddHHmmss";
 

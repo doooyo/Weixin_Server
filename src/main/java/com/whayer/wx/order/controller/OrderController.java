@@ -97,4 +97,28 @@ public class OrderController extends BaseController{
 		
 		return getResponse(X.TRUE);
 	}
+	
+	/**
+	 * 获取订单详情
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/getDetailById", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getDetailById(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("OrderController.getDetailById()");
+		
+		Box box = loadNewBox(request);
+		//订单id
+		String id = box.$p("id");
+		if(isNullOrEmpty(id)){
+			return getResponse(X.FALSE);
+		}
+		
+		orderService.getOrderDetailById(id);
+		
+		return getResponse(X.TRUE);
+	}
 }

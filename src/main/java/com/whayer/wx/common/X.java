@@ -107,6 +107,20 @@ public final class X implements Constant{
 		    }  
 		    return shortBuffer.toString();
 	  }
+	  
+	  /**
+	   * 系统时间戳随机编码
+	   * @return
+	   */
+	  public static String randomOrderId() {
+	        // UUID.randomUUID().toString().replace("-","")
+	        Random random = new Random(System.currentTimeMillis());
+	        int value = random.nextInt();
+	        while (value < 0) {
+	            value = random.nextInt();
+	        }
+	        return value + "";
+	    }
 
 	  /**
 	   * 当前线程休眠x秒钟

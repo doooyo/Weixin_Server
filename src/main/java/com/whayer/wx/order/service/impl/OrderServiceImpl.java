@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService{
 		int e = examineeDao.saveExaminee(examinee);
 		
 		//保存订单
-		String orderId = X.uuidPure();
+		String orderId = X.randomOrderId(); //X.uuidPure();
 		order.setId(orderId);
 		order.setExamineeId(examineeId);
 		int o = orderDao.save(order);
@@ -114,6 +114,21 @@ public class OrderServiceImpl implements OrderService{
 		
 		return 1;
 		
+	}
+	
+	@Override
+	public Order getOrderById(String id) {
+		
+		return orderDao.getOrderById(id);
+	}
+
+	/**
+	 * TODO 获取订单相关所有数据
+	 */
+	@Override
+	public Order getOrderDetailById(String id) {
+		
+		return null;
 	}
 
 }

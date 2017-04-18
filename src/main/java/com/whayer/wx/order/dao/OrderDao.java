@@ -55,4 +55,11 @@ public interface OrderDao extends DAO{
 	 * @return
 	 */
 	public Order getOrderById(@Param("id") String id);
+	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	//public Order getOrderDetailById(@Param("id") String id);
 }

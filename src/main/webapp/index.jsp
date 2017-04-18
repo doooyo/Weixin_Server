@@ -49,7 +49,7 @@ $(function(){
         }
 	}) */
 	
-	$.ajax({
+	/* $.ajax({
 		type: "POST",
         url: "/order/save",
         data: JSON.stringify({
@@ -75,9 +75,7 @@ $(function(){
         success: function(data){
           console.log(data);          
         }
-	}) 
-	
-	
+	})  */
 	
 })
 </script>
