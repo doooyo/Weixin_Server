@@ -312,7 +312,8 @@ public class PayController extends BaseController{
 	
 	
 	private String getOpenId(String code) {
-		////https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
+		//https://api.weixin.qq.com/sns/jscode2session?appid=wxa142513e524e496c&secret=5d6a7d86048884e7c60f84f7aa85253c&js_code=" + code + "&grant_type=authorization_code
+		//https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + Constant.APP_ID +
                 "&secret=" + Constant.APP_SECRET + "&js_code=" + code + "&grant_type=authorization_code";
 

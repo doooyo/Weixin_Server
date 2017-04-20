@@ -3,9 +3,9 @@ package com.whayer.wx.pay.util;
 public class Constant {
 	public static final String DOMAIN = "https://skyg.com.cn";
 
-    public static final String APP_ID = "";  
+    public static final String APP_ID = "wx95e0f6128d7e91f6";  
 
-    public static final String APP_SECRET = "";
+    public static final String APP_SECRET = "bf64789369b16c812f0ebdae79c8154e";
 
     public static final String APP_KEY = ""; 
 
