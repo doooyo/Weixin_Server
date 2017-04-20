@@ -175,7 +175,13 @@
             <artifactId>httpclient</artifactId>
             <version>4.5</version>
         </dependency>
-
+        <dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>servlet-api</artifactId>
+		    <version>2.5</version>
+		    <scope>provided</scope>
+		</dependency>
+		<!-- 解决maven编译找不到javax.servlet.http -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
