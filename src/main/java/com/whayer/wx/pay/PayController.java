@@ -270,7 +270,7 @@ public class PayController extends BaseController{
         payInfo.setNonce_str(randomNonceStr);
         payInfo.setSign_type("MD5");  //默认即为MD5
         payInfo.setBody("尚康阳光-病原检测");
-        payInfo.setAttach("支付测试4luluteam");
+        payInfo.setAttach("支付测试");
         payInfo.setOut_trade_no(order.getId());//(randomOrderId);
         payInfo.setTotal_fee(1); //order.getAmount() * 100
         payInfo.setSpbill_create_ip(clientIP);

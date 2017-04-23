@@ -6,7 +6,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 public class SpringResource implements ApplicationContextAware{
 	private ApplicationContext applicationContext;

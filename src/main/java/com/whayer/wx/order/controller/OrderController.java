@@ -149,4 +149,30 @@ public class OrderController extends BaseController{
 		res.setList(list);
 		return res;
 	}
+	
+	/**
+	 * 通过用户id查询指定状态的订单
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/getListByType", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("OrderController.getListByType()");
+		Box box = loadNewBox(request);
+		
+		/**
+		 * 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
+		 */
+		String type = box.$p("type");
+		String userId = box.$p("userId");
+		if(isNullOrEmpty(userId) || isNullOrEmpty(type)){
+			return getResponse(X.FALSE);
+		}
+		
+		
+		return getResponse(X.TRUE);
+	}
 }
