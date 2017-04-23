@@ -217,4 +217,160 @@
         WHERE id=#{id} 
 	</select>
 	
+	<!-- 查询指定订单的所有详情 -->
+	<select id="getOrderDetailById" resultMap="allOrderMap">
+		select 
+		o.id as o_id,
+		o.product_id_list as o_product_id_list,
+		o.user_id as o_user_id,
+		o.coupon_id as o_coupon_id,
+		o.vouchers_id as o_vouchers_id,
+		o.examinee_id as o_examinee_id,
+		o.amount as o_amount,
+		o.state as o_state,
+		o.is_invoice as o_is_invoice,
+		o.creare_time as o_creare_time,
+		
+		c.id as c_id,
+		c.user_id as c_user_id,
+		c.amount as c_amount,
+		c.is_effect as c_is_effect,
+		c.is_expired as c_is_expired,
+		c.create_date as c_create_date,
+		c.use_date as c_use_date,
+		c.create_user_id as c_create_user_id,
+		
+		e.id as e_id,
+		e.name as e_name,
+		e.age as e_age,
+		e.address as e_address,
+		e.gender as e_gender,
+		e.mobile as e_mobile,
+		e.identity_id as e_identity_id,
+		e.birthday as e_birthday,
+		
+		p.id as p_id,
+		p.name as p_name,
+		p.img_url as p_img_url,
+		p.price as p_price,
+		p.description as p_description,
+		p.create_time as p_create_time,
+		
+		v.id as v_id,
+		v.user_id as v_user_id,
+		v.amount as v_amount,
+		v.is_effect as v_is_effect,
+		v.is_expired as v_is_expired,
+		v.create_date as v_create_date,
+		v.use_date as v_use_date,
+		v.create_user_id as v_create_user_id
+		
+		from sk_order o
+		left join sk_coupon c    
+		     on o.coupon_id = c.id
+		left join sk_examinee e
+		     on o.examinee_id = e.id
+		left join sk_order_voucher ov
+		     on o.id = ov.order_id
+		left join sk_order_product op
+		     on o.id = op.order_id
+	    left join sk_voucher v
+		     on v.id = ov.voucher_id
+		left join sk_product p
+		     on p.id = op.product_id 
+		 
+		<trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <if test="id != null and id !='' ">  
+		        o.id =#{id}   
+		    </if>  
+		</trim>	
+	</select>
+	
+	<resultMap type="OrderStatistics" id="orderStatisticsMap">
+		<result property="totalFee" column="total_fee" />
+	    <result property="unfinishedFee" column="unfinished_fee" />
+	    <result property="finishedFee" column="finished_fee" />
+	    <result property="unpaidCount" column="unpaid_count" />
+	    <result property="unbindBoxCount" column="unbind_box_count" />
+	    <result property="unsettledCount" column="unsettled_count" />
+	    <result property="settledCount" column="settled_count" />
+	</resultMap>
+	
+	<!-- 个人订单统计 -->
+	<select id="getOrderStatisticsByUid" resultMap="orderStatisticsMap">
+		SELECT SUM(total_fee) total_fee, 
+			   SUM(unfinished_fee) unfinished_fee, 
+			   SUM(finished_fee) finished_fee, 
+			   SUM(unpaid_count) unpaid_count, 
+			   SUM(unbind_box_count) unbind_box_count, 
+			   SUM(unsettled_count) unsettled_count, 
+			   SUM(settled_count) settled_count
+		FROM (
+			<!-- 总金额(不包含已取消的订单) -->
+			SELECT IFNULL(SUM(amount), 0) total_fee, 0 unfinished_fee, 0 finished_fee, 0 unpaid_count, 0 unbind_box_count, 0 unsettled_count, 0 settled_count
+			FROM sk_order WHERE user_id=#{userId} AND state!=3
+			
+			UNION ALL
+			<!-- 未完成金额(未支付/已支付但未绑定检测盒) -->
+			SELECT 0 total_fee, IFNULL(SUM(amount), 0) unfinished_fee, 0 finished_fee, 0 unpaid_count, 0 unbind_box_count, 0 unsettled_count, 0 settled_count
+			FROM sk_order so 
+			WHERE so.user_id=#{userId} AND so.state=1 AND so.id NOT IN (SELECT sod.order_id FROM sk_order_detectionbox sod)
+			OR so.state=0 
+			<!-- 
+			SELETE SUM(amount) amount FROM sk_order so LEFT JOIN sk_order_detectionbox sod ON so.id=sod.order_id 
+			WHERE so.user_id=#{userId} AND so.state=1
+			-->
+			
+			UNION ALL
+			<!-- 已完成金额(已支付并绑定检测盒/已结算) -->
+			SELECT 0 total_fee, 0 unfinished_fee, IFNULL(SUM(amount), 0) finished_fee, 0 unpaid_count, 0 unbind_box_count, 0 unsettled_count, 0 settled_count
+			FROM sk_order so 
+			WHERE so.user_id=#{userId} AND so.state=1 AND so.id IN (SELECT sod.order_id FROM sk_order_detectionbox sod)
+			OR so.state=2 
+			 
+			UNION ALL
+			<!-- 未支付订单数量 -->
+			SELECT 0 total_fee, 0 unfinished_fee, 0 finished_fee, COUNT(*) unpaid_count, 0 unbind_box_count, 0 unsettled_count, 0 settled_count 
+			FROM sk_order WHERE user_id=#{userId} AND state=0
+			
+			UNION ALL
+			<!-- 未绑定检测盒订单数量(已支付) -->
+			SELECT 0 total_fee, 0 unfinished_fee, 0 finished_fee, 0 unpaid_count, COUNT(*) unbind_box_count, 0 unsettled_count, 0 settled_count
+			FROM sk_order 
+			WHERE user_id=#{userId} AND state=1 AND id NOT IN (SELECT order_id FROM sk_order_detectionbox)
+			
+			UNION ALL
+			<!-- 未结算订单数量(已支付并绑定检测盒) -->
+			SELECT 0 total_fee, 0 unfinished_fee, 0 finished_fee, 0 unpaid_count, 0 unbind_box_count, COUNT(*) unsettled_count, 0 settled_count
+			FROM sk_order 
+			WHERE user_id=#{userId} AND state=1 AND id IN (SELECT order_id FROM sk_order_detectionbox)
+			
+			UNION ALL
+			<!-- 已结算订单数量 -->
+			SELECT 0 total_fee, 0 unfinished_fee, 0 finished_fee, 0 unpaid_count, 0 unbind_box_count, 0 unsettled_count, COUNT(*) settled_count
+			FROM sk_order 
+			WHERE user_id=#{userId} AND state=2
+		) t
+	</select>
+	<!-- 查询一个表中没有存在在另一个表的数据
+		SELECT * FROM A 
+			WHERE  id  NOT  IN  ( SELECT id FROM B);
+			 
+			或者
+			SELECT * FROM A 
+			WHERE 
+			    NOT  EXISTS  ( 
+			        SELECT 1 
+			        FROM B 
+			        WHERE B.id = A.id );
+			 
+			或者
+			SELECT 
+			  A.* 
+			FROM 
+			  A  LEFT JOIN B
+			    ON (A.id = B.id)
+			WHERE
+			  b.id  IS  NULL
+	 -->
 </mapper>

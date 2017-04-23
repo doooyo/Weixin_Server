@@ -3,6 +3,7 @@ package com.whayer.wx.order.service;
 import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.order.vo.Order;
+import com.whayer.wx.order.vo.OrderStatistics;
 
 public interface OrderService {
 	
@@ -42,4 +43,6 @@ public interface OrderService {
 	 */
 	public int cancelOrder(String id);
 	
+	
+	public OrderStatistics getOrderStatisticsByUid(String userId);
 }

@@ -23,6 +23,7 @@ import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.order.service.OrderService;
 import com.whayer.wx.order.vo.Order;
+import com.whayer.wx.order.vo.OrderStatistics;
 
 @RequestMapping(value = "/order")
 @Controller
@@ -99,7 +100,7 @@ public class OrderController extends BaseController{
 	}
 	
 	/**
-	 * 获取订单详情
+	 * 获取订单所有详情
 	 * @param request
 	 * @param response
 	 * @return
@@ -120,5 +121,32 @@ public class OrderController extends BaseController{
 		orderService.getOrderDetailById(id);
 		
 		return getResponse(X.TRUE);
+	}
+	
+	/**
+	 * 用户订单统计
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/getOrderStatisticsByUid", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getOrderStatisticsByUid(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("OrderController.getUserOrderStatistics()");
+		Box box = loadNewBox(request);
+		
+		String userId = box.$p("userId");
+		if(isNullOrEmpty(userId)){
+			return getResponse(X.FALSE);
+		}
+		
+		OrderStatistics result = orderService.getOrderStatisticsByUid(userId);
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		List<OrderStatistics> list = new ArrayList<OrderStatistics>();
+		list.add(result);
+		res.setList(list);
+		return res;
 	}
 }

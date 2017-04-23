@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.whayer.wx.common.mvc.DAO;
 import com.whayer.wx.order.vo.Order;
+import com.whayer.wx.order.vo.OrderStatistics;
 
 @Repository
 public interface OrderDao extends DAO{
@@ -56,10 +57,17 @@ public interface OrderDao extends DAO{
 	 */
 	public Order getOrderById(@Param("id") String id);
 	
+	
 	/**
-	 * 
+	 * 查询指定订单所有详情
 	 * @param id
 	 * @return
 	 */
-	//public Order getOrderDetailById(@Param("id") String id);
+	public Order getOrderDetailById(@Param("id") String id);
+	
+	/**
+	 * 订单统计
+	 * @return
+	 */
+	public OrderStatistics getOrderStatisticsByUid(@Param("userId") String userId);
 }

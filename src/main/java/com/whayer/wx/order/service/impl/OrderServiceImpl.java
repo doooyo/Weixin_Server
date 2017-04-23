@@ -16,6 +16,7 @@ import com.whayer.wx.order.dao.OrderDao;
 import com.whayer.wx.order.service.OrderService;
 import com.whayer.wx.order.vo.Examinee;
 import com.whayer.wx.order.vo.Order;
+import com.whayer.wx.order.vo.OrderStatistics;
 import com.whayer.wx.vouchers.dao.VoucherDao;
 
 @Service
@@ -128,7 +129,13 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public Order getOrderDetailById(String id) {
 		
-		return null;
+		return orderDao.getOrderDetailById(id);
+	}
+
+	@Override
+	public OrderStatistics getOrderStatisticsByUid(String userId) {
+		
+		return orderDao.getOrderStatisticsByUid(userId);
 	}
 
 }
