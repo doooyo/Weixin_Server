@@ -15,7 +15,7 @@
 		amount,
 		state,
 		is_invoice,
-		creare_time
+		create_time
 	</sql>
 	
 	<resultMap type="Order" id="allOrderMap">
@@ -28,7 +28,7 @@
 	    <result property="amount" column="o_amount" />
 	    <result property="state" column="o_state" />
 	    <result property="isInvoice" column="o_is_invoice" />
-	    <result property="creareTime" column="o_creare_time" />
+	    <result property="createTime" column="o_create_time" />
 	    
 	    <result property="coupon.id" column="c_id" />
 	    <result property="coupon.userId" column="c_user_id" />
@@ -80,7 +80,7 @@
 		o.amount as o_amount,
 		o.state as o_state,
 		o.is_invoice as o_is_invoice,
-		o.creare_time as o_creare_time,
+		o.create_time as o_create_time,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,
@@ -152,7 +152,7 @@
 			amount,
 			state,
 			is_invoice,
-			creare_time
+			create_time
   		) 
   		values(
   		#{id},
@@ -229,7 +229,7 @@
 		o.amount as o_amount,
 		o.state as o_state,
 		o.is_invoice as o_is_invoice,
-		o.creare_time as o_creare_time,
+		o.create_time as o_create_time,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,
@@ -373,4 +373,101 @@
 			WHERE
 			  b.id  IS  NULL
 	 -->
+	 
+	 <select id="getListByType" resultMap="allOrderMap">
+	 	select 
+		o.id as o_id,
+		o.product_id_list as o_product_id_list,
+		o.user_id as o_user_id,
+		o.coupon_id as o_coupon_id,
+		o.vouchers_id as o_vouchers_id,
+		o.examinee_id as o_examinee_id,
+		o.amount as o_amount,
+		o.state as o_state,
+		o.is_invoice as o_is_invoice,
+		o.create_time as o_create_time,
+		
+		c.id as c_id,
+		c.user_id as c_user_id,
+		c.amount as c_amount,
+		c.is_effect as c_is_effect,
+		c.is_expired as c_is_expired,
+		c.create_date as c_create_date,
+		c.use_date as c_use_date,
+		c.create_user_id as c_create_user_id,
+		
+		e.id as e_id,
+		e.name as e_name,
+		e.age as e_age,
+		e.address as e_address,
+		e.gender as e_gender,
+		e.mobile as e_mobile,
+		e.identity_id as e_identity_id,
+		e.birthday as e_birthday,
+		
+		p.id as p_id,
+		p.name as p_name,
+		p.img_url as p_img_url,
+		p.price as p_price,
+		p.description as p_description,
+		p.create_time as p_create_time,
+		
+		v.id as v_id,
+		v.user_id as v_user_id,
+		v.amount as v_amount,
+		v.is_effect as v_is_effect,
+		v.is_expired as v_is_expired,
+		v.create_date as v_create_date,
+		v.use_date as v_use_date,
+		v.create_user_id as v_create_user_id
+		
+		from sk_order o
+		left join sk_coupon c    
+		     on o.coupon_id = c.id
+		left join sk_examinee e
+		     on o.examinee_id = e.id
+		left join sk_order_voucher ov
+		     on o.id = ov.order_id
+		left join sk_order_product op
+		     on o.id = op.order_id
+	    left join sk_voucher v
+		     on v.id = ov.voucher_id
+		left join sk_product p
+		     on p.id = op.product_id 
+		<!-- <where>
+			<if test="uid != null and id != ''">
+				o.user_id =#{uid}
+			</if>
+		</where> -->    
+		<!-- <trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <if test="type != null and type !='' and type = '-1'">  
+		        o.user_id =#{type}   
+		    </if>  
+		</trim>	 -->
+		<!-- -1:所有订单(包括已取消) 0:未支付 1:未绑定检测盒 2:未结算 3:已结算 -->
+		<!-- @see http://blog.csdn.net/chenaini119/article/details/51917263 字符串比较问题 -->
+		<where>  
+	        <choose>  
+	            <when test="type == '-1'.toString()">  
+	                 o.user_id=#{userId} 
+	            </when >  
+	            <when test="type == '0'.toString()">  
+	                  o.user_id=#{userId} AND o.state=0 AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	            </when >  
+	            <when test="type == '1'.toString()">  
+	                  o.user_id=#{userId} AND o.state=1 AND o.id NOT IN (SELECT sod.order_id FROM sk_order_detectionbox sod)
+	                  AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	            </when >  
+	            <when test="type == '2'.toString()">  
+	                  o.user_id=#{userId} AND o.state=1 AND o.id IN (SELECT order_id FROM sk_order_detectionbox)
+	                  AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	            </when >
+	            <when test="type == '3'.toString()">  
+	                  o.user_id=#{userId} AND o.state=2 AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	            </when >
+	            <otherwise>  
+	            </otherwise>  
+	        </choose>  
+	    </where>
+	 </select>
 </mapper>

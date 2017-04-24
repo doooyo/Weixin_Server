@@ -1,5 +1,8 @@
 package com.whayer.wx.order.service;
 
+import java.util.Date;
+import java.util.List;
+
 import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.order.vo.Order;
@@ -43,6 +46,20 @@ public interface OrderService {
 	 */
 	public int cancelOrder(String id);
 	
-	
+	/**
+	 * 个人订单统计信息
+	 * @param userId
+	 * @return
+	 */
 	public OrderStatistics getOrderStatisticsByUid(String userId);
+	
+	/**
+	 * 个人订单条件查询
+	 * @param type      -1:所有订单(包括已取消) 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
+	 * @param userId    用户id
+	 * @param beginTime 开始时间
+	 * @param endTime   结束时间
+	 * @return
+	 */
+	public List<Order> getListByType(String type, String userId, Date beginTime, Date endTime);
 }

@@ -1,12 +1,16 @@
 package com.whayer.wx.pay2.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 
 import javax.net.ssl.X509TrustManager;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -61,6 +65,34 @@ public class HttpRequest {
         String result = EntityUtils.toString(entity, "UTF-8");
         return result;
 	}
+	
+	public static String getRequest(HttpServletRequest request) throws Exception{
+//		InputStream inputStream;
+//		StringBuffer sb = new StringBuffer();
+//		inputStream = request.getInputStream();
+//		String s;
+//		BufferedReader in=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+//		while((s = in.readLine()) != null){
+//			sb.append(s);
+//		}
+//		in.close();
+//		inputStream.close();
+//		return sb.toString();
+		InputStream inputStream = request.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String str = null;
+        StringBuffer buffer = new StringBuffer();
+        while ((str = bufferedReader.readLine()) != null) {
+            buffer.append(str);
+        }
+        bufferedReader.close();
+        inputStreamReader.close();
+        inputStream.close();
+        inputStream = null;
+        return buffer.toString();
+	}
+	
 	/**
 	 * 自定义证书管理器，信任所有证书
 	 * @author 

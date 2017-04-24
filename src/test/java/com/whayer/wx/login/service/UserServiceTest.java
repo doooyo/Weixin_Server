@@ -20,7 +20,7 @@ public class UserServiceTest extends UnitTestBase{
 	@Test
 	public void testUserService() {
 		UserService userService = super.getBean("userServiceImpl");
-		User user = userService.findUserByName("test");
+		//User user = userService.findUserByName("test");
 		
 		User u = new User();
 		u.setPassword("e10adc3949ba59abbe56e057f20f883e");

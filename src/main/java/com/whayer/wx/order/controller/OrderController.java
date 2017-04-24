@@ -2,6 +2,7 @@ package com.whayer.wx.order.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -164,15 +165,28 @@ public class OrderController extends BaseController{
 		Box box = loadNewBox(request);
 		
 		/**
-		 * 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
+		 * -1:所有订单(包括已取消) 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
 		 */
 		String type = box.$p("type");
 		String userId = box.$p("userId");
-		if(isNullOrEmpty(userId) || isNullOrEmpty(type)){
+		String beginTime = box.$p("beginTime");
+		String endTime = box.$p("endTime");
+		if(isNullOrEmpty(userId) || isNullOrEmpty(type) 
+				|| isNullOrEmpty(beginTime) || isNullOrEmpty(endTime)){
 			return getResponse(X.FALSE);
 		}
 		
+		Date begin = X.string2date(beginTime + " 00:00:00", X.TIMEA);
+		Date end = X.string2date(endTime + " 23:59:59", X.TIMEA);
 		
-		return getResponse(X.TRUE);
+		if(begin.compareTo(end) > 0){
+			return getResponse(X.FALSE);
+		}
+		
+		List<Order> list = orderService.getListByType(type, userId, begin, end);
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		return res;
+		
 	}
 }

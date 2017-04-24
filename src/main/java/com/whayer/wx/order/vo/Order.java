@@ -28,7 +28,7 @@ public class Order implements Serializable{
 	private BigDecimal amount= new BigDecimal(0);    //总金额
 	private Integer state = 0;        //订单状态(0:未付款, 1:已付款 2:已结算 3:已取消)
 	private Boolean isInvoice = false;    //是否需要发票(0: 无需发票1:需要发票)
-	private Date creareTime;      //创建时间
+	private Date createTime;      //创建时间
 	
 	private List<Product> products = new ArrayList<>();  //订单的产品列表
 	private List<Voucher> vouchers = new ArrayList<>();  //订单的代金劵列表
@@ -111,11 +111,11 @@ public class Order implements Serializable{
 	public void setExaminee(Examinee examinee) {
 		this.examinee = examinee;
 	}
-	public Date getCreareTime() {
-		return creareTime;
+	public Date getCreateTime() {
+		return createTime;
 	}
-	public void setCreareTime(Date creareTime) {
-		this.creareTime = creareTime;
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 	public String getUserId() {
 		return userId;
@@ -127,7 +127,7 @@ public class Order implements Serializable{
 	public String toString() {
 		return "Order [id=" + id + ", userId=" + userId + ", productIdList=" + productIdList + ", couponId=" + couponId
 				+ ", vouchersId=" + vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state="
-				+ state + ", isInvoice=" + isInvoice + ", creareTime=" + creareTime + ", products=" + products
+				+ state + ", isInvoice=" + isInvoice + ", createTime=" + createTime + ", products=" + products
 				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + "]";
 	}
 	

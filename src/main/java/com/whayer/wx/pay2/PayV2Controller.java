@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import com.whayer.wx.pay.util.RandomUtils;
 import com.whayer.wx.pay.vo.PayInfo;
 import com.whayer.wx.pay2.service.PayV2Service;
 import com.whayer.wx.pay2.util.HttpRequest;
+import com.whayer.wx.pay2.util.Signature;
 import com.whayer.wx.pay2.util.XStreamUtil;
 import com.whayer.wx.pay2.vo.OrderReturnInfo;
 
@@ -172,5 +174,35 @@ public class PayV2Controller extends BaseController{
     public void callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.debug("PayV2Controller.callback()");
 		
+		/**
+		 * @see https://github.com/seven-cm/weixinpay/blob/master/WebContent/payNotifyUrl.jsp
+		 * 签名验证
+		 * 支付结果中transaction_id是否存在 -->FAIL
+		 * 支付结果中查询订单，判断订单真实性
+		 * 业务逻辑处理start-->更改订单状态-->保存对账信息到数据库  
+		 */
+		
+		Map<String, String> map = XStreamUtil.Xml2Map(HttpRequest.getRequest(request));
+		if(isNullOrEmpty(map)){
+			log.error("获取回调参数错误");
+		}
+		log.debug("回调参数" + map.toString());
+		
+		String sign = map.get("sign");
+		String calcSign = Signature.getSign(map);
+		log.debug("sign:" + sign);
+		log.debug("calcSign" + calcSign);
+		if(sign.equals(calcSign)){
+			StringBuffer sb = new StringBuffer("<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单签名失败]]></return_msg></xml>");
+			response.getWriter().append(sb.toString());
+		}else{
+			String out_trade_no = map.get("out_trade_no");
+			log.debug("out_trade_no:" + out_trade_no);
+			
+		}
+		
+		
+		StringBuffer sb = new StringBuffer("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
+		response.getWriter().append(sb.toString());
 	}
 }

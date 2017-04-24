@@ -1,5 +1,6 @@
 package com.whayer.wx.order.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -136,6 +137,11 @@ public class OrderServiceImpl implements OrderService{
 	public OrderStatistics getOrderStatisticsByUid(String userId) {
 		
 		return orderDao.getOrderStatisticsByUid(userId);
+	}
+
+	@Override
+	public List<Order> getListByType(String type, String userId, Date beginTime, Date endTime) {
+		return orderDao.getListByType(type, userId, beginTime, endTime);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.whayer.wx.order.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -70,4 +71,18 @@ public interface OrderDao extends DAO{
 	 * @return
 	 */
 	public OrderStatistics getOrderStatisticsByUid(@Param("userId") String userId);
+	
+	/**
+	 * 个人订单条件查询
+	 * @param type      -1:所有订单(包括已取消) 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
+	 * @param userId    用户id
+	 * @param beginTime 开始时间
+	 * @param endTime   结束时间
+	 * @return
+	 */
+	public List<Order> getListByType(
+			@Param("type") String type, 
+			@Param("userId") String userId, 
+			@Param("beginTime") Date beginTime, 
+			@Param("endTime") Date endTime);
 }
