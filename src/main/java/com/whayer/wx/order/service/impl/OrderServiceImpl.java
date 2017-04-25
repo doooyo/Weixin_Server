@@ -89,6 +89,7 @@ public class OrderServiceImpl implements OrderService{
 			vus = voucherDao.updateStateByIds(vids);
 		}
 		System.out.println(e + o + op + vp + cus + vus); //6次数据库操作,AOP保证事物
+		
 		return orderId; 
 	}
 
@@ -142,6 +143,11 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public List<Order> getListByType(String type, String userId, Date beginTime, Date endTime) {
 		return orderDao.getListByType(type, userId, beginTime, endTime);
+	}
+
+	@Override
+	public int saveOrder2Box(String orderId, String detectionboxId) {
+		return orderDao.saveOrder2Box(orderId, detectionboxId);
 	}
 
 }

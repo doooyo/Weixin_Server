@@ -17,11 +17,14 @@
 	<select id="getGiftList" resultType="Gift">
 		select
 		<include refid="giftFields" />,
-		1 as is_effect
+		IF(deadline >= CURDATE(), 1, 0) as is_effect
 		from sk_gift
 		<trim prefix="WHERE" prefixOverrides="AND|OR">
-    		<if test="isExpired != null and isExpired = 1"> 
-    			 deadline >= now()
+    		<if test="isExpired != null and isExpired == 1"> 
+    			 deadline >= CURDATE() ORDER BY create_time DESC
+    		</if>
+    		<if test="isExpired != null and isExpired == 0"> 
+    			 1=1 ORDER BY create_time ASC
     		</if>
 		</trim>
 	</select>

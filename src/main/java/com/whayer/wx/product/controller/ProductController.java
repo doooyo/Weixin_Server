@@ -146,9 +146,16 @@ public class ProductController extends BaseController{
 			return getResponse(false);
 		}
 		
-		productService.deleteProductById(id);
+		int count = productService.deleteProductById(id);
 		
-		return getResponse(true);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("删除产品失败");
+			log.error("删除产品失败");
+			return res;
+		}
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -174,7 +181,15 @@ public class ProductController extends BaseController{
 		product.setPrice(price);
 		product.setDescription(description);
 		
-		productService.saveProduct(product);
-		return getResponse(true);
+		int count = productService.saveProduct(product);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("保存产品失败");
+			log.error("保存产品失败");
+			return res;
+		}
 	}
 }

@@ -38,11 +38,11 @@ public class GiftController extends BaseController{
 		log.info("GiftController.getList()");
 		
 		Box box = loadNewBox(request);
-		//type 0:查询全部礼品 1:查询未过期礼品
+		//type 0/null:查询全部礼品 1:查询未过期礼品
 		String expired = box.$p("expired");
 		int isExpired = 0;
 		if(!isNullOrEmpty(expired)){
-			isExpired = 1;
+			isExpired = X.string2int(expired);
 		}
 		
 		PageInfo<Gift> pi = giftService.getGiftList(isExpired, box.getPagination());
@@ -84,9 +84,17 @@ public class GiftController extends BaseController{
 			return getResponse(X.FALSE);
 		}
 		
-		giftService.deleteById(id);
+		int count = giftService.deleteById(id);
 		
-		return getResponse(X.TRUE);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("删除礼品失败");
+			log.error("删除礼品失败");
+			return res;
+		}
+		
 	}
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -120,9 +128,16 @@ public class GiftController extends BaseController{
 		gift.setDeadline(deadlineDate);
 		gift.setImgSrc(imgSrc);
 		
-		giftService.update(gift);
+		int count = giftService.update(gift);
 		
-		return getResponse(X.TRUE);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("更新礼品失败");
+			log.error("更新礼品失败");
+			return res;
+		}
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -161,8 +176,14 @@ public class GiftController extends BaseController{
 		gift.setImgSrc(imgSrc);
 		gift.setCreateTime(new Date());
 		
-		giftService.save(gift);
-		
-		return getResponse(X.TRUE);
+		int count = giftService.save(gift);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("保存礼品失败");
+			log.error("保存礼品失败");
+			return res;
+		}
 	}
 }

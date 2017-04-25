@@ -81,8 +81,16 @@ public class CouponController extends BaseController{
 			return getResponse(false);
 		}
 		
-		couponService.deleteCouponById(id);
-		return getResponse(true);
+		int count = couponService.deleteCouponById(id);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("删除优惠卷失败");
+			log.error("删除优惠卷失败");
+			return res;
+		}
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -110,9 +118,16 @@ public class CouponController extends BaseController{
 		coupon.setAmount(amount);
 		coupon.setDeadline(X.string2date(deadline, X.TIMEA));
 		
-		couponService.saveCoupon(coupon);
+		int count = couponService.saveCoupon(coupon);
 		
-		return getResponse(true);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("保存优惠卷失败");
+			log.error("保存优惠卷失败");
+			return res;
+		}
 	}
 	
 	/**

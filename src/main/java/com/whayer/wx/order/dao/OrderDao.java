@@ -85,4 +85,14 @@ public interface OrderDao extends DAO{
 			@Param("userId") String userId, 
 			@Param("beginTime") Date beginTime, 
 			@Param("endTime") Date endTime);
+	
+	/**
+	 * 订单绑定检测盒
+	 * @param orderId
+	 * @param detectionboxId
+	 * @return
+	 */
+	public int saveOrder2Box(
+			@Param("orderId") String orderId, 
+			@Param("detectionboxId") String detectionboxId);
 }

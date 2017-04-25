@@ -56,9 +56,16 @@ public class Product2RoleController extends BaseController{
 		}
 		
 		//插入中间表
-		productService.associate(role, ids);
+		int count = productService.associate(role, ids);
 		
-		return getResponse(X.TRUE);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("产品关联角色失败");
+			log.error("产品关联角色失败");
+			return res;
+		}
 	}
 
 }

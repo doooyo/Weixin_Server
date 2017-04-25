@@ -73,6 +73,6 @@ public class GiftServiceTest extends UnitTestBase{
 	public void testGetList(){
 		GiftService giftService = super.getBean("giftServiceImpl");
 		PageInfo<Gift> pageInfo = giftService.getGiftList(1, new Pagination());
-		System.out.println(pageInfo.getList());
+		System.out.println(pageInfo.getList().size());
 	}
 }

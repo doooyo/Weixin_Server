@@ -95,9 +95,17 @@ public class OrderController extends BaseController{
 			return getResponse(X.FALSE);
 		}
 		
-		orderService.cancelOrder(id);
+		int count = orderService.cancelOrder(id);
 		
-		return getResponse(X.TRUE);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("取消订单失败");
+			log.error("取消订单失败");
+			return res;
+		}
+		
 	}
 	
 	/**
@@ -187,6 +195,38 @@ public class OrderController extends BaseController{
 		ResponseCondition res = getResponse(X.TRUE);
 		res.setList(list);
 		return res;
+		
+	}
+	
+	/**
+	 * 订单绑定检测盒
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/saveOrder2Box", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition saveOrder2Box(HttpServletRequest request, HttpServletResponse response) {
+		log.info("OrderController.saveOrder2Box()");
+		Box box = loadNewBox(request);
+		
+		String orderId = box.$p("orderId");
+		String detectionboxId = box.$p("detectionboxId");
+		
+		if(isNullOrEmpty(orderId) || isNullOrEmpty(detectionboxId)){
+			return getResponse(X.FALSE);
+		}
+		
+		int count  = orderService.saveOrder2Box(orderId, detectionboxId);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("订单绑定检测盒失败");
+			log.error("订单绑定检测盒失败");
+			return res;
+		}
+		
 		
 	}
 }

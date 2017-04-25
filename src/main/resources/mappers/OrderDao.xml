@@ -470,4 +470,21 @@
 	        </choose>  
 	    </where>
 	 </select>
+	 
+	 <sql id="orderDetectionboxFields">
+		id,
+		order_id,
+		detectionbox_id
+	</sql>
+	 
+	 <insert id="saveOrder2Box">
+		insert into sk_order_detectionbox(
+  			<include refid="orderDetectionboxFields" />
+  		) 
+  		values(
+	  		REPLACE(UUID(), '-', ''),
+	  		#{orderId},
+	  		#{detectionboxId}
+  		)
+	 </insert>
 </mapper>

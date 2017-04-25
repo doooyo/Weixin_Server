@@ -76,9 +76,16 @@ public class ExamineeController extends BaseController{
 			return getResponse(false);
 		}
 		
-		examineeService.deleteExamineeById(id);
+		int count = examineeService.deleteExamineeById(id);
 		
-		return getResponse(true);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("删除体检人失败");
+			log.error("删除体检人失败");
+			return res;
+		}
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -113,8 +120,16 @@ public class ExamineeController extends BaseController{
 			examinee.setAge(X.string2int(age));
 		}
 		
-		examineeService.saveExaminee(examinee);
-		return getResponse(true);
+		int count = examineeService.saveExaminee(examinee);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("保存体检人失败");
+			log.error("保存体检人失败");
+			return res;
+		}
 	}
 
 }

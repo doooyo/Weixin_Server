@@ -32,5 +32,13 @@ public class OrderServiceTest extends UnitTestBase{
 		System.out.println("所有订单:"+all.size() + "\n未支付:"+list0.size()+"\n未绑定检测盒:"
 		+list1.size()+"\n未结算:"+list2.size()+"\n已结算:"+list3.size());
 	}
+	
+	@Test
+	public void testSaveOrder2Box(){
+		OrderService orderService = super.getBean("orderServiceImpl");
+		int count = orderService.saveOrder2Box("123", "456");
+		System.out.println(count);
+		
+	}
 
 }

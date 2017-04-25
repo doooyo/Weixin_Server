@@ -62,4 +62,12 @@ public interface OrderService {
 	 * @return
 	 */
 	public List<Order> getListByType(String type, String userId, Date beginTime, Date endTime);
+	
+	/**
+	 * 订单绑定检测盒
+	 * @param orderId
+	 * @param detectionboxId
+	 * @return
+	 */
+	public int saveOrder2Box(String orderId, String detectionboxId);
 }

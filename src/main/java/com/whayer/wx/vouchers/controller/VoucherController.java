@@ -22,13 +22,14 @@ import com.whayer.wx.login.vo.User;
 import com.whayer.wx.vouchers.service.VoucherService;
 import com.whayer.wx.vouchers.vo.Voucher;
 
-import ch.ethz.ssh2.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/voucher")
 public class VoucherController extends BaseController{
 	
-	private static final Logger log = Logger.getLogger(VoucherController.class);
+	private static final Logger log = LoggerFactory.getLogger(VoucherController.class);
 	
 	@Resource
 	private VoucherService voucherService;
@@ -76,8 +77,16 @@ public class VoucherController extends BaseController{
 			return getResponse(false);
 		}
 		
-		voucherService.deleteVoucherById(id);
-		return getResponse(true);
+		int count = voucherService.deleteVoucherById(id);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("删除优惠卷失败");
+			log.error("删除优惠卷失败");
+			return res;
+		}
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -105,8 +114,15 @@ public class VoucherController extends BaseController{
 		voucher.setAmount(amount);
 		voucher.setDeadline(X.string2date(deadline, X.TIMEA));
 		
-		voucherService.saveVoucher(voucher);
-		 
-		return getResponse(true);
+		int count = voucherService.saveVoucher(voucher);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("保存优惠卷失败");
+			log.error("保存优惠卷失败");
+			return res;
+		}
 	}
 }
