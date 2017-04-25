@@ -471,12 +471,14 @@
 	    </where>
 	 </select>
 	 
+	 
 	 <sql id="orderDetectionboxFields">
 		id,
 		order_id,
 		detectionbox_id
 	</sql>
 	 
+	 <!-- 订单关联检测盒 -->
 	 <insert id="saveOrder2Box">
 		insert into sk_order_detectionbox(
   			<include refid="orderDetectionboxFields" />
@@ -487,4 +489,5 @@
 	  		#{detectionboxId}
   		)
 	 </insert>
+	 
 </mapper>

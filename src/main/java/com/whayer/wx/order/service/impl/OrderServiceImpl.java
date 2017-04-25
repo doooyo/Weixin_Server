@@ -150,4 +150,9 @@ public class OrderServiceImpl implements OrderService{
 		return orderDao.saveOrder2Box(orderId, detectionboxId);
 	}
 
+	@Override
+	public int updateOrderStatusById(String orderId, int state) {
+		return orderDao.updateOrderStatusById(orderId, state);
+	}
+
 }

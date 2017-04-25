@@ -95,4 +95,5 @@ public interface OrderDao extends DAO{
 	public int saveOrder2Box(
 			@Param("orderId") String orderId, 
 			@Param("detectionboxId") String detectionboxId);
+	
 }

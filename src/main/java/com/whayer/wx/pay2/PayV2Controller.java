@@ -35,6 +35,7 @@ import com.whayer.wx.pay2.service.PayV2Service;
 import com.whayer.wx.pay2.util.HttpRequest;
 import com.whayer.wx.pay2.util.Signature;
 import com.whayer.wx.pay2.util.XStreamUtil;
+import com.whayer.wx.pay2.vo.OrderQuery;
 import com.whayer.wx.pay2.vo.OrderReturnInfo;
 
 @RequestMapping(value = "/payV2")
@@ -139,6 +140,7 @@ public class PayV2Controller extends BaseController{
         String result = HttpRequest.sendPost(Constant.URL_UNIFIED_ORDER, order);
 		log.info("下单返回:"+result);
 		
+		//TODO 注意此处可能会报错,最好转为Map
 		OrderReturnInfo returnInfo = (OrderReturnInfo)XStreamUtil.Xml2Obj(result, OrderReturnInfo.class);
 //		XStream xStream = new XStream();
 //		xStream.alias("xml", OrderReturnInfo.class); 
@@ -147,6 +149,7 @@ public class PayV2Controller extends BaseController{
 		String prepayId = returnInfo.getPrepay_id();
 		if(isNullOrEmpty(prepayId)){
 			ResponseCondition res = getResponse(X.FALSE);
+			log.error("prepayId 获取失败");
 			res.setErrorMsg("prepayId 获取失败");
 			return res;
 		}
@@ -192,17 +195,58 @@ public class PayV2Controller extends BaseController{
 		String calcSign = Signature.getSign(map);
 		log.debug("sign:" + sign);
 		log.debug("calcSign" + calcSign);
-		if(sign.equals(calcSign)){
-			StringBuffer sb = new StringBuffer("<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[订单签名失败]]></return_msg></xml>");
-			response.getWriter().append(sb.toString());
+		if(!sign.equals(calcSign)){
+			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
 		}else{
 			String out_trade_no = map.get("out_trade_no");
 			log.debug("out_trade_no:" + out_trade_no);
+			if(isNullOrEmpty(out_trade_no)){
+				response.getWriter().append(getWxReturnMessage(X.FALSE, "支付结果中微信订单号不存在"));
+			}else{
+				Order order = orderService.getOrderById(out_trade_no);
+				if(isNullOrEmpty(order)){
+					response.getWriter().append(getWxReturnMessage(X.FALSE, "订单查询失败"));
+				}else{
+					
+					OrderQuery orderQuery = new OrderQuery();
+					orderQuery.setAppid(Constant.APP_ID);
+					orderQuery.setMch_id(Constant.MCH_ID);
+					orderQuery.setNonce_str(RandomUtils.generateMixString(32));
+					orderQuery.setOut_trade_no(out_trade_no);
+					orderQuery.setSign_type("MD5");
+					String qSign = Signature.getSign(orderQuery);
+					orderQuery.setSign(qSign);
+					
+					String result = HttpRequest.sendPost(Constant.URL_ORDER_QUERY, orderQuery);
+					log.info("query wx order: " + result);
+					Map<String, String> resultMap = XStreamUtil.Xml2Map(result);
+					String res_out_trade_no = resultMap.get("out_trade_no");
+					if(!res_out_trade_no.equals(out_trade_no)){
+						response.getWriter().append(getWxReturnMessage(X.FALSE, "微信订单查询失败"));
+					}else{
+						int count = orderService.updateOrderStatusById(out_trade_no, 1);
+						if(count > 0){
+							log.info("更新业务订单成功");
+							response.getWriter().append(getWxReturnMessage(X.TRUE, "OK"));
+						}else{
+							log.error("更新订单失败");
+							response.getWriter().append(getWxReturnMessage(X.FALSE, "更新业务订单失败"));
+						}
+					}
+				}
+			}
 			
 		}
-		
-		
-		StringBuffer sb = new StringBuffer("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
-		response.getWriter().append(sb.toString());
+	}
+	
+	private String getWxReturnMessage(boolean state, String message){
+		String str = "<xml><return_code><![CDATA[%s]]></return_code><return_msg><![CDATA[%s]]></return_msg></xml>";
+		StringBuffer sb;
+		if(state){
+			sb = new StringBuffer(String.format(str, "SUCCESS", "OK"));
+		}else{
+			sb = new StringBuffer(String.format(str, "FAIL", message));
+		}
+		return sb.toString();
 	}
 }

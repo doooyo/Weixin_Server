@@ -14,6 +14,8 @@ public class Constant {
     public static final String URL_UNIFIED_ORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     
     public static final String URL_OPENID = "https://api.weixin.qq.com/sns/jscode2session";
+    
+    public static final String URL_ORDER_QUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
 
     public static final String URL_NOTIFY = Constant.DOMAIN + "/payV2/callback"; 
 

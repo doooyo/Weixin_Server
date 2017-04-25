@@ -70,4 +70,12 @@ public interface OrderService {
 	 * @return
 	 */
 	public int saveOrder2Box(String orderId, String detectionboxId);
+	
+	/**
+	 * 更新订单状态
+	 * @param orderId
+	 * @param state
+	 * @return
+	 */
+	public int updateOrderStatusById(String orderId, int state);
 }
