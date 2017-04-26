@@ -1,5 +1,7 @@
-package com.whayer.wx.pay2;
+package com.whayer.wx.pay2.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.whayer.wx.common.X;
+import com.whayer.wx.common.bean.SpringFactory;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
@@ -33,10 +37,12 @@ import com.whayer.wx.pay.util.RandomUtils;
 import com.whayer.wx.pay.vo.PayInfo;
 import com.whayer.wx.pay2.service.PayV2Service;
 import com.whayer.wx.pay2.util.HttpRequest;
+import com.whayer.wx.pay2.util.QRCodeKit;
 import com.whayer.wx.pay2.util.Signature;
 import com.whayer.wx.pay2.util.XStreamUtil;
 import com.whayer.wx.pay2.vo.OrderQuery;
 import com.whayer.wx.pay2.vo.OrderReturnInfo;
+import com.whayer.wx.test.controller.TestBean;
 
 @RequestMapping(value = "/payV2")
 @Controller
@@ -48,6 +54,9 @@ public class PayV2Controller extends BaseController{
 	
 	@Resource
 	private PayV2Service payV2Service;
+	
+	@Resource
+	private SpringFactory springFactory;
 	
 	/**
 	 *    生成订单 (业务系统) --> 客户端申请支付
@@ -88,16 +97,16 @@ public class PayV2Controller extends BaseController{
 	 * @param model
 	 * @param request
 	 * @return
-	 * @throws IOException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws KeyStoreException 
-	 * @throws ClientProtocolException 
-	 * @throws KeyManagementException 
-	 * @throws UnrecoverableKeyException 
 	 */
 	@ResponseBody
     @RequestMapping(value = "/prepay")
-    public ResponseCondition prePay(HttpServletRequest request, HttpServletResponse response) throws UnrecoverableKeyException, KeyManagementException, ClientProtocolException, KeyStoreException, NoSuchAlgorithmException, IOException {
+    public ResponseCondition prePay(HttpServletRequest request, HttpServletResponse response) 
+    		throws UnrecoverableKeyException, 
+    		KeyManagementException, 
+    		ClientProtocolException, 
+    		KeyStoreException, 
+    		NoSuchAlgorithmException, 
+    		IOException {
 		log.debug("PayV2Controller.prepay()");
 		
 		Box box = loadNewBox(request);
@@ -217,6 +226,7 @@ public class PayV2Controller extends BaseController{
 					String qSign = Signature.getSign(orderQuery);
 					orderQuery.setSign(qSign);
 					
+					//TODO 验证签名
 					String result = HttpRequest.sendPost(Constant.URL_ORDER_QUERY, orderQuery);
 					log.info("query wx order: " + result);
 					Map<String, String> resultMap = XStreamUtil.Xml2Map(result);
@@ -229,7 +239,7 @@ public class PayV2Controller extends BaseController{
 							log.info("更新业务订单成功");
 							response.getWriter().append(getWxReturnMessage(X.TRUE, "OK"));
 						}else{
-							log.error("更新订单失败");
+							log.error("更新业务订单失败");
 							response.getWriter().append(getWxReturnMessage(X.FALSE, "更新业务订单失败"));
 						}
 					}
@@ -248,5 +258,21 @@ public class PayV2Controller extends BaseController{
 			sb = new StringBuffer(String.format(str, "FAIL", message));
 		}
 		return sb.toString();
+	}
+	
+	@ResponseBody
+    @RequestMapping(value = "/qrcode")
+    public void qrcode(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		log.debug("PayV2Controller.qrcode()");
+		
+		
+		TestBean bean = (TestBean)springFactory.getBean("testBean");
+		bean.hello();
+		
+		String data = "http://www.baidu.com";
+		org.springframework.core.io.Resource resource = springFactory.getResource("classpath:image/logo.jpg");
+        File logoFile = resource.getFile();
+        BufferedImage image = QRCodeKit.createQRCodeWithLogo(data, logoFile);
+        ImageIO.write(image, "gif", new File("wx.gif"));
 	}
 }

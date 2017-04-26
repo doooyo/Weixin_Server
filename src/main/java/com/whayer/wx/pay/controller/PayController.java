@@ -1,4 +1,4 @@
-package com.whayer.wx.pay;
+package com.whayer.wx.pay.controller;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;

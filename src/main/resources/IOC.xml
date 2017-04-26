@@ -113,6 +113,9 @@
 	<bean id="springFactory" class="com.whayer.wx.common.bean.SpringFactory"></bean>
 	<bean id="beanFactory" class="com.whayer.wx.common.bean.BeanFactory"></bean>
 	-->
-  
+  	<!-- <bean id="qRCodeKit" class="com.whayer.wx.pay2.util.QRCodeKit"></bean> -->
+	
+	
+	<bean id="springFactory" class="com.whayer.wx.common.bean.SpringFactory"></bean>
 </beans>
 

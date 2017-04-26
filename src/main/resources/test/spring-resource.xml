@@ -4,6 +4,6 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd" >
         
-        <bean  id="springResource" class="com.whayer.wx.spring.SpringResource" ></bean>
+        <bean  id="springResource" class="com.whayer.wx.test.spring.SpringResource" ></bean>
 	
  </beans>

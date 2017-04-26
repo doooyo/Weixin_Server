@@ -1,16 +1,18 @@
 package com.whayer.wx;
 
-import static org.junit.Assert.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.whayer.wx.base.UnitTestBase;
 import com.whayer.wx.common.bean.SpringFactory;
 import com.whayer.wx.test.controller.TestBean;
 
-public class SpringFactoryTest {
+public class SpringFactoryTest extends UnitTestBase{
+	
+	public SpringFactoryTest() {
+		super("classpath:IOC.xml");
+	}
 	
 	//private static ApplicationContext ctx;
 
@@ -21,7 +23,8 @@ public class SpringFactoryTest {
 
 	@Test
 	public void test() {
-		TestBean bean = (TestBean)SpringFactory.getBean("testBean");
+		SpringFactory springFactory = super.getBean("springFactory");
+		TestBean bean = (TestBean)springFactory.getBean("testBean");
 		//TestBean bean = (TestBean)ctx.getBean("testBean");
 		bean.hello();
 	}
