@@ -18,6 +18,8 @@ public class Constant {
     public static final String URL_ORDER_QUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
 
     public static final String URL_NOTIFY = Constant.DOMAIN + "/payV2/callback"; 
+    
+    public static final String URL_BARCODE = "https://github.com/DoyuLy/Weixin_Server"; //Constant.DOMAIN + "/payV2/callback"; 
 
     public static final String TIME_FORMAT = "yyyyMMddHHmmss";
 

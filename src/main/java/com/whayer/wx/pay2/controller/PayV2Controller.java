@@ -1,6 +1,5 @@
 package com.whayer.wx.pay2.controller;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,13 +34,12 @@ import com.whayer.wx.pay.util.Constant;
 import com.whayer.wx.pay.util.RandomUtils;
 import com.whayer.wx.pay.vo.PayInfo;
 import com.whayer.wx.pay2.service.PayV2Service;
+import com.whayer.wx.pay2.util.BarCodeKit;
 import com.whayer.wx.pay2.util.HttpRequest;
-import com.whayer.wx.pay2.util.QRCodeKit;
 import com.whayer.wx.pay2.util.Signature;
 import com.whayer.wx.pay2.util.XStreamUtil;
 import com.whayer.wx.pay2.vo.OrderQuery;
 import com.whayer.wx.pay2.vo.OrderReturnInfo;
-import com.whayer.wx.test.controller.TestBean;
 
 @RequestMapping(value = "/payV2")
 @Controller
@@ -265,14 +262,25 @@ public class PayV2Controller extends BaseController{
     public void qrcode(HttpServletRequest request, HttpServletResponse response) throws IOException{
 		log.debug("PayV2Controller.qrcode()");
 		
+		Box box = loadNewBox(request);
+		String orderId = box.$p("orderId");
+		if(isNullOrEmpty(orderId)){
+			return;
+		}
 		
-		TestBean bean = (TestBean)springFactory.getBean("testBean");
-		bean.hello();
-		
-		String data = "http://www.baidu.com";
+		String url = Constant.URL_BARCODE + "?orderId=" + orderId;//123.207.68.241
 		org.springframework.core.io.Resource resource = springFactory.getResource("classpath:image/logo.jpg");
         File logoFile = resource.getFile();
-        BufferedImage image = QRCodeKit.createQRCodeWithLogo(data, logoFile);
-        ImageIO.write(image, "gif", new File("wx.gif"));
+        //BufferedImage image = QRCodeKit.createQRCodeWithLogo(url, logoFile);
+        //ImageIO.write(image, "gif", response.getOutputStream());
+        
+        response.setHeader("Progma", "No-cache");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setDateHeader("Expires", 0);
+		response.setContentType("image/jpeg");
+		
+        BarCodeKit.encode2(url, 300, 300, logoFile, response);
+        
+        
 	}
 }
