@@ -168,4 +168,12 @@
 		    </foreach>
     	</where>  
 	</update>
+	
+	<!-- 代理商获取下线 -->
+	<select id="getTeams" parameterType="String" resultType="User">
+		SELECT 
+        <include refid="userFields" /> 
+        FROM sk_user
+        WHERE p_id=#{userId}
+	</select>
 </mapper>

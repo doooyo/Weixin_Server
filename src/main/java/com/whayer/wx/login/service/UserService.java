@@ -74,4 +74,12 @@ public interface UserService {
 	 * @return
 	 */
 	public int approveAgentBatch(String... ids);
+	
+	/**
+	 * 获取代理商下线
+	 * @param userId
+	 * @param pagination
+	 * @return
+	 */
+	public PageInfo<User> getTeams(String userId, Pagination pagination);
 }

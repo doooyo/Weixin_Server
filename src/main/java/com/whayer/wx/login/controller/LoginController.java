@@ -387,4 +387,29 @@ public class LoginController extends BaseVerificationController {
 		return getResponse(X.TRUE);
 	}
 	
+	/**
+	 * 获取代理商下线
+	 * @param userId
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/team", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition team(@RequestParam("userId") String userId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.team()");
+		
+		Box box = loadNewBox(request);
+		
+		if(isNullOrEmpty(userId)){
+			getResponse(X.FALSE);
+		}
+		
+		PageInfo<User> pi = userService.getTeams(userId, box.getPagination());
+		
+		return pagerResponse(pi);
+	}
+	
+	
 }

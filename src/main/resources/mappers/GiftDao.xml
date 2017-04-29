@@ -21,7 +21,7 @@
 		from sk_gift
 		<trim prefix="WHERE" prefixOverrides="AND|OR">
     		<if test="isExpired != null and isExpired == 1"> 
-    			 deadline >= CURDATE() ORDER BY create_time DESC
+    			 deadline >= CURDATE() ORDER BY create_time ASC
     		</if>
     		<if test="isExpired != null and isExpired == 0"> 
     			 1=1 ORDER BY create_time ASC
@@ -83,4 +83,53 @@
    			DELETE FROM sk_gift WHERE id=#{id}
    		]]>
 	</delete>
+	
+	<sql id="giftReleaseFields">
+		id,
+		gift_id,
+		is_mailed,
+		address,
+		name,
+		mobile,
+		create_time,
+		release_time,
+		order_id
+	</sql>
+	
+	<insert id="saveGiftRelease" parameterType="GiftRelease">
+		<![CDATA[
+    		INSERT INTO sk_gift_release(
+				id,
+				gift_id,
+				is_mailed,
+				address,
+				name,
+				mobile,
+				create_time,
+				order_id
+				)
+			VALUES(
+				#{id},
+				#{giftId},
+				0,
+				#{address},
+				#{name},
+				#{mobile},
+				now(),
+				#{orderId}
+			)
+    	]]>
+	</insert>
+	
+	<update id="updateGiftRelease">
+		UPDATE sk_gift_release
+		SET is_mailed=#{isMailed}, release_time=now()
+		WHERE id=#{id}
+	</update>
+	
+	<select id="getGiftReleaseById" parameterType="String" resultType="GiftRelease">
+		SELECT 
+		<include refid="giftReleaseFields" />
+		WHERE order_id=#{orderId}
+	</select>
 </mapper>

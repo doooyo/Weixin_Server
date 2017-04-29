@@ -78,4 +78,13 @@ public class UserServiceImpl implements UserService{
 		return userDao.approveAgentBatch(ids);
 	}
 
+	@Override
+	public PageInfo<User> getTeams(String userId, Pagination pagination) {
+		
+		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
+		List<User> list = userDao.getTeams(userId);
+		PageInfo<User> pageInfo = new PageInfo<User>(list, pagination.getNavigationSize());
+		return pageInfo;
+	}
+
 }

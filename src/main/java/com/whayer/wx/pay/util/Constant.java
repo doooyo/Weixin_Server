@@ -1,12 +1,15 @@
 package com.whayer.wx.pay.util;
 
 public class Constant {
-	public static final String DOMAIN = "https://skyg.com.cn";
+	public static final String DOMAIN = "https://scskss.com";
 
-    public static final String APP_ID = "wx95e0f6128d7e91f6";  
+	//唯一id
+    public static final String APP_ID = ""; 
 
-    public static final String APP_SECRET = "bf64789369b16c812f0ebdae79c8154e";
+    //应用密匙(API接口密码)
+    public static final String APP_SECRET = ""; 
 
+    //签名密钥
     public static final String APP_KEY = ""; 
 
     public static final String MCH_ID = "";  //商户号

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +24,7 @@ import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.gift.service.GiftService;
 import com.whayer.wx.gift.vo.Gift;
+import com.whayer.wx.gift.vo.GiftRelease;
 
 @RequestMapping(value = "/gift")
 @Controller
@@ -183,6 +185,102 @@ public class GiftController extends BaseController{
 			ResponseCondition res = getResponse(X.FALSE);
 			res.setErrorMsg("保存礼品失败");
 			log.error("保存礼品失败");
+			return res;
+		}
+	}
+	
+	/**
+	 * 保存礼品发放记录
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/saveGiftRelease", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition saveGiftRelease(HttpServletRequest request, HttpServletResponse response){
+		
+		log.info("GiftController.saveGiftRelease()");
+		
+		Box box = loadNewBox(request);
+		
+		String orderId = box.$p("orderId");
+		String name = box.$p("name");
+		String mobile = box.$p("mobile");
+		String address = box.$p("address");
+		
+		if(isNullOrEmpty(orderId) || isNullOrEmpty(name) 
+				|| isNullOrEmpty(mobile) || isNullOrEmpty(address)){
+			return getResponse(X.FALSE);
+		}
+		
+		//验证是否有此订单,同时验证此订单是否已有发放记录
+		if(!giftService.validateGiftReleaseExist(orderId)){
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("订单不存在或已有发放记录");
+			return res;
+		}
+		
+		//查询发放礼品
+		List<Gift> list = giftService.getGiftList(1);
+		if(isNullOrEmpty(list)){
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("当前没有礼品");
+			return res;
+		}
+		List<String> arr = new ArrayList<>();
+		for(Gift gift : list){
+			arr.add(gift.getId());
+		}
+		String giftId = StringUtils.collectionToDelimitedString(list, ",");
+		
+		GiftRelease giftRelease = new GiftRelease();
+		giftRelease.setId(X.uuidPure());
+		giftRelease.setGiftId(giftId);
+		giftRelease.setMailed(X.FALSE);
+		giftRelease.setName(name);
+		giftRelease.setAddress(address);
+		giftRelease.setMobile(mobile);
+		giftRelease.setOrderId(orderId);
+		
+		int count = giftService.saveGiftRelease(giftRelease);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("保存礼品发放记录失败");
+			log.error("保存礼品发放记录失败");
+			return res;
+		}
+	}
+	
+	/**
+	 * 更新礼品记录为已发放
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/updateGiftRelease", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition updateGiftRelease(HttpServletRequest request, HttpServletResponse response){
+		
+		log.info("GiftController.updateGiftRelease()");
+		
+		Box box = loadNewBox(request);
+		
+		//礼品发放记录id
+		String id = box.$p("id");
+		if(isNullOrEmpty(id)){
+			return getResponse(X.FALSE);
+		}
+		
+		int count = giftService.updateGiftRelease(id, 1);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("更新礼品发放记录失败");
+			log.error("更新礼品发放记录失败");
 			return res;
 		}
 	}

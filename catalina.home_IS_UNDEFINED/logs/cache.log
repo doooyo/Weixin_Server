@@ -1,8 +1,0 @@
-[ERROR] 04.24 22:09:13 [main] com.whayer.wx.common.X.string2date[193]
-     >> Unparseable date: "2017-01-01"
-[ERROR] 04.24 22:09:13 [main] com.whayer.wx.common.X.string2date[193]
-     >> Unparseable date: "2017-06-01"
-[ERROR] 04.24 22:09:37 [main] com.whayer.wx.common.X.string2date[193]
-     >> Unparseable date: "2017-01-01"
-[ERROR] 04.24 22:09:37 [main] com.whayer.wx.common.X.string2date[193]
-     >> Unparseable date: "2017-06-01"

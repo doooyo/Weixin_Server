@@ -47,4 +47,11 @@ public interface UserDao extends DAO{
 	 * @return
 	 */
 	public int approveAgentBatch(@Param("ids") String... ids);
+	
+	/**
+	 * 代理商获取下线
+	 * @param userId
+	 * @return
+	 */
+	public List<User> getTeams(@Param("userId") String userId);
 }
