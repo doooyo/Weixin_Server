@@ -54,4 +54,11 @@ public interface UserDao extends DAO{
 	 * @return
 	 */
 	public List<User> getTeams(@Param("userId") String userId);
+	
+	/**
+	 * 验证父级是否存在
+	 * @param pid 电话/ID
+	 * @return
+	 */
+	public int validatePid(@Param("pid") String pid);
 }

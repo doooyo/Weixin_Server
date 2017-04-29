@@ -176,4 +176,11 @@
         FROM sk_user
         WHERE p_id=#{userId}
 	</select>
+	
+	<!-- 验证父级代理商是否存在 >0 存在 ==0 不存在 -->
+	<select id="validatePid" parameterType="String" resultType="Integer">
+		SELECT COUNT(*)
+		FROM sk_user
+		WHERE id=#{pid} OR mobile=#{pid}
+	</select>
 </mapper>

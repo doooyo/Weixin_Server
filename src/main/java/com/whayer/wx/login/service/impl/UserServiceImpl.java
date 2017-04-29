@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.login.dao.UserDao;
 import com.whayer.wx.login.service.UserService;
@@ -85,6 +86,15 @@ public class UserServiceImpl implements UserService{
 		List<User> list = userDao.getTeams(userId);
 		PageInfo<User> pageInfo = new PageInfo<User>(list, pagination.getNavigationSize());
 		return pageInfo;
+	}
+
+	@Override
+	public boolean validatePid(String pid) {
+		
+		int count = userDao.validatePid(pid);
+		if(count > 0) 
+			return X.TRUE;
+		return X.FALSE;
 	}
 
 }

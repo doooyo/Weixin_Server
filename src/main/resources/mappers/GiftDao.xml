@@ -130,6 +130,7 @@
 	<select id="getGiftReleaseById" parameterType="String" resultType="GiftRelease">
 		SELECT 
 		<include refid="giftReleaseFields" />
+		FROM sk_gift_release
 		WHERE order_id=#{orderId}
 	</select>
 </mapper>

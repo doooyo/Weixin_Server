@@ -231,7 +231,7 @@ public class GiftController extends BaseController{
 		for(Gift gift : list){
 			arr.add(gift.getId());
 		}
-		String giftId = StringUtils.collectionToDelimitedString(list, ",");
+		String giftId = StringUtils.collectionToDelimitedString(arr, ",");
 		
 		GiftRelease giftRelease = new GiftRelease();
 		giftRelease.setId(X.uuidPure());

@@ -227,8 +227,9 @@ public class LoginController extends BaseVerificationController {
 		
 		String username = box.$p(X.USER_NAME);
 		String password = box.$p(X.PASSWORD);
-		//String userType = box.$p("userType");
+		//String userType = box.$p("userType"); //集团用户已独立出来
 		String mobile = box.$p("mobile");
+		String pid = box.$p("pid"); //父级代理电话/ID
 		
 		/*if(isNullOrEmpty(userType)){
 			return getResponse(X.FALSE);
@@ -255,6 +256,7 @@ public class LoginController extends BaseVerificationController {
 		user.setPassword(MD5.md5Encode(password.trim()));
 		user.setMobile(mobile);
 		user.setUserType(0);
+		user.setpId(pid);
 		
 		User u = userService.findUser(user);
 		if(isNullOrEmpty(u)){
@@ -313,6 +315,35 @@ public class LoginController extends BaseVerificationController {
 		}else{
 			ResponseCondition res = getResponse(X.FALSE);
 			res.setErrorMsg("集团用户已存在!");
+			return res;
+		}
+	}
+	
+	/**
+	 * 验证父级代理是否存在
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/validatePid")
+	@ResponseBody
+	public ResponseCondition validatePid(HttpServletRequest request, HttpServletResponse response){
+		log.info("LoginController.validatePid()");
+		
+		Box box = loadNewBox(request);
+		
+		String pid = box.$p("pid");
+		
+		if(isNullOrEmpty(pid)){
+			return getResponse(X.FALSE);
+		}
+		
+		if(userService.validatePid(pid)){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("父级代理商不存在");
+			log.error("父级代理商不存在");
 			return res;
 		}
 	}
@@ -411,5 +442,23 @@ public class LoginController extends BaseVerificationController {
 		return pagerResponse(pi);
 	}
 	
+	@RequestMapping(value = "/getUserByName", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition findUserByName(@RequestParam("username") String username, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("LoginController.findUserByName()");
+		
+		if(isNullOrEmpty(username)){
+			getResponse(X.FALSE);
+		}
+		
+		User user = userService.findUserByName(username);
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		List<User> list = new ArrayList<>();
+		list.add(user);
+		res.setList(list);
+		
+		return res;
+	}
 	
 }

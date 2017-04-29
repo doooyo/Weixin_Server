@@ -82,4 +82,11 @@ public interface UserService {
 	 * @return
 	 */
 	public PageInfo<User> getTeams(String userId, Pagination pagination);
+	
+	/**
+	 * 验证父级是否存在
+	 * @param pid 电话/ID
+	 * @return
+	 */
+	public boolean validatePid(String pid);
 }

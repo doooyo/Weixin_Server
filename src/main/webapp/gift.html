@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>礼品领取</title>
+	<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+</head>
+<body>
+	<div>
+		<input placeholder="姓名" id='username'></input>
+		<input placeholder="手机号" id='mobile'></input>
+		<input placeholder="邮寄地址" id='address'></input>
+		<button id="submit">提交</button>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			var orderId = '';
+			/*获取url中的参数*/
+		    function getUrlParam(name) {
+		        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+		        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+		        if (r != null) return unescape(r[2]); return null; //返回参数值
+		    }
+
+			function submit(){
+				//var url = 'http://localhost/gift.html?orderId=28222EA2B4D34354A4A1604ECADB4014';
+				var oderId = getUrlParam('orderId');
+				var data = {
+						orderId:'28222EA2B4D34354A4A1604ECADB4014',
+						name:$("#username").val(),
+						mobile:$("#mobile").val(),
+						address:$("#address").val()
+				};
+				$.ajax({
+					url:'http://192.168.1.106:8088/gift/saveGiftRelease',
+					type:'POST',
+					data:data,
+					success:function(res){
+						console.log(res);
+					},
+					error:function(error){
+						console.log(error);
+					}
+
+				});
+			}
+			$("#submit").on("click",function(){				
+				submit();
+			});
+		});
+	</script>
+</body>
+</html>
