@@ -1,7 +1,7 @@
 package com.whayer.wx.pay.util;
 
 public class Constant {
-	public static final String DOMAIN = "www.scskss.com";
+	public static final String DOMAIN = "http://scskss.com";
 
 	//唯一id
     public static final String APP_ID = ""; 
