@@ -1,8 +1,11 @@
 package com.whayer.wx.login.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -16,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.MD5;
+import com.whayer.wx.common.io.FileUtil;
 import com.whayer.wx.common.mvc.BaseVerificationController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
@@ -206,24 +211,16 @@ public class LoginController extends BaseVerificationController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/register/agent")
+	@RequestMapping(value = "/register/agent", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition registerAgent(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ResponseCondition registerAgent(
+			@RequestParam(value = "file", required = false) MultipartFile file, 
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("LoginController.registerAgent()");
 		
 		Box box = loadNewBox(request);
 		String id = X.uuidPure();
 		
-//		private String id;
-//		private String pId;      //父级代理ID
-//		private String username; //用户名
-//		private String password; //用户密码
-//		private Long points = 0L;//积分
-//		private byte[] photo;    //头像
-//		private Integer auditState = 0; //审核状态    0:未审核   1:已审核
-//		private Integer isAgent = 0;    //是否区域代理 0:普通用户 1:区域代理
-//		private String mobile;          //手机
-//		private Integer userType;       //用户类型    0:代理用户 1:集团用户
 		
 		String username = box.$p(X.USER_NAME);
 		String password = box.$p(X.PASSWORD);
@@ -231,22 +228,8 @@ public class LoginController extends BaseVerificationController {
 		String mobile = box.$p("mobile");
 		String pid = box.$p("pid"); //父级代理电话/ID
 		
-		/*if(isNullOrEmpty(userType)){
-			return getResponse(X.FALSE);
-		}else{
-			int type = Integer.parseInt(userType);
-			//代理用户注册
-			if(0 == type){
-				if(isNullOrEmpty(username) || isNullOrEmpty(password) || isNullOrEmpty(mobile)){
-					return getResponse(X.FALSE);
-				}
-			}
-			//集团用户注册
-			else{
-				
-			}
-		}*/
-		if(isNullOrEmpty(username) || isNullOrEmpty(password) || isNullOrEmpty(mobile)){
+		if(isNullOrEmpty(username) || isNullOrEmpty(password) 
+				|| isNullOrEmpty(mobile) || isNullOrEmpty(file)){
 			return getResponse(X.FALSE);
 		}
 		
@@ -255,11 +238,48 @@ public class LoginController extends BaseVerificationController {
 		user.setUsername(username.trim());
 		user.setPassword(MD5.md5Encode(password.trim()));
 		user.setMobile(mobile);
-		user.setUserType(0);
+		user.setUserType(0); //0:代理用户 1:集团用户
 		user.setpId(pid);
 		
 		User u = userService.findUser(user);
 		if(isNullOrEmpty(u)){
+			//http://www.cnblogs.com/fjsnail/p/3491033.html
+//			<form action="/user/register/agent" method="post" enctype="multipart/form-data">  
+//			  <input type="file" name="file" />  
+//			  <input type="submit" value="上传" />  
+//			</form> 
+			String originFileName = file.getOriginalFilename();
+			String extension = FileUtil.getExtension(originFileName);
+			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+			Pattern pattern = Pattern.compile(X.REGEX);
+			Matcher matcher = pattern.matcher(originFileName);
+			if (matcher.find()) {
+				originFileName = matcher.replaceAll("_").trim();
+			}
+			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+			
+			ResponseCondition res = getResponse(X.FALSE);
+			if (file.getSize() == 0 || file.isEmpty()) {
+				log.error("文件不能为空");
+				res.setErrorMsg("文件不能为空");
+				return res;
+			}
+			// check if too large
+			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+			if (file.getSize() > maxSize) {
+				log.error("文件太大");
+				res.setErrorMsg("文件太大");
+				return res;
+			}
+			
+			String uploadPath = X.getConfig("file.upload.header.dir");
+			X.makeDir(uploadPath);
+			File targetFile = new File(uploadPath, originFileName);
+		    file.transferTo(targetFile);
+		    
+			//设置头像路径
+		    user.setHeadImg(originFileName);
+		    
 			userService.saveUser(user);
 			return getResponse(X.TRUE);
 		}

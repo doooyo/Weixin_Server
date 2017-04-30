@@ -19,9 +19,14 @@ public interface Constant {
 
 	public static final String FILE_SEPARATOR = File.separator;
 	
-	public static final String  UNDERLINE = "_";
-	public static final String  ENCRYPTED = "+";
-	public static final String  DECRYPTED = "-";
+	public static final String ENCRYPTED = "+";
+	public static final String DECRYPTED = "-";
+	public static final String DOT       = ".";
+	public static final String COMMA     = ",";
+	public static final String COLON     = ":";
+	public static final String SLASH     = "/";
+	public static final String UNDER_LINE     = "_";
+	public static final String MULTIPLICATION = "x";
 
 	public static final String GBK       = "GBK";
 	public static final String UTF16LE   = "UTF-16LE";

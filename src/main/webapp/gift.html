@@ -7,10 +7,25 @@
 </head>
 <body>
 	<div>
-		<input placeholder="姓名" id='username'></input>
-		<input placeholder="手机号" id='mobile'></input>
-		<input placeholder="邮寄地址" id='address'></input>
+		<div class="getGiftDetail">
+			
+		</div>
+	</div>
+	<div>
+		<input placeholder="姓名" value="测试用户1" id='username'></input>
+	</div>
+	<div>
+		<input placeholder="手机号"  value="18224070547"  id='mobile'></input>
+	</div>
+	<div>
+		<input placeholder="邮寄地址"  value="四川成都" id='address'></input>
+	</div>
+	<div>
 		<button id="submit">提交</button>
+	</div>
+	<div>
+		<div>提示:</div>
+		<div class="tips"></div>
 	</div>
 	<script type="text/javascript">
 		$(function(){
@@ -26,27 +41,51 @@
 				//var url = 'http://localhost/gift.html?orderId=28222EA2B4D34354A4A1604ECADB4014';
 				var oderId = getUrlParam('orderId');
 				var data = {
-						orderId:'28222EA2B4D34354A4A1604ECADB4014',
+						orderId:oderId,
 						name:$("#username").val(),
 						mobile:$("#mobile").val(),
 						address:$("#address").val()
 				};
 				$.ajax({
-					url:'http://192.168.1.106:8088/gift/saveGiftRelease',
+					url:'/gift/saveGiftRelease',
 					type:'POST',
 					data:data,
+					dateType:"json", 
 					success:function(res){
-						console.log(res);
+						if(res.isSuccess){//提交成功
+							$(".tips").html('提交成功');
+						}else{
+							//console.log(res.errorMsg);
+							$(".tips").html(res.errorMsg);
+						}
+						//console.log(data);
 					},
-					error:function(error){
-						console.log(error);
+					error:function(XMLHttpRequest, textStatus, errorThrow){
+						//console.log(textStatus);
 					}
-
 				});
 			}
 			$("#submit").on("click",function(){				
 				submit();
 			});
+
+			//获取礼品信息
+			function getGiftDetail(){
+				var data = {
+					expired:1
+				};
+				$.ajax({
+					url:'/gift/getList',
+					type:'GET',
+					data:data,
+					dataType:'json'
+					success:function(res){
+						var list = res.list;
+						$(".getGiftDetail").html(JSON.stringify(list));
+					}
+				});
+			}
+			getGiftDetail();
 		});
 	</script>
 </body>

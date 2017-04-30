@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,6 +34,7 @@ import java.util.concurrent.ThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * 全局工具类  （如 X.string2int("123")）
  * @author duyu
@@ -55,6 +57,7 @@ public final class X implements Constant{
 	
 	static{
 		init();
+		loadProperties();
 	}  
 	
 	private static void init() {
@@ -73,6 +76,49 @@ public final class X implements Constant{
 	    ESCAPE_TABLE.put('\"', "&quot;");
 	    ESCAPE_TABLE.put('&', "&amp;");
 	    ESCAPE_TABLE.put('|', "&brvbar;");
+	  }
+	
+	/**
+	   * load webContent/WEB-INF/classes/x.properties as default; then periodically load X.properties from /etc/jvm/x.propertis
+	   */
+	  private static void loadProperties() {
+	    Properties p = new Properties();
+	    File defaultProperties = null;
+	    try {
+	      java.net.URL u = X.class.getClassLoader().getResource("");
+	      java.net.URL u2 = X.class.getClassLoader().getResource("/");
+	      defaultProperties = new File(u == null ? u2.getPath() : u.getPath(), "x.properties");
+	      p.load(new FileInputStream(defaultProperties));
+	      properties = new Properties(p);
+	    } catch (FileNotFoundException e) {
+	      log.error("X.loadProperties() error " + defaultProperties.getAbsolutePath() + " not found.");
+	    } catch (Exception e) {
+	      log.error(e.getMessage());
+	    }
+	    Thread loaderThread = new Thread(new Runnable() {
+	      @Override
+	      public void run() {
+	        while (true) {
+	          /*log.debug("reloading x.properties from ${catalina.base}/conf and /etc/jvm/");*/
+	          String xPropertiesInConf=System.getProperty("catalina.base")+"/conf/x.properties";
+	          try {
+	            // 每10秒重新加载一次${TOMCAT_HOME}/conf/x.properties 内的配置
+	            properties.load(new FileInputStream(xPropertiesInConf));
+	          } catch (Exception e) {
+	            //log.debug(xPropertiesInConf + " file not found");
+	          }
+	          try {
+	            // 每10秒重新加载一次/etc/jvm/x.properties 内的配置
+	            properties.load(new FileInputStream("/etc/jvm/x.properties"));
+	          } catch (Exception e) {
+	            //log.debug("/etc/jvm/x.properties file not found");
+	          }
+	          X.sleep(10);
+	        }
+	      }
+	    }, "X.propertiesLoader");
+	    loaderThread.setDaemon(true);
+	    loaderThread.start();
 	  }
 	
 	/**

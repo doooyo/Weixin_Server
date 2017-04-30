@@ -19,14 +19,9 @@ public class User implements Serializable{
 	private Integer userType;        //用户类型    0:代理用户 1:集团用户
 	private String mobile;      //手机
 	private String nickName;    //昵称(主要用于集团用户)
+	private String headImg;   //头像地址
 	
 	
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
-				+ points + ", photo=" + Arrays.toString(photo) + ", isAudit=" + isAudit + ", isAgent=" + isAgent
-				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + "]";
-	}
 	public String getId() {
 		return id;
 	}
@@ -95,5 +90,18 @@ public class User implements Serializable{
 	}
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+	}
+	public String getHeadImg() {
+		return headImg;
+	}
+	public void setHeadImg(String headImg) {
+		this.headImg = headImg;
+	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
+				+ points + ", photo=" + Arrays.toString(photo) + ", isAudit=" + isAudit + ", isAgent=" + isAgent
+				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + ", headImg=" + headImg
+				+ "]";
 	}
 }

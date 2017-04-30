@@ -110,6 +110,8 @@
 		<!--one of the properties available;the maximum upload size in bytes 100M -->
 		<property name="defaultEncoding" value="UTF-8" />
 		<property name="maxUploadSize" value="104857600" />
+		<!-- <property name="maxInMemorySize" value="40960" /> 
+		<property name="uploadTempDir" value="/upload/headImg" /> -->
 	</bean>
 	
 	<bean id="exceptionResolver"

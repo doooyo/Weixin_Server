@@ -17,7 +17,8 @@
 		is_agent,
 		mobile,
 		user_type,
-		nick_name
+		nick_name,
+		head_img
 	</sql>
 
 	<!-- 根据用户名查询用户 -->
@@ -33,16 +34,18 @@
 		select
 		<include refid="userFields" />
 		from sk_user
-		where 1=1
-		<if test="id >''">
-			and id = #{id}
-		</if>
-		<if test="username >''">
-			and username = #{username}
-		</if>
-		<if test="mobile > ''">
-			and mobile = #{mobile}
-		</if>
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+    		<if test="id != null and id != ''">
+			    id = #{id}
+			</if>
+			<if test="username != null and username != ''">
+				or username = #{username}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				or mobile = #{mobile}
+			</if>
+		</trim>
+		limit 1
 	</select>
 	
 	<update id="updateUserById" parameterType="User">
@@ -116,7 +119,9 @@
   		0,
   		0,
   		#{mobile},
-  		#{userType} <!-- 默认只有代理用户(个代/区代)才会进行注册 -->
+  		#{userType}, <!-- 默认只有代理用户(个代/区代)才会进行注册 -->
+  		null,
+  		#{headImg}
   		)
   	</insert>
   	
@@ -132,6 +137,7 @@
         <result column="mobile" property="mobile" />
         <result column="user_type" property="userType" />
         <result column="nick_name" property="nickName" />
+        <result column="head_img" property="headImg" />
     </resultMap>
     
   	<select id="getUserListByType" parameterType="Integer" resultType="User">
