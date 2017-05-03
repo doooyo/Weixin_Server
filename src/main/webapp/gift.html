@@ -78,7 +78,7 @@
 					url:'/gift/getList',
 					type:'GET',
 					data:data,
-					dataType:'json'
+					dataType:'json',
 					success:function(res){
 						var list = res.list;
 						$(".getGiftDetail").html(JSON.stringify(list));

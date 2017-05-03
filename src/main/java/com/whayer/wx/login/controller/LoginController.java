@@ -272,8 +272,8 @@ public class LoginController extends BaseVerificationController {
 				return res;
 			}
 			
-			String uploadPath = X.getConfig("file.upload.header.dir");
-			X.makeDir(uploadPath);
+			String uploadPath = X.getConfig("file.upload.dir");
+			X.makeDir(uploadPath + "/header");
 			File targetFile = new File(uploadPath, originFileName);
 		    file.transferTo(targetFile);
 		    
