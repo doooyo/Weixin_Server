@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>礼品活动页</title>
+	<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>	
+	<link rel="stylesheet" type="text/css" href="style/index.css">
+</head>
+<body>
+	<div class="wrapper">
+		<div class="header">
+			恭喜您，获得以下礼品:
+		</div>
+		<!-- 礼品信息 -->
+		<div class="col-xs-12">
+			<!-- Swiper -->
+		    <div class="swiper-container">
+		        <div class="swiper-wrapper">
+		           <!--  <div class="swiper-slide">
+		            	<image src="images/充电宝.jpg"/>
+		            </div>
+		            <div class="swiper-slide">
+		            	<image src="images/蓝月亮洗衣液.jpg"/>
+		            </div> -->
+		        </div>
+		        <!-- Add Pagination -->
+		        <div class="swiper-pagination"></div>
+		        <!-- Add Arrows -->
+		        <!-- <div class="swiper-button-next"></div>
+		        <div class="swiper-button-prev"></div> -->
+		    </div>
+		</div>
+		<!-- 表单 -->
+		<div class="col-xs-12">
+			<div class="tips">
+				<label for="title">礼品收货信息:</label>
+			</div>
+			<form role="form" id="form">
+				<div class="form-group">
+					<label for="name">姓名:</label>
+					<input type="text" class="form-control" placeholder="请输入姓名" id='username'>
+				</div>
+				<div class="form-group">
+					<label for="mobile">手机号:</label>
+					<input type="text" class="form-control" placeholder="请输入手机号" id='mobile'>
+				</div>
+				<div class="form-group">
+					<label for="address">收货地址:</label>
+					<input type="text" class="form-control" placeholder="请输入联系地址" id='address'>
+				</div>
+				<div class="form-group">
+					<button type="button" class="btn btn-default submit">提交</button>
+				</div>
+			 </form>
+		</div>
+		<div class="sendTips"></div>
+	</div>
+	<link rel="stylesheet" href="swiper/swiper.min.css">
+	<script src="swiper/swiper.min.js"></script>	
+	<script type="text/javascript" src="gift.index.js"></script>
+</body>
+</html>
