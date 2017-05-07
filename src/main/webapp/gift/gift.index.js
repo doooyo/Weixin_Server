@@ -54,7 +54,7 @@ $(function(){
 		        var str = '<div class="swiper-slide">';    
 				for (var i = 0; i < list.length; i++) {
 					var item = list[i];
-					var imageUrl = 'image/gift/'+item['imageUrl'];
+					var imageUrl = 'http://scskss.com/image/gift/'+item['imgSrc'];
 					str+= '<image src="'+imageUrl+'"/>';
 					str+='</div>';
 				}

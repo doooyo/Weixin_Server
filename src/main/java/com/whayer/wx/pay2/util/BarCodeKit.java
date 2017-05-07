@@ -14,6 +14,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Component;
+
 import com.google.zxing.BarcodeFormat;  
 import com.google.zxing.EncodeHintType;  
 import com.google.zxing.MultiFormatWriter;  
@@ -21,6 +23,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;  
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+@Component
 public final class BarCodeKit {
 	// 图片宽度的一般  
     private static final int IMAGE_WIDTH = 80;  

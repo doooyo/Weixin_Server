@@ -268,7 +268,7 @@ public class PayV2Controller extends BaseController{
 			return;
 		}
 		
-		String url = Constant.URL_BARCODE + "?orderId=" + orderId;//123.207.68.241
+		String url = Constant.URL_BARCODE + "?orderId=" + orderId;
 		org.springframework.core.io.Resource resource = springFactory.getResource("classpath:image/logo.jpg");
         File logoFile = resource.getFile();
         //BufferedImage image = QRCodeKit.createQRCodeWithLogo(url, logoFile);

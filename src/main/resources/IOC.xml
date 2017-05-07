@@ -82,6 +82,7 @@
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.whayer.wx" />
 		<property name="markerInterface" value="com.whayer.wx.common.mvc.DAO" />
+		<!-- 可以配置扫描注解方式 -->
 	</bean>
 	
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

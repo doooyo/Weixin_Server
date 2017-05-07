@@ -21,8 +21,8 @@ public class SpringFactory implements ApplicationContextAware {
 		System.out.println(context.toString());
 	}
 
-	public <T> T getBean(String beanName, Class<T> clazs) {
-		return clazs.cast(getBean(beanName));
+	public <T> T getBean(String beanName, Class<T> clazz) {
+		return clazz.cast(getBean(beanName));
 	}
 
 	public Object getBean(String beanName) {

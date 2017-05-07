@@ -32,6 +32,7 @@ import com.google.zxing.common.BitMatrix;
 //import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+@Deprecated
 @Repository
 public class QRCodeKit {
 	public static final String QRCODE_DEFAULT_CHARSET = "UTF-8";
