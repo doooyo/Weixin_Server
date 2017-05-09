@@ -76,6 +76,33 @@ public class LoginController extends BaseVerificationController {
 		res.setList(list);
 		return res;
 	}
+	
+	@RequestMapping(value = "/login/company", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition loginCompany(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("LoginController.loginCompany()");
+		
+		Box box = loadNewBox(request);
+		String code = box.$p("code");
+		
+		if(isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		Company company = companyService.findByCode(code);
+		
+		if(null == company){
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("没有此集团用户");
+			return res;
+		}
+		
+		ResponseCondition res = getResponse(true);
+		List<Company> list = new ArrayList<>();
+		list.add(company);
+		res.setList(list);
+		return res;
+	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
@@ -144,6 +171,13 @@ public class LoginController extends BaseVerificationController {
 					res.setErrorMsg("密码错误");
 					return res;
 				} else {
+					
+					if(!user.getIsAudit()){
+						ResponseCondition res = getResponse(false);
+						res.setErrorMsg("账户正在审核中");
+						return res;
+					}
+					
 					// TODO update login time /IP /last_session
 					HtmlParser.GetClientIp(request);
 		            String sessionid = MD5.md5Encode(X.uuid());
