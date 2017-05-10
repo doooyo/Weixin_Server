@@ -163,8 +163,8 @@ public class LoginController extends BaseVerificationController {
 				res.setErrorMsg("没有此用户");
 				return res;
 			} else {
-				user = userService.findUser(u);
-				if (null == user) {
+				//user = userService.findUser(u);
+				if (user.getPassword() != passWord) {
 					log.info("密码错误");
 					//errorCode = 3;
 					ResponseCondition res = getResponse(false);

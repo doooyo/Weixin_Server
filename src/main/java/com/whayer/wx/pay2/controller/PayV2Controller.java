@@ -2,10 +2,6 @@ package com.whayer.wx.pay2.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -40,7 +35,6 @@ import com.whayer.wx.pay2.util.HttpRequest;
 import com.whayer.wx.pay2.util.Signature;
 import com.whayer.wx.pay2.util.XStreamUtil;
 import com.whayer.wx.pay2.vo.OrderQuery;
-import com.whayer.wx.pay2.vo.OrderReturnInfo;
 
 @RequestMapping(value = "/payV2")
 @Controller
@@ -95,16 +89,12 @@ public class PayV2Controller extends BaseController{
 	 * @param model
 	 * @param request
 	 * @return
+	 * @throws Exception 
 	 */
 	@ResponseBody
     @RequestMapping(value = "/prepay", method = RequestMethod.POST)
     public ResponseCondition prePay(HttpServletRequest request, HttpServletResponse response) 
-    		throws UnrecoverableKeyException, 
-    		KeyManagementException, 
-    		ClientProtocolException, 
-    		KeyStoreException, 
-    		NoSuchAlgorithmException, 
-    		IOException {
+    		throws Exception {
 		log.debug("PayV2Controller.prepay()");
 		
 		Box box = loadNewBox(request);
@@ -144,16 +134,21 @@ public class PayV2Controller extends BaseController{
         String sign = payV2Service.getPrepaySign(payInfo);
         payInfo.setSign(sign);
         
-        String result = HttpRequest.sendPost(Constant.URL_UNIFIED_ORDER, order);
+        log.info("payInfo:" + payInfo.toString());
+        
+        String result = HttpRequest.sendPost(Constant.URL_UNIFIED_ORDER, payInfo);
 		log.info("下单返回:"+result);
 		
 		//TODO 注意此处可能会报错,最好转为Map
-		OrderReturnInfo returnInfo = (OrderReturnInfo)XStreamUtil.Xml2Obj(result, OrderReturnInfo.class);
+		//OrderReturnInfo returnInfo = (OrderReturnInfo)XStreamUtil.Xml2Obj(result, OrderReturnInfo.class);
+		Map<String, String> map = XStreamUtil.Xml2Map(result);
+		log.info(map.toString());
 //		XStream xStream = new XStream();
 //		xStream.alias("xml", OrderReturnInfo.class); 
 //		OrderReturnInfo returnInfo = (OrderReturnInfo)xStream.fromXML(result);
 		
-		String prepayId = returnInfo.getPrepay_id();
+		String prepayId = map.get("prepay_id"); //returnInfo.getPrepay_id();
+		log.info(prepayId);
 		if(isNullOrEmpty(prepayId)){
 			ResponseCondition res = getResponse(X.FALSE);
 			log.error("prepayId 获取失败");

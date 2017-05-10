@@ -1,15 +1,14 @@
 package com.whayer.wx.pay2.vo;
 
-import java.io.Serializable;
 
 /**
  * 只处理正常返回,若失败则转译XML会抛出异常
  * @author duyu
  *
  */
-public class OrderReturnInfo implements Serializable{
+public class OrderReturnInfo{
 
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 	
 	private String return_code;
     private String return_msg;
@@ -75,9 +74,7 @@ public class OrderReturnInfo implements Serializable{
 	public void setTrade_type(String trade_type) {
 		this.trade_type = trade_type;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+	
 	@Override
 	public String toString() {
 		return "OrderReturnInfo [return_code=" + return_code + ", return_msg=" + return_msg + ", result_code="

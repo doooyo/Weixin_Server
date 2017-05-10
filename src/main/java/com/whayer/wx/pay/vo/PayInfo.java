@@ -1,16 +1,13 @@
 package com.whayer.wx.pay.vo;
 
-import java.io.Serializable;
 
 /**
  * @see https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=9_1
  * @author duyu
  *
  */
-public class PayInfo implements Serializable{
+public class PayInfo {
 
-	private static final long serialVersionUID = 1L;
-	
 	private String appid;
     private String mch_id;
     private String device_info; //终端设备号，手机与PC传"WEB"

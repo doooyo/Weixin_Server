@@ -55,4 +55,27 @@ public class XStreamUtil {
 		xStream.alias("xml", klass.getClass()); 
 		return xStream.fromXML(xml);
 	}
+	
+	public static void main(String[] args) {
+		String xml = "<xml><return_code><![CDATA[SUCCESS]]></return_code>" +
+						"<return_msg><![CDATA[OK]]></return_msg>" +
+						"<appid><![CDATA[wx2e4ffffd52348193]]></appid>" +
+						"<mch_id><![CDATA[1465571902]]></mch_id>" +
+						"<device_info><![CDATA[WEB]]></device_info>" +
+						"<nonce_str><![CDATA[cACljoSPpvw1nTpR]]></nonce_str>" +
+						"<sign><![CDATA[97FC87D8EDBC6D2C9201510A119AD4AC]]></sign>" +
+						"<result_code><![CDATA[SUCCESS]]></result_code>" +
+						"<prepay_id><![CDATA[wx20170511002206828dfd536c0124395974]]></prepay_id>" +
+						"<trade_type><![CDATA[JSAPI]]></trade_type>" +
+						"</xml>";
+		
+		try {
+			Map<String, String> map = XStreamUtil.Xml2Map(xml);
+			System.out.println(map.toString());
+//			OrderReturnInfo returnInfo = (OrderReturnInfo)XStreamUtil.Xml2Obj(xml, OrderReturnInfo.class);
+//			System.out.println(returnInfo.getPrepay_id());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
