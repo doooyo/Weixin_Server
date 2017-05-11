@@ -198,26 +198,7 @@ public class PayV2Controller extends BaseController{
 		String calcSign = Signature.getSign(map);
 		log.debug("sign:" + sign);
 		log.debug("calcSign:" + calcSign);
-		/**
-		 * transaction_id=4004312001201705110474795463, 
-		 * nonce_str=B16x5MwEiIdf4vsCPMvPoN41LkzFLktj, 
-		 * bank_type=CFT, 
-		 * openid=o1z7s0Fm7hxkKspl_i3sH3yqOp_Q, 
-		 * sign=B120537C372DF2A2515E304C81AF5BA5, 
-		 * fee_type=CNY, 
-		 * mch_id=1465571902, 
-		 * cash_fee=1, 
-		 * device_info=WEB, 
-		 * out_trade_no=1598407135, 
-		 * appid=wx2e4ffffd52348193, 
-		 * total_fee=1, 
-		 * trade_type=JSAPI, 
-		 * result_code=SUCCESS, 
-		 * attach=pay test, 
-		 * time_end=20170511221106, 
-		 * is_subscribe=N, 
-		 * return_code=SUCCESS
-		 */
+		
 		if(!sign.equals(calcSign)){
 			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
 		}else{
