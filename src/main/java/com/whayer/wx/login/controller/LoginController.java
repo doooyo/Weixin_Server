@@ -164,7 +164,7 @@ public class LoginController extends BaseVerificationController {
 				return res;
 			} else {
 				//user = userService.findUser(u);
-				if (user.getPassword() != passWord) {
+				if (user.getPassword() != MD5.md5Encode(passWord)) {
 					log.info("密码错误");
 					//errorCode = 3;
 					ResponseCondition res = getResponse(false);
