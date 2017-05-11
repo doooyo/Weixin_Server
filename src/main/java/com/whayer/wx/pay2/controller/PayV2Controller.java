@@ -203,9 +203,9 @@ public class PayV2Controller extends BaseController{
 		log.debug("sign:" + sign);
 		log.debug("calcSign:" + calcSign);
 		
-//		if(!sign.equals(calcSign)){
-//			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
-//		}else{
+		if(!sign.equals(calcSign)){
+			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
+		}else{
 			String out_trade_no = map.get("out_trade_no");
 			log.debug("out_trade_no:" + out_trade_no);
 			if(isNullOrEmpty(out_trade_no)){
@@ -249,7 +249,7 @@ public class PayV2Controller extends BaseController{
 				}
 			}
 			
-		//}
+		}
 	}
 	
 	private String getWxReturnMessage(boolean state, String message){
