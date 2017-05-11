@@ -22,7 +22,7 @@ public class Constant {
 
     public static final String URL_NOTIFY = DOMAIN + "/payV2/callback"; 
     
-    public static final String URL_BARCODE = DOMAIN + "/gift.html"; 
+    public static final String URL_BARCODE = DOMAIN + "/gift/gift.html"; 
 
     public static final String TIME_FORMAT = "yyyyMMddHHmmss";
 

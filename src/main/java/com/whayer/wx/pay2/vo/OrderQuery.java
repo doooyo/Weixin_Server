@@ -1,15 +1,13 @@
 package com.whayer.wx.pay2.vo;
 
-import java.io.Serializable;
-
 /**
  * 订单查询VO
  * @author duyu
  *
  */
-public class OrderQuery implements Serializable{
+public class OrderQuery{
 
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 	
 	private String appid;        
 	private String mch_id;       
@@ -56,9 +54,7 @@ public class OrderQuery implements Serializable{
 	public void setSign_type(String sign_type) {
 		this.sign_type = sign_type;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+	
 	@Override
 	public String toString() {
 		return "OrderQuery [appid=" + appid + ", mch_id=" + mch_id + ", out_trade_no=" + out_trade_no + ", nonce_str="

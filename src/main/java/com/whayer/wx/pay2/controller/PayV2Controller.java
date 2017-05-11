@@ -195,19 +195,24 @@ public class PayV2Controller extends BaseController{
 		
 		String sign = map.get("sign");
 		map.put("sign", "");
+		map.put("result_code", "");
+		map.put("return_code", "");
+		map.put("return_msg", "");
+		
 		String calcSign = Signature.getSign(map);
 		log.debug("sign:" + sign);
 		log.debug("calcSign:" + calcSign);
 		
-		if(!sign.equals(calcSign)){
-			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
-		}else{
+//		if(!sign.equals(calcSign)){
+//			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
+//		}else{
 			String out_trade_no = map.get("out_trade_no");
 			log.debug("out_trade_no:" + out_trade_no);
 			if(isNullOrEmpty(out_trade_no)){
 				response.getWriter().append(getWxReturnMessage(X.FALSE, "支付结果中微信订单号不存在"));
 			}else{
 				Order order = orderService.getOrderById(out_trade_no);
+				log.debug("业务订单信息: " + order.toString());
 				if(isNullOrEmpty(order)){
 					response.getWriter().append(getWxReturnMessage(X.FALSE, "订单查询失败"));
 				}else{
@@ -219,19 +224,22 @@ public class PayV2Controller extends BaseController{
 					orderQuery.setOut_trade_no(out_trade_no);
 					orderQuery.setSign_type("MD5");
 					String qSign = Signature.getSign(orderQuery);
+					log.debug("订单查询签名: " + qSign);
 					orderQuery.setSign(qSign);
 					
 					//TODO 验证签名
 					String result = HttpRequest.sendPost(Constant.URL_ORDER_QUERY, orderQuery);
-					log.info("query wx order: " + result);
+					log.debug("query wx order: " + result);
 					Map<String, String> resultMap = XStreamUtil.Xml2Map(result);
+					log.debug("订单查询结果: " + resultMap.toString());
 					String res_out_trade_no = resultMap.get("out_trade_no");
 					if(!res_out_trade_no.equals(out_trade_no)){
+						log.debug("微信没有此订单");
 						response.getWriter().append(getWxReturnMessage(X.FALSE, "微信订单查询失败"));
 					}else{
 						int count = orderService.updateOrderStatusById(out_trade_no, 1);
 						if(count > 0){
-							log.info("更新业务订单成功");
+							log.debug("更新业务订单成功");
 							response.getWriter().append(getWxReturnMessage(X.TRUE, "OK"));
 						}else{
 							log.error("更新业务订单失败");
@@ -241,7 +249,7 @@ public class PayV2Controller extends BaseController{
 				}
 			}
 			
-		}
+		//}
 	}
 	
 	private String getWxReturnMessage(boolean state, String message){
@@ -267,7 +275,7 @@ public class PayV2Controller extends BaseController{
 		}
 		
 		String url = Constant.URL_BARCODE + "?orderId=" + orderId;
-		org.springframework.core.io.Resource resource = springFactory.getResource("classpath:image/logo.jpg");
+		org.springframework.core.io.Resource resource = springFactory.getResource("classpath:image/logo.png");
         File logoFile = resource.getFile();
         //BufferedImage image = QRCodeKit.createQRCodeWithLogo(url, logoFile);
         //ImageIO.write(image, "gif", response.getOutputStream());
