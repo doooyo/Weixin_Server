@@ -106,14 +106,14 @@ public class PayV2ServiceImpl implements PayV2Service{
 	}
 
 	@Override
-	public JSONObject getPaySign(String repayId) {
+	public JSONObject getPaySign(String prepayId) {
 		SignInfo signInfo = new SignInfo();
 		signInfo.setAppId(Constant.APP_ID);
 		long time = System.currentTimeMillis()/1000;
 		signInfo.setTimeStamp(String.valueOf(time));
 		String randomNonceStr = RandomUtils.generateMixString(32);
 		signInfo.setNonceStr(randomNonceStr);
-		signInfo.setRepay_id("prepay_id=" + repayId);
+		signInfo.setRepay_id("prepay_id=" + prepayId);
 		signInfo.setSignType("MD5");
 		//生成签名
 		String sign;

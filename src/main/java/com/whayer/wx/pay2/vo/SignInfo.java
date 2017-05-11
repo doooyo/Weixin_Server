@@ -1,7 +1,5 @@
 package com.whayer.wx.pay2.vo;
 
-import java.io.Serializable;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -9,9 +7,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author duyu
  * 
  */
-public class SignInfo implements Serializable{
-
-	private static final long serialVersionUID = 1L;
+public class SignInfo{
 	
 	private String appId;    //小程序ID	
 	private String timeStamp;//时间戳	
@@ -53,9 +49,7 @@ public class SignInfo implements Serializable{
 	public void setSignType(String signType) {
 		this.signType = signType;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+	
 	@Override
 	public String toString() {
 		return "SignInfo [appId=" + appId + ", timeStamp=" + timeStamp + ", nonceStr=" + nonceStr + ", repay_id="
