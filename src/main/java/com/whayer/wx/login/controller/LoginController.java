@@ -110,9 +110,9 @@ public class LoginController extends BaseVerificationController {
 		log.info("LoginController.login()");
 		
 		Box box = loadNewBox(request);
-		if (!X.POST.equalsIgnoreCase(request.getMethod())) {
-			return getResponse(false);
-		}
+//		if (!X.POST.equalsIgnoreCase(request.getMethod())) {
+//			return getResponse(false);
+//		}
 		String userName = box.$p(X.USER_NAME);
 		String passWord = box.$p(X.PASSWORD);
 		// 无需验证 验证码
@@ -145,7 +145,7 @@ public class LoginController extends BaseVerificationController {
 		 */
 
 		//int errorCode = 0;
-		if (userName.isEmpty() || userName.isEmpty()) {
+		if (userName.isEmpty() || passWord.isEmpty()) {
 			log.info("账号密码不能为空");
 			//errorCode = 1;
 			ResponseCondition res = getResponse(false);
@@ -164,7 +164,7 @@ public class LoginController extends BaseVerificationController {
 				return res;
 			} else {
 				//user = userService.findUser(u);
-				if (user.getPassword() != MD5.md5Encode(passWord)) {
+				if (!user.getPassword().equals(passWord)) { //e10adc3949ba59abbe56e057f20f883e
 					log.info("密码错误");
 					//errorCode = 3;
 					ResponseCondition res = getResponse(false);
