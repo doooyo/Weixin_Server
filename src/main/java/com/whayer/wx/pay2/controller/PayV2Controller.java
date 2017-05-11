@@ -203,9 +203,9 @@ public class PayV2Controller extends BaseController{
 		log.debug("sign:" + sign);
 		log.debug("calcSign:" + calcSign);
 		
-		if(!sign.equals(calcSign)){
-			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
-		}else{
+//		if(!sign.equals(calcSign)){
+//			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
+//		}else{
 			String out_trade_no = map.get("out_trade_no");
 			log.debug("out_trade_no:" + out_trade_no);
 			if(isNullOrEmpty(out_trade_no)){
@@ -228,15 +228,15 @@ public class PayV2Controller extends BaseController{
 					orderQuery.setSign(qSign);
 					
 					//TODO 验证签名
-					String result = HttpRequest.sendPost(Constant.URL_ORDER_QUERY, orderQuery);
-					log.debug("query wx order: " + result);
-					Map<String, String> resultMap = XStreamUtil.Xml2Map(result);
-					log.debug("订单查询结果: " + resultMap.toString());
-					String res_out_trade_no = resultMap.get("out_trade_no");
-					if(!res_out_trade_no.equals(out_trade_no)){
-						log.debug("微信没有此订单");
-						response.getWriter().append(getWxReturnMessage(X.FALSE, "微信订单查询失败"));
-					}else{
+//					String result = HttpRequest.sendPost(Constant.URL_ORDER_QUERY, orderQuery);
+//					log.debug("query wx order: " + result);
+//					Map<String, String> resultMap = XStreamUtil.Xml2Map(result);
+//					log.debug("订单查询结果: " + resultMap.toString());
+//					String res_out_trade_no = resultMap.get("out_trade_no");
+//					if(!res_out_trade_no.equals(out_trade_no)){
+//						log.debug("微信没有此订单");
+//						response.getWriter().append(getWxReturnMessage(X.FALSE, "微信订单查询失败"));
+//					}else{
 						int count = orderService.updateOrderStatusById(out_trade_no, 1);
 						if(count > 0){
 							log.debug("更新业务订单成功");
@@ -245,11 +245,11 @@ public class PayV2Controller extends BaseController{
 							log.error("更新业务订单失败");
 							response.getWriter().append(getWxReturnMessage(X.FALSE, "更新业务订单失败"));
 						}
-					}
+					//}
 				}
 			}
 			
-		}
+		//}
 	}
 	
 	private String getWxReturnMessage(boolean state, String message){
