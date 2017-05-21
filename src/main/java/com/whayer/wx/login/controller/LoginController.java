@@ -531,7 +531,7 @@ public class LoginController extends BaseVerificationController {
 		}
 		
 		User user = userService.findUserByName(username);
-		ResponseCondition res = new ResponseCondition();
+		ResponseCondition res = getResponse(X.FALSE);
 		if(isNullOrEmpty(user)){
 			res.setErrorMsg("没有此用户");
 			return res;
