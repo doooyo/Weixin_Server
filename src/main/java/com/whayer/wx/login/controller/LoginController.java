@@ -515,4 +515,38 @@ public class LoginController extends BaseVerificationController {
 		return res;
 	}
 	
+	@RequestMapping(value = "/changePwd", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition changePwd(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		log.info("LoginController.changePwd()");
+	
+		Box box = loadNewBox(request);
+		
+		String username = box.$p("username");
+		String oldPwd = box.$p("oldPassword");
+		String newPwd = box.$p("password");
+		
+		if(isNullOrEmpty(username) || isNullOrEmpty(oldPwd) || isNullOrEmpty(newPwd)){
+			return getResponse(X.FALSE);
+		}
+		
+		User user = userService.findUserByName(username);
+		ResponseCondition res = new ResponseCondition();
+		if(isNullOrEmpty(user)){
+			res.setErrorMsg("没有此用户");
+			return res;
+		}
+		if(!user.getPassword().equals(MD5.md5Encode(oldPwd.trim()))){
+			res.setErrorMsg("旧密码错误");
+			return res;
+		}
+		
+		user.setPassword(MD5.md5Encode(newPwd.trim()));
+		int result = userService.updateUserById(user);
+		
+		if(result > 0){
+			return getResponse(X.TRUE);
+		}else return getResponse(X.FALSE);
+	}
+	
 }
