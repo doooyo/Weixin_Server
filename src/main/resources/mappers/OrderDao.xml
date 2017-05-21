@@ -136,7 +136,7 @@
 		</where> -->    
 		<trim prefix="WHERE" prefixOverrides="AND|OR">  
 		    <if test="uid != null and uid !='' ">  
-		        o.user_id =#{uid}   
+		        o.user_id =#{uid}  ORDER BY o.create_time DESC 
 		    </if>  
 		</trim>	
 	</select>
@@ -449,21 +449,21 @@
 		<where>  
 	        <choose>  
 	            <when test="type == '-1'.toString()">  
-	                 o.user_id=#{userId} 
+	                 o.user_id=#{userId} ORDER BY o.create_time DESC
 	            </when >  
 	            <when test="type == '0'.toString()">  
-	                  o.user_id=#{userId} AND o.state=0 AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	                  o.user_id=#{userId} AND o.state=0 AND o.create_time BETWEEN #{beginTime} AND #{endTime} ORDER BY o.create_time DESC
 	            </when >  
 	            <when test="type == '1'.toString()">  
 	                  o.user_id=#{userId} AND o.state=1 AND o.id NOT IN (SELECT sod.order_id FROM sk_order_detectionbox sod)
-	                  AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	                  AND o.create_time BETWEEN #{beginTime} AND #{endTime} ORDER BY o.create_time DESC
 	            </when >  
 	            <when test="type == '2'.toString()">  
 	                  o.user_id=#{userId} AND o.state=1 AND o.id IN (SELECT order_id FROM sk_order_detectionbox)
-	                  AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	                  AND o.create_time BETWEEN #{beginTime} AND #{endTime} ORDER BY o.create_time DESC
 	            </when >
 	            <when test="type == '3'.toString()">  
-	                  o.user_id=#{userId} AND o.state=2 AND o.create_time BETWEEN #{beginTime} AND #{endTime}
+	                  o.user_id=#{userId} AND o.state=2 AND o.create_time BETWEEN #{beginTime} AND #{endTime} ORDER BY o.create_time DESC
 	            </when >
 	            <otherwise>  
 	            </otherwise>  
