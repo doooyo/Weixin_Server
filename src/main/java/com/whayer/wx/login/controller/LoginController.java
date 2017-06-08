@@ -105,6 +105,110 @@ public class LoginController extends BaseVerificationController {
 		res.setList(list);
 		return res;
 	}
+	
+	@RequestMapping(value = "/weixin/login", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition weixinLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		log.info("LoginController.weixinLogin()");
+		
+		Box box = loadNewBox(request);
+		String userName = box.$p(X.USER_NAME);
+		String passWord = box.$p(X.PASSWORD);
+		// 无需验证 验证码
+		userName = (userName == null || userName.isEmpty()) ? "" : userName.trim();
+		passWord = (passWord == null || passWord.isEmpty()) ? "" : MD5.md5Encode(passWord.trim());
+		
+		
+		/**
+		 * 123456 : 49ba59abbe56e057                 (16 bit)
+		 *        : e10adc3949ba59abbe56e057f20f883e (32 bit)
+		 */
+		
+		/**
+		 * 20-03-17 duyu
+		 * 1.若有验证码: 
+		 *   验证码携带三个cookie {key: X.ENCRYPTED+X.KEY , value: '验证码的值'} 
+		 *                     {key: X.ENCRYPTED+X.TIME, value: '当前时间戳'} 用于验证验证码是否过期
+		 *                     {key: X.ENCRYPTED+"hash", value: MD5.md5Encode(MD5.md5Encode(key.toLowerCase()+X.USER_PASS_PREFIX)+X.USER_PASS_PREFIX+time)}
+		 *                     //验证hash签名,避免暴力注册与登陆
+		 *   预定义错误码 enum:
+		 *                     0:正常;1：用户名账号或密码不能为空;2:没有此用户;3:密码错误;4:验证码过期;5.验证码错误;6:非法登录
+		 * 2.登陆成功:
+		 *   设置三个会话 cookie: {key: X.USERID   ,  value: '用户ID'}
+		 *                     {key: X.USER_TYPE,  value: '用户类型'}
+		 *                     {key: X.SESSION_ID, value: MD5.md5Encode(X.uuid())}
+		 *   设置三个会话 session:{key: X.USER   ,  value: 用户对象SKUser}                //当前用户
+		 *                     {key: X.SESSION_ID,  value: MD5.md5Encode(X.uuid())}   //拦截器登陆验证
+		 *                     //若需支持分布式,需将session移至第三方Redis服务
+		 *                     
+		 */
+
+		//int errorCode = 0;
+		if (userName.isEmpty() || passWord.isEmpty()) {
+			log.info("账号密码不能为空");
+			//errorCode = 1;
+			ResponseCondition res = getResponse(false);
+			res.setErrorMsg("账号密码不能为空");
+			return res;
+		} else {
+			User u = new User();
+			u.setUsername(userName);
+			u.setPassword(passWord);
+			User user = userService.findUserByName(userName);
+			if (null == user) {
+				log.info("没有此用户");
+				//errorCode = 2;
+				ResponseCondition res = getResponse(false);
+				res.setErrorMsg("没有此用户");
+				return res;
+			} else {
+				//user = userService.findUser(u);
+				if (!user.getPassword().equals(passWord)) { //e10adc3949ba59abbe56e057f20f883e
+					log.info("密码错误");
+					//errorCode = 3;
+					ResponseCondition res = getResponse(false);
+					res.setErrorMsg("密码错误");
+					return res;
+				} else {
+					
+					if(!user.getIsAudit()){
+						ResponseCondition res = getResponse(false);
+						res.setErrorMsg("账户正在审核中");
+						return res;
+					}
+					
+					// TODO update login time /IP /last_session
+					HtmlParser.GetClientIp(request);
+		            String sessionid = MD5.md5Encode(X.uuid());
+
+					Cookie uidc = new Cookie(X.USERID, user.getId().toString());
+					uidc.setMaxAge(60 * 60 * 6);
+					box.getCookie().put(X.USERID, uidc);
+					Cookie userType = new Cookie(X.USER_TYPE, Boolean.toString(user.getIsAgent()));
+					userType.setMaxAge(60 * 60 * 6);
+					box.getCookie().put(X.USER_TYPE, userType);
+					Cookie sessioncookie = new Cookie(X.SESSION_ID, user.getId().toString());
+					sessioncookie.setMaxAge(60 * 60 * 6);
+					box.getCookie().put(X.SESSION_ID, sessioncookie);
+					
+					writeCookies(box, response);
+
+					request.getSession().setAttribute(X.USER, user);
+					request.getSession().setAttribute(X.SESSION_ID, sessionid);
+					//request.getSession().setAttribute(X.USER, user.getId().toString());
+					//request.getSession().setAttribute(X.USER_TYPE, user.getIsAgent().toString());
+					//request.getSession().setAttribute(X.USER_NAME, user.getUsername());
+
+					ResponseCondition res = getResponse(X.TRUE);
+					List<User> list = new ArrayList<>();
+					list.add(user);
+					res.setList(list);
+					
+					return res;
+				}
+			}
+		}
+	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
