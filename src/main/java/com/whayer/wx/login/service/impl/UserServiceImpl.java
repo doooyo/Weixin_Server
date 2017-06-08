@@ -60,9 +60,9 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public PageInfo<User> getUserListByType(Integer type, Pagination pagination) {
+	public PageInfo<User> getUserListByType(Integer isAuditType, String nickName, Pagination pagination) {
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
-		List<User> list = userDao.getUserListByType(type);
+		List<User> list = userDao.getUserListByType(isAuditType, nickName);
 		PageInfo<User> pageInfo = new PageInfo<User>(list, pagination.getNavigationSize());
 		return pageInfo;
 	}
@@ -95,6 +95,11 @@ public class UserServiceImpl implements UserService{
 		if(count > 0) 
 			return X.TRUE;
 		return X.FALSE;
+	}
+
+	@Override
+	public int deleteUserById(String id) {
+		return userDao.deleteUserById(id);
 	}
 
 }

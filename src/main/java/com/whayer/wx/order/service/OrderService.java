@@ -64,6 +64,25 @@ public interface OrderService {
 	public List<Order> getListByType(String type, String userId, Date beginTime, Date endTime);
 	
 	/**
+	 * 
+	 * @param type        -1:所有订单(包括已取消) 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
+	 * @param userId      用户id为空，代表查询所有用户的订单；不为空，查询指定用户订单
+	 * @param beginTime   开始时间
+	 * @param endTime     结束时间
+	 * @param nickname    用户昵称
+	 * @param examineeName 订单体检人名称
+	 * @return
+	 */
+	public PageInfo<Order> getListByTypeV2(
+			String type, 
+			String userId, 
+			Date beginTime, 
+			Date endTime, 
+			String nickname, 
+			String examineeName,
+			Pagination pagination);
+	
+	/**
 	 * 订单绑定检测盒
 	 * @param orderId
 	 * @param detectionboxId

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.whayer.wx.coupon.vo.Coupon;
+import com.whayer.wx.login.vo.User;
 import com.whayer.wx.product.vo.Product;
 import com.whayer.wx.vouchers.vo.Voucher;
 
@@ -34,7 +35,7 @@ public class Order implements Serializable{
 	private List<Voucher> vouchers = new ArrayList<>();  //订单的代金劵列表
 	private Coupon coupon;           //订单的优惠卷(限一个)
 	private Examinee examinee;       //订单的体检人
-	
+	private User user;               //订单所属用户
 	
 	public String getId() {
 		return id;
@@ -123,12 +124,17 @@ public class Order implements Serializable{
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", userId=" + userId + ", productIdList=" + productIdList + ", couponId=" + couponId
 				+ ", vouchersId=" + vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state="
 				+ state + ", isInvoice=" + isInvoice + ", createTime=" + createTime + ", products=" + products
-				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + "]";
+				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + ", user=" + user + "]";
 	}
-	
 }

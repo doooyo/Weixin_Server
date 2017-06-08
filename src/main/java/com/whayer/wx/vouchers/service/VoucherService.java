@@ -26,6 +26,13 @@ public interface VoucherService {
 	public Integer saveVoucher(Voucher voucher);
 	
 	/**
+	 * 更新代金劵
+	 * @param voucher
+	 * @return
+	 */
+	public Integer updateVoucher(Voucher voucher);
+	
+	/**
 	 * 通过ID删除代金劵
 	 * @param id
 	 * @return

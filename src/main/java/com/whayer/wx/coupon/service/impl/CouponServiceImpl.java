@@ -120,4 +120,10 @@ public class CouponServiceImpl implements CouponService{
 		
 	}
 
+	@Override
+	public Integer updateCoupon(Coupon coupon) {
+		
+		return couponDao.updateCoupon(coupon);
+	}
+
 }

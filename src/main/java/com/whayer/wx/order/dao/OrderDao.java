@@ -87,6 +87,24 @@ public interface OrderDao extends DAO{
 			@Param("endTime") Date endTime);
 	
 	/**
+	 * 订单条件查询(支持模糊查询，支持所有用户订单查询)
+	 * @param type     (must)
+	 * @param userId
+	 * @param beginTime
+	 * @param endTime
+	 * @param nickname
+	 * @param examineeName
+	 * @return
+	 */
+	public List<Order> getListByTypeV2(
+			@Param("type") String type, 
+			@Param("userId") String userId, 
+			@Param("beginTime") Date beginTime, 
+			@Param("endTime") Date endTime,
+			@Param("nickname") String nickname,
+			@Param("examineeName") String examineeName);
+	
+	/**
 	 * 订单绑定检测盒
 	 * @param orderId
 	 * @param detectionboxId

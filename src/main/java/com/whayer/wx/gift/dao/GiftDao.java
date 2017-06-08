@@ -27,4 +27,6 @@ public interface GiftDao extends DAO{
 	public int updateGiftRelease(@Param("id") String id, @Param("isMailed") int isMailed);
 	
 	public GiftRelease getGiftReleaseById(@Param("orderId") String orderId);
+	
+	public List<GiftRelease> getGiftReleaseList(@Param("isMailed") Integer isMailed, @Param("name") String name);
 }

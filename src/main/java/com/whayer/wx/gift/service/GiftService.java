@@ -36,4 +36,13 @@ public interface GiftService {
 	 * @return
 	 */
 	public boolean validateGiftReleaseExist(String orderId);
+	
+	/**
+	 * 
+	 * @param isMailed  是否邮寄(null:全部  0:未邮寄  1:已邮寄)
+	 * @param name    邮寄人(模糊查询)
+	 * @param pagination
+	 * @return
+	 */
+	public PageInfo<GiftRelease> getGiftReleaseList(Integer isMailed, String name, Pagination pagination);
 }

@@ -1,9 +1,12 @@
 package com.whayer.wx.gift.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,10 +18,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.X;
+import com.whayer.wx.common.io.FileUtil;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
@@ -101,7 +107,9 @@ public class GiftController extends BaseController{
 	
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition update(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ResponseCondition update(
+			@RequestParam(value = "file", required = false) MultipartFile file,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("GiftController.update()");
 		
 		Box box = loadNewBox(request);
@@ -109,7 +117,7 @@ public class GiftController extends BaseController{
 		String name = box.$p("name");
 		String detail = box.$p("detail");
 		String deadline = box.$p("deadline");
-		String imgSrc = box.$p("imgSrc");
+		//String imgSrc = box.$p("imgSrc");
 		
 		if(isNullOrEmpty(id)){
 			return getResponse(X.FALSE);
@@ -123,12 +131,55 @@ public class GiftController extends BaseController{
 			return res;
 		}
 		
-		Gift gift = new Gift();
+		
+		Gift gift = giftService.findById(id);
+		String oldImg = gift.getImgSrc();
+		
 		gift.setId(id);
 		gift.setName(name);
 		gift.setDetail(detail);
 		gift.setDeadline(deadlineDate);
-		gift.setImgSrc(imgSrc);
+		//gift.setImgSrc(imgSrc);
+		
+		if(!isNullOrEmpty(file)){
+			
+			String originFileName = file.getOriginalFilename();
+			String extension = FileUtil.getExtension(originFileName);
+			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+			Pattern pattern = Pattern.compile(X.REGEX);
+			Matcher matcher = pattern.matcher(originFileName);
+			if (matcher.find()) {
+				originFileName = matcher.replaceAll("_").trim();
+			}
+			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+			
+			ResponseCondition res = getResponse(X.FALSE);
+			if (file.getSize() == 0 || file.isEmpty()) {
+				log.error("文件不能为空");
+				res.setErrorMsg("文件不能为空");
+				return res;
+			}
+			// check if too large
+			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+			if (file.getSize() > maxSize) {
+				log.error("文件太大");
+				res.setErrorMsg("文件太大");
+				return res;
+			}
+			
+			String uploadPath = X.getConfig("file.upload.dir");
+			uploadPath += "/gift";
+			X.makeDir(uploadPath);
+			File targetFile = new File(uploadPath, originFileName);
+		    file.transferTo(targetFile);
+		    
+		    //删除旧图
+		    File oldFile = new File(uploadPath, oldImg);
+		    oldFile.delete();
+		    
+		    //设置新图
+		    gift.setImgSrc(originFileName);
+		}
 		
 		int count = giftService.update(gift);
 		
@@ -144,7 +195,9 @@ public class GiftController extends BaseController{
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition save(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ResponseCondition save(
+			@RequestParam(value = "file", required = false) MultipartFile file,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("GiftController.save()");
 		
 		Box box = loadNewBox(request);
@@ -152,7 +205,7 @@ public class GiftController extends BaseController{
 		String name = box.$p("name");
 		String detail = box.$p("detail");
 		String deadline = box.$p("deadline");
-		String imgSrc = box.$p("imgSrc");
+		//String imgSrc = box.$p("imgSrc");
 		
 		if(isNullOrEmpty(name) || isNullOrEmpty(deadline)){
 			return getResponse(X.FALSE);
@@ -175,8 +228,43 @@ public class GiftController extends BaseController{
 		gift.setName(name.trim());
 		gift.setDetail(detail.trim());
 		gift.setDeadline(deadlineDate);
-		gift.setImgSrc(imgSrc);
+		//gift.setImgSrc(imgSrc);
 		gift.setCreateTime(new Date());
+		
+		if(!isNullOrEmpty(file)){
+			String originFileName = file.getOriginalFilename();
+			String extension = FileUtil.getExtension(originFileName);
+			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+			Pattern pattern = Pattern.compile(X.REGEX);
+			Matcher matcher = pattern.matcher(originFileName);
+			if (matcher.find()) {
+				originFileName = matcher.replaceAll("_").trim();
+			}
+			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+			
+			ResponseCondition res = getResponse(X.FALSE);
+			if (file.getSize() == 0 || file.isEmpty()) {
+				log.error("文件不能为空");
+				res.setErrorMsg("文件不能为空");
+				return res;
+			}
+			// check if too large
+			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+			if (file.getSize() > maxSize) {
+				log.error("文件太大");
+				res.setErrorMsg("文件太大");
+				return res;
+			}
+			
+			String uploadPath = X.getConfig("file.upload.dir");
+			uploadPath += "/gift";
+			X.makeDir(uploadPath);
+			File targetFile = new File(uploadPath, originFileName);
+		    file.transferTo(targetFile);
+		    
+		    //设置礼品图片路径
+		    gift.setImgSrc(originFileName);
+		}
 		
 		int count = giftService.save(gift);
 		if(count > 0){
@@ -283,5 +371,26 @@ public class GiftController extends BaseController{
 			log.error("更新礼品发放记录失败");
 			return res;
 		}
+	}
+	
+	@RequestMapping(value = "/getGiftReleaseList", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getGiftReleaseList(HttpServletRequest request, HttpServletResponse response){
+		
+		log.info("GiftController.getGiftReleaseList()");
+		
+		Box box = loadNewBox(request);
+		
+		//isMail: null:全部  0:未邮寄  1:已邮寄
+		Integer isMail = null;
+		String isMailed = box.$p("isMailed");
+		String name = box.$p("name");
+		if(!isNullOrEmpty(isMailed)){
+			isMail = X.string2int(isMailed);
+		} 
+		
+		PageInfo<GiftRelease> pi = giftService.getGiftReleaseList(isMail, name, box.getPagination());
+		
+		return pagerResponse(pi);
 	}
 }

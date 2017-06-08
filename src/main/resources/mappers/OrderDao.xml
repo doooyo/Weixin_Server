@@ -18,6 +18,36 @@
 		create_time
 	</sql>
 	
+	<resultMap type="Order" id="allOrderMapV2">
+		<result property="id" column="o_id" /> <!-- 若关联对象有重名,则必须要重命名 -->
+	    <result property="productIdList" column="o_product_id_list" />
+	    <result property="userId" column="o_user_id" />
+	    <result property="couponId" column="o_coupon_id" />
+	    <result property="vouchersId" column="o_vouchers_id" />
+	    <result property="examineeId" column="o_examinee_id" />
+	    <result property="amount" column="o_amount" />
+	    <result property="state" column="o_state" />
+	    <result property="isInvoice" column="o_is_invoice" />
+	    <result property="createTime" column="o_create_time" />
+	    
+	    <result property="user.id" column="u_id" />
+	    <result property="user.pId" column="u_p_id" />
+	    <result property="user.username" column="u_username" />
+	    <result property="user.mobile" column="u_mobile" />
+	    <result property="user.nickName" column="u_nick_name" />
+	    
+	    
+	    <result property="examinee.id" column="e_id" />
+	    <result property="examinee.name" column="e_name" />
+	    <result property="examinee.age" column="e_age" />
+	    <result property="examinee.address" column="e_address" />
+	    <result property="examinee.gender" column="e_gender" />
+	    <result property="examinee.mobile" column="e_mobile" />
+	    <result property="examinee.identityId" column="e_identity_id" />
+	    <result property="examinee.birthday" column="e_birthday" />
+	    
+	</resultMap>
+	
 	<resultMap type="Order" id="allOrderMap">
 		<result property="id" column="o_id" /> <!-- 若关联对象有重名,则必须要重命名 -->
 	    <result property="productIdList" column="o_product_id_list" />
@@ -29,6 +59,12 @@
 	    <result property="state" column="o_state" />
 	    <result property="isInvoice" column="o_is_invoice" />
 	    <result property="createTime" column="o_create_time" />
+	    
+	    <result property="user.id" column="u_id" />
+	    <result property="user.pId" column="u_p_id" />
+	    <result property="user.username" column="u_username" />
+	    <result property="user.mobile" column="u_mobile" />
+	    <result property="user.nickName" column="u_nick_name" />
 	    
 	    <result property="coupon.id" column="c_id" />
 	    <result property="coupon.userId" column="c_user_id" />
@@ -68,6 +104,117 @@
 		    <result property="createUserId" column="v_create_user_id" />
 	    </collection>
 	</resultMap>
+	
+	<select id="getListByTypeV2" resultMap="allOrderMapV2">
+		select 
+		o.id as o_id,
+		o.product_id_list as o_product_id_list,
+		o.user_id as o_user_id,
+		o.coupon_id as o_coupon_id,
+		o.vouchers_id as o_vouchers_id,
+		o.examinee_id as o_examinee_id,
+		o.amount as o_amount,
+		o.state as o_state,
+		o.is_invoice as o_is_invoice,
+		o.create_time as o_create_time,
+		
+		u.id as u_id,
+		u.p_id as u_p_id,
+		u.username as u_username,
+		u.mobile as u_mobile,
+		u.nick_name as u_nick_name,
+		
+		<!-- c.id as c_id,
+		c.user_id as c_user_id,
+		c.amount as c_amount,
+		c.is_effect as c_is_effect,
+		c.is_expired as c_is_expired,
+		c.create_date as c_create_date,
+		c.use_date as c_use_date,
+		c.create_user_id as c_create_user_id, -->
+		
+		e.id as e_id,
+		e.name as e_name,
+		e.age as e_age,
+		e.address as e_address,
+		e.gender as e_gender,
+		e.mobile as e_mobile,
+		e.identity_id as e_identity_id,
+		e.birthday as e_birthday
+		
+		<!-- p.id as p_id,
+		p.name as p_name,
+		p.img_url as p_img_url,
+		p.price as p_price,
+		p.description as p_description,
+		p.create_time as p_create_time,
+		
+		v.id as v_id,
+		v.user_id as v_user_id,
+		v.amount as v_amount,
+		v.is_effect as v_is_effect,
+		v.is_expired as v_is_expired,
+		v.create_date as v_create_date,
+		v.use_date as v_use_date,
+		v.create_user_id as v_create_user_id -->
+		
+		from sk_order o
+		<!-- left join sk_coupon c    
+		     on o.coupon_id = c.id -->
+		left join sk_examinee e
+		     on o.examinee_id = e.id
+		<!-- left join sk_order_voucher ov
+		     on o.id = ov.order_id
+		left join sk_order_product op
+		     on o.id = op.order_id -->
+	    <!-- left join sk_voucher v
+		     on v.id = ov.voucher_id
+	    left join sk_product p
+		     on p.id = op.product_id --> 
+		left join sk_user u
+			 on o.user_id = u.id
+		<!-- <trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <if test="uid != null and uid !='' ">  
+		        o.user_id =#{uid}  ORDER BY o.create_time DESC 
+		    </if>  
+		</trim> -->	
+		<where>  
+			1=1  
+			<if test="userId != null and userId != ''">
+           	 	AND o.user_id=#{userId} 
+           	 </if>
+           	 <if test="beginTime != null and endTime != null">
+           	 	AND o.create_time BETWEEN #{beginTime} AND #{endTime} 
+           	 </if>
+           	 <if test="nickname != null and nickname != ''">
+           	 	AND u.nick_name LIKE CONCAT('%',#{nickname},'%')  
+           	 </if>
+           	 <if test="examineeName != null and examineeName != ''">
+           	 	AND e.name LIKE CONCAT('%',#{examineeName},'%')  
+           	 </if>
+           	 
+	        <choose>  
+	            <when test="type == '-1'.toString()"> 
+	            </when >  
+	            <when test="type == '0'.toString()"> 
+	            	  AND o.state=0 
+	            </when >  
+	            <when test="type == '1'.toString()">  
+	                  AND o.state=1 AND o.id NOT IN (SELECT sod.order_id FROM sk_order_detectionbox sod)       
+	            </when >  
+	            <when test="type == '2'.toString()">  
+	                  AND o.state=1 AND o.id IN (SELECT order_id FROM sk_order_detectionbox) 
+	            </when >
+	            <when test="type == '3'.toString()">  
+	                  AND o.state=2 
+	            </when >
+	            <otherwise>  
+	            </otherwise>  
+	        </choose>  
+	        ORDER BY o.create_time DESC
+	    </where>
+	    
+	</select>
 
 	<select id="getOrderList" resultMap="allOrderMap">
 		select 

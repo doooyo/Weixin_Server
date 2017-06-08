@@ -26,27 +26,74 @@
         <result column="create_date" property="createDate" />
         <result column="use_date" property="useDate" />
         <result column="deadline" property="deadline" />
+        
+        <result property="user.id" column="u_id" />
+	    <result property="user.pId" column="u_p_id" />
+	    <result property="user.username" column="u_username" />
+	    <result property="user.mobile" column="u_mobile" />
+	    <result property="user.nickName" column="u_nick_name" />
     </resultMap>
 
+	<!-- 2017-06-07 du 添加user关联 -->
 	<select id="getCouponListByUid" parameterType="String" resultMap="couponListMap" >
-		<![CDATA[
 	        select 
-	        id,
-			user_id,
-			create_user_id,
-			amount,
-			is_effect, 
-			is_expired,
-			create_date,
-			use_date,
-			deadline
+	        c.id,
+			c.user_id,
+			c.create_user_id,
+			c.amount,
+			c.is_effect, 
+			c.is_expired,
+			c.create_date,
+			c.use_date,
+			c.deadline,
+			
+			u.id as u_id,
+			u.p_id as u_p_id,
+			u.username as u_username,
+			u.mobile as u_mobile,
+			u.nick_name as u_nick_name
 			 
-	        from sk_coupon 
-	        where user_id = #{userId} 
+	        from sk_coupon c
+	        left join sk_user u on c.user_id = u.id
+	       <!--  where c.user_id = #{userId}  -->
+	       <trim prefix="WHERE" prefixOverrides="AND|OR">  
+			    <choose>  
+		            <when test="userId != null and userId !=''">  
+		                c.user_id = #{userId} ORDER BY c.deadline ASC 
+		            </when >
+		            <otherwise> 
+		            	1=1  ORDER BY c.deadline ASC
+		            </otherwise>  
+		        </choose>  
+			</trim>
+    </select>
+    
+    <select id="getCouponById"  parameterType="String" resultMap="couponListMap">
+   		<![CDATA[
+	        select 
+	        c.id,
+			c.user_id,
+			c.create_user_id,
+			c.amount,
+			c.is_effect, 
+			c.is_expired,
+			c.create_date,
+			c.use_date,
+			c.deadline,
+			
+			u.id as u_id,
+			u.p_id as u_p_id,
+			u.username as u_username,
+			u.mobile as u_mobile,
+			u.nick_name as u_nick_name
+			 
+	        from sk_coupon c
+	        left join sk_user u on c.user_id = u.id
+	        where c.id = #{id} 
         ]]>
     </select>
     
-    <select id="getCouponById"  parameterType="String" resultType="Coupon">
+    <select id="getCouponByIdV1"  parameterType="String" resultType="Coupon">
    		select
 		<include refid="couponFields" />
 		from sk_coupon
@@ -128,4 +175,30 @@
     	UPDATE sk_coupon SET is_expired = 1
     	WHERE id = #{id}
     </update>
+    
+    <!-- 更新优惠卷 -->
+    <update id="updateCoupon" parameterType="Coupon">
+    	UPDATE sk_coupon
+		    <trim prefix="SET" suffixOverrides=",">
+			    <if test="userId != null and userId != ''">
+			      user_id = #{userId},
+			    </if>
+			    <if test="amount != null">
+			      amount = #{amount},
+			    </if>
+			    <if test="deadline != null">
+			      deadline = #{deadline},
+			    </if>
+		    </trim>
+			<where>
+		      id=#{id}
+		    </where>
+    </update>
+    
+    <!-- 删除优惠卷 -->
+    <delete id="deleteCoupontById" parameterType="String">
+    	<![CDATA[
+   			DELETE FROM sk_coupon WHERE id=#{id}
+   		]]>
+    </delete>
 </mapper>

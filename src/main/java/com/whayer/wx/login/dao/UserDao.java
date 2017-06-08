@@ -32,7 +32,9 @@ public interface UserDao extends DAO{
 	
 	public Integer saveUser(User user);
 	
-	public List<User> getUserListByType(@Param("type") Integer type);
+	public List<User> getUserListByType(
+			@Param("isAuditType") Integer isAuditType, 
+			@Param("nickName") String nickName);
 	
 	/**
 	 * 批量审核账号
@@ -61,4 +63,11 @@ public interface UserDao extends DAO{
 	 * @return
 	 */
 	public int validatePid(@Param("pid") String pid);
+	
+	/**
+	 * 删除代理商
+	 * @param id
+	 * @return
+	 */
+	public int deleteUserById(@Param("id") String id);
 }

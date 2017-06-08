@@ -67,4 +67,13 @@ public class CompanyServiceImpl implements CompanyService{
 		int saveRole = roleDao.save(role);
 		return saveCompany + saveRole;
 	}
+
+	@Override
+	public int updateCompanyName(String id, String name) {
+		Company company = new Company();
+		company.setId(id);
+		company.setName(name);
+		int result = companyDao.update(company);
+		return result;
+	}
 }

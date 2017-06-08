@@ -89,6 +89,8 @@ public class LoginController extends BaseVerificationController {
 			return getResponse(X.FALSE);
 		}
 		
+		code = MD5.md5Encode(code);
+		
 		Company company = companyService.findByCode(code);
 		
 		if(null == company){
@@ -116,10 +118,29 @@ public class LoginController extends BaseVerificationController {
 		String userName = box.$p(X.USER_NAME);
 		String passWord = box.$p(X.PASSWORD);
 		// 无需验证 验证码
-		//String cookie = box.$c(X.ENCRYPTED + X.KEY).getValue();
-		// String verifyCode = box.$p("verifycode");
+		String cookie = box.$c(X.ENCRYPTED + X.KEY).getValue();
+		String verifyCode = box.$p("verifyCode");
+		String loginType = box.$p("loginType");
 		userName = (userName == null || userName.isEmpty()) ? "" : userName.trim();
 		passWord = (passWord == null || passWord.isEmpty()) ? "" : MD5.md5Encode(passWord.trim());
+		
+		
+		if(!isNullOrEmpty(loginType) && loginType.equals("1")){
+			//PC登陆
+			ResponseCondition res = getResponse(X.FALSE);
+			if(isNullOrEmpty(verifyCode) || isNullOrEmpty(cookie)){
+				res.setErrorMsg("请填写验证码");
+				return res;
+			}
+			
+			if(!verifyCode.equalsIgnoreCase(cookie)){
+				res.setErrorMsg("验证码错误");
+				return res;
+			}
+		}else{
+			//小程序登陆
+		}
+		
 		/**
 		 * 123456 : 49ba59abbe56e057                 (16 bit)
 		 *        : e10adc3949ba59abbe56e057f20f883e (32 bit)
@@ -261,6 +282,7 @@ public class LoginController extends BaseVerificationController {
 		//String userType = box.$p("userType"); //集团用户已独立出来
 		String mobile = box.$p("mobile");
 		String pid = box.$p("pid"); //父级代理电话/ID
+		String nickName = box.$p("nickName"); 
 		
 		if(isNullOrEmpty(username) || isNullOrEmpty(password) 
 				|| isNullOrEmpty(mobile) || isNullOrEmpty(file)){
@@ -274,6 +296,7 @@ public class LoginController extends BaseVerificationController {
 		user.setMobile(mobile);
 		user.setUserType(0); //0:代理用户 1:集团用户
 		user.setpId(pid);
+		user.setNickName(nickName);
 		
 		User u = userService.findUser(user);
 		if(isNullOrEmpty(u)){
@@ -282,40 +305,50 @@ public class LoginController extends BaseVerificationController {
 //			  <input type="file" name="file" />  
 //			  <input type="submit" value="上传" />  
 //			</form> 
-			String originFileName = file.getOriginalFilename();
-			String extension = FileUtil.getExtension(originFileName);
-			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
-			Pattern pattern = Pattern.compile(X.REGEX);
-			Matcher matcher = pattern.matcher(originFileName);
-			if (matcher.find()) {
-				originFileName = matcher.replaceAll("_").trim();
+			if(!isNullOrEmpty(file)){
+				String originFileName = file.getOriginalFilename();
+				String extension = FileUtil.getExtension(originFileName);
+				originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+				Pattern pattern = Pattern.compile(X.REGEX);
+				Matcher matcher = pattern.matcher(originFileName);
+				if (matcher.find()) {
+					originFileName = matcher.replaceAll("_").trim();
+				}
+				originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+				
+				ResponseCondition res = getResponse(X.FALSE);
+				if (file.getSize() == 0 || file.isEmpty()) {
+					log.error("文件不能为空");
+					res.setErrorMsg("文件不能为空");
+					return res;
+				}
+				// check if too large
+				int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+				if (file.getSize() > maxSize) {
+					log.error("文件太大");
+					res.setErrorMsg("文件太大");
+					return res;
+				}
+				
+				String uploadPath = X.getConfig("file.upload.dir");
+				uploadPath += "/header";
+				X.makeDir(uploadPath);
+				File targetFile = new File(uploadPath, originFileName);
+			    file.transferTo(targetFile);
+			    
+				//设置头像路径
+			    user.setHeadImg(originFileName);
 			}
-			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
 			
-			ResponseCondition res = getResponse(X.FALSE);
-			if (file.getSize() == 0 || file.isEmpty()) {
-				log.error("文件不能为空");
-				res.setErrorMsg("文件不能为空");
+		    
+			int result = userService.saveUser(user);
+			if(result > 0)
+				return getResponse(X.TRUE);
+			else{
+				ResponseCondition res = getResponse(X.FALSE);
+				res.setErrorMsg("更新代理商失败!");
 				return res;
 			}
-			// check if too large
-			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
-			if (file.getSize() > maxSize) {
-				log.error("文件太大");
-				res.setErrorMsg("文件太大");
-				return res;
-			}
-			
-			String uploadPath = X.getConfig("file.upload.dir");
-			X.makeDir(uploadPath + "/header");
-			File targetFile = new File(uploadPath, originFileName);
-		    file.transferTo(targetFile);
-		    
-			//设置头像路径
-		    user.setHeadImg(originFileName);
-		    
-			userService.saveUser(user);
-			return getResponse(X.TRUE);
 		}
 		else{
 			ResponseCondition res = getResponse(X.FALSE);
@@ -351,18 +384,19 @@ public class LoginController extends BaseVerificationController {
 		//MD5加密
 		code = MD5.md5Encode(code.trim());
 		
-		Company company = new Company();
-		company.setId(X.uuidPure());
-		company.setName(name.trim());
-		company.setCode(code);
-		
-		Role role = new Role();
-		role.setId(X.uuidPure());
-		role.setName(name.trim());
-		role.setCode(code);
-		
-		Company c = companyService.findByCode(MD5.md5Encode(code.trim()));
+		Company c = companyService.findByCode(code);
 		if(isNullOrEmpty(c)){
+			
+			Company company = new Company();
+			company.setId(X.uuidPure());
+			company.setName(name.trim());
+			company.setCode(code);
+			
+			Role role = new Role();
+			role.setId(X.uuidPure());
+			role.setName(name.trim());
+			role.setCode(code);
+			
 			//注册集团用户时,需要添加此集团角色
 			companyService.save(company, role);
 			return getResponse(X.TRUE);
@@ -410,17 +444,18 @@ public class LoginController extends BaseVerificationController {
 		Box box = loadNewBox(request);
 		
 		/**
-		 * isAgent  0:个人代理 1:区域代理 null:所有代理用户
+		 * isAudit  0:未审核通过, 1:已审核通过
 		 */
-		Integer type = null;
-		String isAgent = box.$p("isAgent");
-		if(isNullOrEmpty(isAgent)){
-			type = null;
-		}else {
-			type = Integer.parseInt(isAgent);
-		}
+		Integer isAuditType = null;
+		String isAudit = box.$p("isAudit");
+		String nickName = box.$p("name");
 		
-		PageInfo<User> pi = userService.getUserListByType(type, box.getPagination());
+		if(!isNullOrEmpty(isAudit)){
+			isAuditType = Integer.parseInt(isAudit);
+		}
+		if(!isNullOrEmpty(nickName)) nickName = nickName.trim();
+		
+		PageInfo<User> pi = userService.getUserListByType(isAuditType, nickName, box.getPagination());
 		
 		return pagerResponse(pi);
 	}
@@ -543,6 +578,178 @@ public class LoginController extends BaseVerificationController {
 		
 		user.setPassword(MD5.md5Encode(newPwd.trim()));
 		int result = userService.updateUserById(user);
+		
+		if(result > 0){
+			return getResponse(X.TRUE);
+		}else return getResponse(X.FALSE);
+	}
+	
+	/**
+	 * 更新代理商用户信息
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException 
+	 * @throws IllegalStateException 
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/updateAgent", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition updateAgent(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IllegalStateException, IOException {
+		log.info("LoginController.updateAgent()");
+		
+		Box box = loadNewBox(request);
+		
+		String mobile = box.$p("mobile");
+		String nickName = box.$p("nickName");
+		String id = box.$p("id");
+		if(isNullOrEmpty(id)){
+			return getResponse(X.FALSE);
+		}
+		
+		User user = new User();
+		user.setId(id);
+		user = userService.findUser(user);
+		//user.setMobile(mobile);
+		//user.setNickName(nickName);
+		ResponseCondition res = getResponse(X.FALSE);
+		if(isNullOrEmpty(user)){
+			res.setErrorMsg("没有此用户!");
+			return res;
+		}
+		
+		if(!isNullOrEmpty(file) && !file.isEmpty() && file.getSize()  > 0){
+			String originFileName = file.getOriginalFilename();
+			String extension = FileUtil.getExtension(originFileName);
+			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+			Pattern pattern = Pattern.compile(X.REGEX);
+			Matcher matcher = pattern.matcher(originFileName);
+			if (matcher.find()) {
+				originFileName = matcher.replaceAll("_").trim();
+			}
+			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+			
+			if (file.getSize() == 0 || file.isEmpty()) {
+				log.error("文件不能为空");
+				res.setErrorMsg("文件不能为空");
+				return res;
+			}
+			// check if too large
+			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+			if (file.getSize() > maxSize) {
+				log.error("文件太大");
+				res.setErrorMsg("文件太大");
+				return res;
+			}
+			
+			String uploadPath = X.getConfig("file.upload.dir");
+			uploadPath += "/header";
+			X.makeDir(uploadPath);
+			File targetFile = new File(uploadPath, originFileName);
+		    file.transferTo(targetFile);
+		    
+		    //删除旧头像
+		    File oldFile = new File(uploadPath, user.getHeadImg());
+		    oldFile.delete();
+		    
+		    //设置头像信息
+		    user.setHeadImg(originFileName);
+		}
+		
+	    user.setMobile(mobile);
+	    user.setNickName(nickName);
+		
+		int result = userService.updateUserById(user);
+		if(result > 0){
+			return getResponse(X.TRUE);
+		}else return getResponse(X.FALSE);
+	}
+	
+	/**
+	 * 更新集团用户信息
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/updateCompany", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition updateCompany(HttpServletRequest request, HttpServletResponse response) {
+		log.info("LoginController.updateCompany()");
+		
+		Box box = loadNewBox(request);
+		String id = box.$p("id");
+		String name = box.$p("name");
+		
+		if(isNullOrEmpty(id) || isNullOrEmpty(name)){
+			return getResponse(X.FALSE);
+		}
+		
+		int result = companyService.updateCompanyName(id, name);
+		
+		if(result > 0){
+			return getResponse(X.TRUE);
+		}else return getResponse(X.FALSE);
+	}
+	
+	/**
+	 * 删除代理商
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition deleteUser(HttpServletRequest request, HttpServletResponse response) {
+		log.info("LoginController.deleteUser()");
+		
+		Box box = loadNewBox(request);
+		String id = box.$p("id");
+		
+		if(isNullOrEmpty(id)){
+			return getResponse(X.FALSE);
+		}
+		
+		User user = new User();
+		user.setId(id);
+		user = userService.findUser(user);
+		String headImg = user.getHeadImg();
+		
+		int result = userService.deleteUserById(id);
+		if(result > 0){
+			if(!isNullOrEmpty(headImg)){
+				String uploadPath = X.getConfig("file.upload.dir");
+				uploadPath += "/header";
+			    
+			    //删除头像
+			    File oldFile = new File(uploadPath, user.getHeadImg());
+			    oldFile.delete();
+			}
+			
+			return getResponse(X.TRUE);
+		}else return getResponse(X.FALSE);
+	}
+	
+	
+	/**
+	 * 删除集团用户
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteCompany", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition deleteCompany(HttpServletRequest request, HttpServletResponse response) {
+		log.info("LoginController.deleteCompany()");
+		
+		Box box = loadNewBox(request);
+		String id = box.$p("id");
+		
+		if(isNullOrEmpty(id)){
+			return getResponse(X.FALSE);
+		}
+		
+		int result = companyService.deleteById(id);
 		
 		if(result > 0){
 			return getResponse(X.TRUE);

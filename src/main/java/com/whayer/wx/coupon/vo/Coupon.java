@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.whayer.wx.login.vo.User;
+
 /**
  * 优惠卷
  * @author duyu
@@ -22,6 +24,8 @@ public class Coupon implements Serializable{
 	private Date useDate;         //使用日期
 	private String createUserId;  //创建人id
 	private Date deadline;        //过期时间
+	
+	private User user;            //优惠卷所属用户
 	
 	public String getId() {
 		return id;
@@ -80,10 +84,17 @@ public class Coupon implements Serializable{
 	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
 	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	@Override
 	public String toString() {
 		return "Coupon [id=" + id + ", userId=" + userId + ", amount=" + amount + ", isEffect=" + isEffect
 				+ ", isExpired=" + isExpired + ", createDate=" + createDate + ", useDate=" + useDate + ", createUserId="
-				+ createUserId + ", deadline=" + deadline + "]";
+				+ createUserId + ", deadline=" + deadline + ", user=" + user + "]";
 	}
+	
 }

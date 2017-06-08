@@ -42,4 +42,9 @@ public class VoucherServiceImpl implements VoucherService{
 		return voucherDao.deleteVoucherById(id);
 	}
 
+	@Override
+	public Integer updateVoucher(Voucher voucher) {
+		return voucherDao.updateVoucher(voucher);
+	}
+
 }

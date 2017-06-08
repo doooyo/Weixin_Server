@@ -155,4 +155,20 @@ public class OrderServiceImpl implements OrderService{
 		return orderDao.updateOrderStatusById(orderId, state);
 	}
 
+	@Override
+	public PageInfo<Order> getListByTypeV2(
+			String type, 
+			String userId, 
+			Date beginTime, 
+			Date endTime, 
+			String nickname,
+			String examineeName, 
+			Pagination pagination) {
+
+		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
+		List<Order> list =  orderDao.getListByTypeV2(type, userId, beginTime, endTime, nickname, examineeName);
+		PageInfo<Order> pageInfo = new PageInfo<Order>(list, pagination.getNavigationSize());
+		return pageInfo;
+	}
+
 }

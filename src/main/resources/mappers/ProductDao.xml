@@ -56,6 +56,27 @@
 		]]>
 	</insert>
 	
+	<update id="updateProduct" parameterType="Product">
+		UPDATE sk_product 
+		    <trim prefix="SET" suffixOverrides=",">
+			    <if test="name != null and name != ''">
+			      name = #{name},
+			    </if>
+			    <if test="price != null">
+			      price = #{price},
+			    </if>
+			    <if test="description != null">
+			      description = #{description},
+			    </if>
+			    <if test="imgUrl != null and imgUrl != ''">
+			      img_url = #{imgUrl},
+			    </if>
+		    </trim>
+			<where>
+		      id=#{id}
+		    </where>
+	</update>
+	
 	<select id="getProductById" parameterType="String" resultType="Product">
 		select
 		<include refid="productFields" />
@@ -120,4 +141,10 @@
             )
         </foreach>
 	</insert>
+	
+	<delete id="deleteAssociation" parameterType="String">
+		<![CDATA[
+			DELETE FROM sk_product_role WHERE product_id=#{id}
+		]]>
+	</delete>
 </mapper>

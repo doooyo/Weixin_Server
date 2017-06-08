@@ -26,31 +26,68 @@
         <result column="create_date" property="createDate" />
         <result column="use_date" property="useDate" />
         <result column="deadline" property="deadline" />
+        
+        <result property="user.id" column="u_id" />
+	    <result property="user.pId" column="u_p_id" />
+	    <result property="user.username" column="u_username" />
+	    <result property="user.mobile" column="u_mobile" />
+	    <result property="user.nickName" column="u_nick_name" />
     </resultMap>
 
 	<select id="getVoucherListByUid" parameterType="String" resultMap="voucherListMap" >
-		<![CDATA[
-	        select 
-	        id,
-			user_id,
-			create_user_id,
-			amount,
-			is_effect,
-			is_expired,
-			create_date,
-			use_date,
-			deadline
-			
-	        from sk_voucher 
-	        where user_id = #{userId} 
-        ]]>
+        select 
+        s.id,
+		s.user_id,
+		s.create_user_id,
+		s.amount,
+		s.is_effect,
+		s.is_expired,
+		s.create_date,
+		s.use_date,
+		s.deadline,
+		
+		u.id as u_id,
+		u.p_id as u_p_id,
+		u.username as u_username,
+		u.mobile as u_mobile,
+		u.nick_name as u_nick_name
+		
+        from sk_voucher s
+        left join sk_user u on s.user_id = u.id
+        <!-- where user_id = #{userId} --> 
+        <trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <choose>  
+	            <when test="userId != null and userId !=''">  
+	                s.user_id = #{userId} ORDER BY s.deadline ASC 
+	            </when >
+	            <otherwise> 
+	            	1=1  ORDER BY s.deadline ASC
+	            </otherwise>  
+	        </choose>  
+		</trim>
     </select>
     
-    <select id="getVoucherById"  parameterType="String" resultType="Voucher">
-   		select
-		<include refid="voucherFields" />
-		from sk_voucher
-		where id=#{id}
+    <select id="getVoucherById"  parameterType="String" resultMap="voucherListMap">
+   		select 
+        s.id,
+		s.user_id,
+		s.create_user_id,
+		s.amount,
+		s.is_effect,
+		s.is_expired,
+		s.create_date,
+		s.use_date,
+		s.deadline,
+		
+		u.id as u_id,
+		u.p_id as u_p_id,
+		u.username as u_username,
+		u.mobile as u_mobile,
+		u.nick_name as u_nick_name
+
+		from sk_voucher s
+		left join sk_user u on s.user_id = u.id
+		where s.id=#{id}
     </select>
     
     <insert id="saveVoucher" parameterType="Voucher">
@@ -128,5 +165,23 @@
     <update id="updateExpired">
     	UPDATE sk_voucher SET is_expired = 1
     	WHERE id = #{id}
+    </update>
+    
+    <update id="updateVoucher" parameterType="Voucher">
+    	UPDATE sk_voucher
+		    <trim prefix="SET" suffixOverrides=",">
+			    <if test="userId != null and userId != ''">
+			      user_id = #{userId},
+			    </if>
+			    <if test="amount != null">
+			      amount = #{amount},
+			    </if>
+			    <if test="deadline != null">
+			      deadline = #{deadline},
+			    </if>
+		    </trim>
+			<where>
+		      id=#{id}
+		    </where>
     </update>
 </mapper>

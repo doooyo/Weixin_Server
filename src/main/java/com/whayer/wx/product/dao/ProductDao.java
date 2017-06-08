@@ -21,8 +21,12 @@ public interface ProductDao  extends DAO{
 	
 	public Integer saveProduct(Product product);
 	
+	public Integer updateProduct(Product product);
+	
 	public Integer deleteProductById(@Param("id") String id);
 	
 	public Integer associate(@Param("role") String role, @Param("ids") String... ids);
+	
+	public Integer deleteAssociation(@Param("id") String id);
 	
 }

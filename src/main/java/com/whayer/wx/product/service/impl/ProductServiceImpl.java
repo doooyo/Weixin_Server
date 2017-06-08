@@ -40,9 +40,15 @@ public class ProductServiceImpl implements ProductService{
 		return productDao.saveProduct(product);
 	}
 
+	/**
+	 * 删除产品
+	 * 需要删除角色-产品中间表数据
+	 */
 	@Override
 	public Integer deleteProductById(String id) {
-		return productDao.deleteProductById(id);
+		int r1 = productDao.deleteAssociation(id);
+		int r2 =  productDao.deleteProductById(id);
+		return r1 + r2;
 	}
 
 	/**
@@ -76,6 +82,20 @@ public class ProductServiceImpl implements ProductService{
 		List<Product> list =  productDao.getProductList2Role(Code);
 		PageInfo<Product> pageInfo = new PageInfo<Product>(list, pagination.getNavigationSize());
 		return pageInfo;
+	}
+
+	/**
+	 * 删除指定产品id与所有角色的关联
+	 */
+	@Override
+	public Integer deleteAssociation(String id) {
+		return productDao.deleteAssociation(id);
+	}
+
+	@Override
+	public Integer updateProduct(Product product) {
+		
+		return productDao.updateProduct(product);
 	}
 
 }

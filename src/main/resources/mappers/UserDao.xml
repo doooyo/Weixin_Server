@@ -82,6 +82,9 @@
 			    <if test="nickName != null and nickName != ''">
 			      nick_name = #{nickName},
 			    </if>
+			    <if test="headImg != null and headImg != ''">
+			      head_img = #{headImg},
+			    </if>
 		    </trim>
 			<where>
 		      id=#{id}
@@ -120,7 +123,7 @@
   		0,
   		#{mobile},
   		#{userType}, <!-- 默认只有代理用户(个代/区代)才会进行注册 -->
-  		null,
+  		#{nickName},
   		#{headImg}
   		)
   	</insert>
@@ -140,15 +143,18 @@
         <result column="head_img" property="headImg" />
     </resultMap>
     
-  	<select id="getUserListByType" parameterType="Integer" resultType="User">
+  	<select id="getUserListByType" resultType="User">
         select 
         <include refid="userFields" /> 
         from sk_user
-        <where>
-        	<if test="type != null">  
-	            is_agent = #{type}  
-	        </if>  
-        </where>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <if test="isAuditType != null">  
+		        AND is_audit = #{isAuditType} 
+		    </if>  
+		    <if test="nickName != null and nickName !='' ">  
+		        AND nick_name LIKE CONCAT('%',#{nickName},'%')  
+		    </if> 
+		</trim>	
   	</select>
   	
   	<!-- 批量审核注册用户 -->
@@ -189,4 +195,11 @@
 		FROM sk_user
 		WHERE id=#{pid} OR mobile=#{pid}
 	</select>
+	
+	<!-- 删除代理商 -->
+	<delete id="deleteUserById" parameterType="String">
+		<![CDATA[
+   			DELETE FROM sk_user WHERE id=#{id}
+   		]]>
+	</delete>
 </mapper>

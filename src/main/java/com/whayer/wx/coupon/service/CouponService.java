@@ -27,6 +27,13 @@ public interface CouponService {
 	public Integer saveCoupon(Coupon coupon);
 	
 	/**
+	 * 更新优惠卷
+	 * @param coupon
+	 * @return
+	 */
+	public Integer updateCoupon(Coupon coupon);
+	
+	/**
 	 * 通过ID删除优惠卷
 	 * @param id
 	 * @return

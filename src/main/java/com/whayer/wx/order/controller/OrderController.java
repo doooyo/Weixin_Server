@@ -198,6 +198,44 @@ public class OrderController extends BaseController{
 		
 	}
 	
+	//http://git.oschina.net/free/Mybatis_PageHelper/issues/158
+	//pageHelper不支持一对多,多对多分页,只能通过手动对主表分页
+	@RequestMapping(value = "/getListByTypeV2", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseCondition getListByTypeV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("OrderController.getListByTypeV2()");
+		Box box = loadNewBox(request);
+		
+		/**
+		 * -1:所有订单(包括已取消) 0:未支付 1:未绑定检测盒 2:未结算 3:已结算
+		 */
+		String type = box.$p("type");
+		String userId = box.$p("userId");
+		String beginTime = box.$p("beginTime");
+		String endTime = box.$p("endTime");
+		String nickname = box.$p("nickname");
+		String examineeName = box.$p("examineeName");
+		
+		if(isNullOrEmpty(type)){
+			return getResponse(X.FALSE);
+		}
+		
+		if(!isNullOrEmpty(nickname)) nickname = nickname.trim();
+		if(!isNullOrEmpty(examineeName)) examineeName = examineeName.trim();
+		
+		Date begin = X.string2date(beginTime + " 00:00:00", X.TIMEA);
+		Date end = X.string2date(endTime + " 23:59:59", X.TIMEA);
+		
+		if(!isNullOrEmpty(begin) && !isNullOrEmpty(end) && begin.compareTo(end) > 0){
+			return getResponse(X.FALSE);
+		}
+		
+		//List<Order> list = orderService.getListByType(type, userId, begin, end);
+		
+		PageInfo<Order> pi = orderService.getListByTypeV2(type, userId, begin, end, nickname, examineeName, box.getPagination());
+		return pagerResponse(pi);
+	}
+	
 	/**
 	 * 订单绑定检测盒
 	 * @param request

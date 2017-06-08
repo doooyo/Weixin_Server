@@ -43,6 +43,13 @@ public interface ProductService {
 	public Integer saveProduct(Product product);
 	
 	/**
+	 * 更新产品
+	 * @param product
+	 * @return
+	 */
+	public Integer updateProduct(Product product);
+	
+	/**
 	 * 通过ID删除产品
 	 * @param id
 	 * @return
@@ -56,5 +63,12 @@ public interface ProductService {
 	 * @return
 	 */
 	public Integer associate(String role, String... ids);
+	
+	/**
+	 * 删除某产品id与所有角色的关联
+	 * @param id
+	 * @return
+	 */
+	public Integer deleteAssociation(String id);
 	
 }

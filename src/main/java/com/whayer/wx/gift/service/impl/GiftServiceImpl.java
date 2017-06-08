@@ -88,4 +88,13 @@ public class GiftServiceImpl implements GiftService{
 		}
 	}
 
+	@Override
+	public PageInfo<GiftRelease> getGiftReleaseList(Integer isMailed, String name, Pagination pagination) {
+		
+		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
+		List<GiftRelease> list = giftDao.getGiftReleaseList(isMailed, name);
+		PageInfo<GiftRelease> pageInfo = new PageInfo<>(list, pagination.getNavigationSize());
+		return pageInfo;
+	}
+
 }

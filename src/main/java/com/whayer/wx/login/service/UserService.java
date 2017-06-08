@@ -8,10 +8,12 @@ public interface UserService {
 	
 	/**
 	 * 根据用户类型查找用户列表
-	 * @param type (0:普通用户 1:区域代理)
+	 * @param isAuditType 是否通过审核
+	 * @param nickName    昵称模糊查询
+	 * @param pagination
 	 * @return
 	 */
-	public PageInfo<User> getUserListByType(Integer type, Pagination pagination);
+	public PageInfo<User> getUserListByType(Integer isAuditType, String nickName,  Pagination pagination);
 
 	/**
 	 * 根据条件查询用户信息
@@ -89,4 +91,11 @@ public interface UserService {
 	 * @return
 	 */
 	public boolean validatePid(String pid);
+	
+	/**
+	 * 删除代理商
+	 * @param id
+	 * @return
+	 */
+	public int deleteUserById(String id);
 }

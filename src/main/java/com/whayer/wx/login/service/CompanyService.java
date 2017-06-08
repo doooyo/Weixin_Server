@@ -21,5 +21,7 @@ public interface CompanyService {
 	
 	public int update(Company company, Role role);
 	
+	public int updateCompanyName(String id, String name);
+	
 	public int deleteById(String id);
 }

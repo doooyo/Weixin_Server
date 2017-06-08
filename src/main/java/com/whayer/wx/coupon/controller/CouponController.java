@@ -2,6 +2,7 @@ package com.whayer.wx.coupon.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -44,9 +45,12 @@ public class CouponController extends BaseController{
 		log.info("CouponController.getList()");
 		Box box = loadNewBox(request);
 		String userId = box.$p("userId");
-		if(isNullOrEmpty(userId)){
-			return getResponse(false);
-		}
+		
+		//TODO 支持模糊匹配
+		
+//		if(isNullOrEmpty(userId)){
+//			return getResponse(false);
+//		}
 		PageInfo<Coupon> pi = couponService.getCouponListByUid(userId, box.getPagination());
 		
 		return pagerResponse(pi);
@@ -99,10 +103,20 @@ public class CouponController extends BaseController{
 		log.info("CouponController.save()");
 		Box box = loadNewBox(request);
 		
-		String uid = box.$cv(X.USERID);
-		uid = isNullOrEmpty(uid) ? ((User)request.getSession().getAttribute(X.USER)).getId() : uid;
+		ResponseCondition res = getResponse(X.FALSE);
 		
-		String id = X.uuidPure();
+		String uid = box.$cv(X.USERID);
+		if(isNullOrEmpty(uid)){
+			User user = (User)request.getSession().getAttribute(X.USER);
+			if(isNullOrEmpty(user)){
+				res.setErrorMsg("请登陆");
+				return res;
+			}
+			uid = user.getId();
+		}
+		//uid = isNullOrEmpty(uid) ? ((User)request.getSession().getAttribute(X.USER)).getId() : uid;
+		
+		String id = X.uuidPure8Bit();
 		String userId = box.$p("userId");
 		String deadline = box.$p("deadline");
 		String createUserId = uid;
@@ -116,14 +130,13 @@ public class CouponController extends BaseController{
 		coupon.setUserId(userId);
 		coupon.setCreateUserId(createUserId);
 		coupon.setAmount(amount);
-		coupon.setDeadline(X.string2date(deadline, X.TIMEA));
+		coupon.setDeadline(X.string2date(deadline + " 23:59:59", X.TIMEA));
 		
 		int count = couponService.saveCoupon(coupon);
 		
 		if(count > 0){
 			return getResponse(X.TRUE);
 		}else{
-			ResponseCondition res = getResponse(X.FALSE);
 			res.setErrorMsg("保存优惠卷失败");
 			log.error("保存优惠卷失败");
 			return res;
@@ -152,6 +165,40 @@ public class CouponController extends BaseController{
 		ResponseCondition res = couponService.validate(getResponse(true), userId, type, code);
 		
 		return res;
+	}
+	
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition update(HttpServletRequest request, HttpServletResponse response){
+		log.info("CouponController.update()");
+		Box box = loadNewBox(request);
+		
+		String id = box.$p("id");
+		String userId = box.$p("userId");
+		String amount = box.$p("amount");
+		String deadline = box.$p("deadline");
+		if(isNullOrEmpty(id) || isNullOrEmpty(userId) 
+				|| isNullOrEmpty(amount) || isNullOrEmpty(deadline)){
+			return getResponse(X.FALSE);
+		}
+		BigDecimal fee = new BigDecimal(amount);
+		Date deadTime = X.string2date(deadline + " 23:59:59", X.TIMEA);
+		
+		Coupon coupon = new Coupon();
+		coupon.setId(id);
+		coupon.setDeadline(deadTime);
+		coupon.setAmount(fee);
+		coupon.setUserId(userId);
+		
+		int count = couponService.updateCoupon(coupon);
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("更新优惠卷失败");
+			log.error("更新优惠卷失败");
+			return res;
+		}
 	}
 	
 }
