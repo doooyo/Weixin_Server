@@ -25,16 +25,16 @@ public class CompanyServiceImpl implements CompanyService{
 	private RoleDao roleDao;
 	
 	@Override
-	public PageInfo<Company> getCompanyList(Pagination pagination) {
+	public PageInfo<Company> getCompanyList(String name, Pagination pagination) {
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
-		List<Company> list = companyDao.getCompanyList();
+		List<Company> list = companyDao.getCompanyList(name);
 		PageInfo<Company> pageInfo = new PageInfo<Company>(list, pagination.getNavigationSize());
 		return pageInfo;
 	}
 
 	@Override
 	public List<Company> getAllCompanyList() {
-		return companyDao.getCompanyList();
+		return companyDao.getCompanyList(null);
 	}
 
 	@Override
@@ -68,12 +68,15 @@ public class CompanyServiceImpl implements CompanyService{
 		return saveCompany + saveRole;
 	}
 
-	@Override
-	public int updateCompanyName(String id, String name) {
-		Company company = new Company();
-		company.setId(id);
-		company.setName(name);
-		int result = companyDao.update(company);
-		return result;
-	}
+//	@Override
+//	public int updateCompanyName(String id, String name) {
+//		Company company = new Company();
+//		company.setId(id);
+//		company.setName(name);
+//		
+//		//Role role = new Role();
+//		
+//		int result = companyDao.update(company);
+//		return result;
+//	}
 }

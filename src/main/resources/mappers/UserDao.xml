@@ -18,7 +18,13 @@
 		mobile,
 		user_type,
 		nick_name,
-		head_img
+		head_img,
+		
+		email,
+		id_card_no,
+		bank,
+		bank_card_no,
+		id_card_img
 	</sql>
 
 	<!-- 根据用户名查询用户 -->
@@ -43,6 +49,19 @@
 			</if>
 			<if test="mobile != null and mobile != ''">
 				or mobile = #{mobile}
+			</if>
+		</trim>
+		limit 1
+	</select>
+	
+	<!-- 根据用户名/密码查询用户 -->
+	<select id="findUserByPid" parameterType="String" resultType="User">
+		select
+		<include refid="userFields" />
+		from sk_user
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+    		<if test="pid != null and pid != ''">
+			    id = #{pid} OR username = #{pid} OR mobile = #{pid}
 			</if>
 		</trim>
 		limit 1
@@ -85,6 +104,21 @@
 			    <if test="headImg != null and headImg != ''">
 			      head_img = #{headImg},
 			    </if>
+			    <if test="email != null and email != ''">
+			      email = #{email},
+			    </if>
+			    <if test="idCardNo != null and idCardNo != ''">
+			      id_card_no = #{idCardNo},
+			    </if>
+			    <if test="bank != null and bank != ''">
+			      bank = #{bank},
+			    </if>
+			    <if test="bankCardNo != null and bankCardNo != ''">
+			      bank_card_no = #{bankCardNo},
+			    </if>
+			    <if test="idCardImg != null and idCardImg != ''">
+			      id_card_img = #{idCardImg},
+			    </if>
 		    </trim>
 			<where>
 		      id=#{id}
@@ -124,7 +158,12 @@
   		#{mobile},
   		#{userType}, <!-- 默认只有代理用户(个代/区代)才会进行注册 -->
   		#{nickName},
-  		#{headImg}
+  		#{headImg},
+  		#{email},
+  		#{idCardNo},
+  		#{bank},
+  		#{bankCardNo},
+  		#{idCardImg}
   		)
   	</insert>
   	
@@ -141,6 +180,12 @@
         <result column="user_type" property="userType" />
         <result column="nick_name" property="nickName" />
         <result column="head_img" property="headImg" />
+        
+        <result column="email" property="email" />
+        <result column="id_card_no" property="idCardNo" />
+        <result column="bank" property="bank" />
+        <result column="bank_card_no" property="bankCardNo" />
+        <result column="id_card_img" property="idCardImg" />
     </resultMap>
     
   	<select id="getUserListByType" resultType="User">
@@ -193,7 +238,7 @@
 	<select id="validatePid" parameterType="String" resultType="Integer">
 		SELECT COUNT(*)
 		FROM sk_user
-		WHERE id=#{pid} OR mobile=#{pid}
+		WHERE id=#{pid} OR username=#{pid} OR mobile=#{pid}
 	</select>
 	
 	<!-- 删除代理商 -->

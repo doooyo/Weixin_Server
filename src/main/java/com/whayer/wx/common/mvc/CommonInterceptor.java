@@ -46,8 +46,14 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		// 验证登录信息,分别从cookie和session取出并进行匹配
 		Box box = new Box();
 		loadCookie(request, box);
-		String sessioncookieid = aes.decrypt(box.$cv(X.SESSION_ID));
-		String userid = aes.decrypt(box.$cv(X.USERID));
+		String sessioncookieid = box.$cv(X.ENCRYPTED + X.SESSION_ID);
+		String userid = box.$cv(X.ENCRYPTED + X.USERID);
+		if(null == sessioncookieid || null == userid){
+			return false;
+		}
+		
+		sessioncookieid = aes.decrypt(sessioncookieid);//aes.decrypt(box.$c(X.ENCRYPTED + X.SESSION_ID).getValue()); 
+		userid = aes.decrypt(userid); //aes.decrypt(box.$c(X.ENCRYPTED + X.USERID).getValue()); 
 		String sessionid = (String)request.getSession().getAttribute(X.SESSION_ID);
 		User user = (User)request.getSession().getAttribute(X.USER);
 
@@ -73,6 +79,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 
 	/**
 	 * 将request中的cookie全部放入box中
+	 * 注意拦截器中的cookie与BaseController中的loadCookie不同,没有将携带'+'的cookie进行aes解密
 	 * 
 	 * @param request
 	 * @param bean

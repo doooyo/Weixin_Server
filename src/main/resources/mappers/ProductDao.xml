@@ -33,6 +33,13 @@
         select 
         <include refid="productFields" /> 
         from sk_product
+        <where>  
+			1=1  
+			<if test="name != null and name != ''">
+           	 	AND name LIKE CONCAT('%',#{name},'%') 
+           	</if>
+           	ORDER BY create_time DESC
+        </where>
     </select>
     
     <insert id="saveProduct" parameterType="Product">
@@ -141,6 +148,15 @@
             )
         </foreach>
 	</insert>
+	
+	<!-- 批量删除产品关联 -->
+	<delete id="deleteAssociates">
+		DELETE from sk_product_role where product_id in
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND user_code=#{role}
+	</delete>
 	
 	<delete id="deleteAssociation" parameterType="String">
 		<![CDATA[

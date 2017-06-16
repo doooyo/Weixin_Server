@@ -9,6 +9,10 @@
 		id,
 		name,
 		code,
+		logo,
+		discount,
+		active_begin_time,
+		active_end_time,
 		create_time
 	</sql>
 	
@@ -16,13 +20,24 @@
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="code" property="code" />
+        <result column="logo" property="logo" />
+        <result column="discount" property="discount" />
+        <result column="active_begin_time" property="activeBeginTime" />
+        <result column="active_end_time" property="activeEndTime" />
         <result column="create_time" property="createTime" />
     </resultMap>
 	
 	<select id="getCompanyList" resultMap="companyListMap">
 		select 
         <include refid="companyFields" /> 
-        from sk_company
+        from sk_company 
+        <where>  
+			1=1  
+			<if test="name != null and name != ''">
+           	 	AND name LIKE CONCAT('%',#{name},'%') 
+           	</if>
+           	ORDER BY create_time DESC
+        </where>
 	</select>
 	
 	<select id="findById" parameterType="String" resultType="Company">
@@ -47,6 +62,10 @@
   		#{id},
   		#{name},
   		#{code},
+  		#{logo},
+  		#{discount},
+  		#{activeBeginTime},
+  		#{activeEndTime},
   		now()
   		)
 	</insert>
@@ -60,6 +79,18 @@
 		    </if>
 		    <if test="code != null and code != ''">
 		      code = #{code},
+		    </if>
+		    <if test="logo != null and logo != ''">
+		      logo = #{logo},
+		    </if>
+		    <if test="discount != null">
+		      discount = #{discount},
+		    </if>
+		    <if test="activeBeginTime != null">
+		      active_begin_time = #{activeBeginTime},
+		    </if>
+		    <if test="activeEndTime != null">
+		      active_end_time = #{activeEndTime},
 		    </if>
 	    </trim>
 		<where>

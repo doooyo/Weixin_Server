@@ -63,17 +63,17 @@ public class ProductServiceTest extends UnitTestBase{
 		}
 	}
 	
-	@Test
-	public void testAssociate(){
-		ProductService productService = super.getBean("productServiceImpl");
-		String[] ids = {"6F8F18D75BB84833BBC54DE379CC5F55",
-					   "751DE588D623498697C95AD4A43260AF",
-					   "7B4E90DBB8E2496E80C82E9A6BFD9D75",
-					   "833D9FEF7E544DCA972A6E5A13366252"};
-		String role = "pQ8wQqDt";
-		
-		int count = productService.associate(role, ids);
-		System.out.println(count);
-	}
+//	@Test
+//	public void testAssociate(){
+//		ProductService productService = super.getBean("productServiceImpl");
+//		String[] ids = {"6F8F18D75BB84833BBC54DE379CC5F55",
+//					   "751DE588D623498697C95AD4A43260AF",
+//					   "7B4E90DBB8E2496E80C82E9A6BFD9D75",
+//					   "833D9FEF7E544DCA972A6E5A13366252"};
+//		String role = "pQ8wQqDt";
+//		
+//		int count = productService.associate(role, ids);
+//		System.out.println(count);
+//	}
 
 }

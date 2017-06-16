@@ -221,6 +221,14 @@ public final class X implements Constant{
 	      return 0;
 	    }
 	  }
+	  
+	  public static float string2float(String i) {
+		  try {
+		      return Float.parseFloat(i);
+		    } catch (NumberFormatException e) {
+		      return 0;
+		    }
+	  }
 
 	  /**
 	   * String 转 date

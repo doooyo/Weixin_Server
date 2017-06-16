@@ -30,12 +30,13 @@
 	    <result property="isInvoice" column="o_is_invoice" />
 	    <result property="createTime" column="o_create_time" />
 	    
+	    <result property="detectionboxId" column="d_detectionbox_id" />
+	    
 	    <result property="user.id" column="u_id" />
 	    <result property="user.pId" column="u_p_id" />
 	    <result property="user.username" column="u_username" />
 	    <result property="user.mobile" column="u_mobile" />
 	    <result property="user.nickName" column="u_nick_name" />
-	    
 	    
 	    <result property="examinee.id" column="e_id" />
 	    <result property="examinee.name" column="e_name" />
@@ -118,6 +119,8 @@
 		o.is_invoice as o_is_invoice,
 		o.create_time as o_create_time,
 		
+		d.detectionbox_id as d_detectionbox_id,
+		
 		u.id as u_id,
 		u.p_id as u_p_id,
 		u.username as u_username,
@@ -173,6 +176,8 @@
 		     on p.id = op.product_id --> 
 		left join sk_user u
 			 on o.user_id = u.id
+		left join sk_order_detectionbox d
+		     on o.id = d.order_id
 		<!-- <trim prefix="WHERE" prefixOverrides="AND|OR">  
 		    <if test="uid != null and uid !='' ">  
 		        o.user_id =#{uid}  ORDER BY o.create_time DESC 

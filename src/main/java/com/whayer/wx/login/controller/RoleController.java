@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.PageInfo;
@@ -41,7 +42,7 @@ public class RoleController extends BaseController{
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping("/getList")
+	@RequestMapping(value = "/getList", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition getList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("RoleController.getList()");
@@ -60,7 +61,7 @@ public class RoleController extends BaseController{
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping("/getAllList")
+	@RequestMapping(value = "/getAllList", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition getAllList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("RoleController.getAllList()");

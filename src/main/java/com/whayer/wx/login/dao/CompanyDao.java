@@ -11,7 +11,7 @@ import com.whayer.wx.login.vo.Company;
 @Repository
 public interface CompanyDao extends DAO{
 
-	public List<Company> getCompanyList();
+	public List<Company> getCompanyList(@Param("name") String name);
 	
 	public Company findById(@Param("id") String id);
 	

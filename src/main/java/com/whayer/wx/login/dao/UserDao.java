@@ -36,6 +36,8 @@ public interface UserDao extends DAO{
 			@Param("isAuditType") Integer isAuditType, 
 			@Param("nickName") String nickName);
 	
+	public User findUserByPid(@Param("pid") String pid);
+	
 	/**
 	 * 批量审核账号
 	 * @param ids

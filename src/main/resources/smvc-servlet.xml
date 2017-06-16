@@ -124,23 +124,23 @@
 		</property>
 	</bean>
 	
-	<!--  
-	<mvc:interceptors>
+	
+	<!-- <mvc:interceptors>
 		<bean class="com.whayer.wx.common.mvc.CommonInterceptor">
 			<property name="aes" ref="aes"/>
 			<property name="excludeUrlPatterns">
 				<array>
 					<value>/index</value>
 					<value>/user/login/**</value>
-					<value>/user/logout </value>
+					<value>/user/logout</value>
 					<value>/upload </value>
 					<value>/facade/** </value>
 					<value>/static/**</value>
 				</array>
 			</property>
 		</bean>
-	</mvc:interceptors>
-	-->
+	</mvc:interceptors> -->
+	
 	
 	<bean id="mappingJacksonHttpMessageConverter"
 		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">

@@ -30,6 +30,13 @@ public interface UserService {
 	 * @return
 	 */
 	public User findUserByName(String userName);
+	
+	/**
+	 * 通过pid查找用户
+	 * @param pid
+	 * @return
+	 */
+	public User findUserByPid(String pid);
 
 	/**
 	 * 修改用户

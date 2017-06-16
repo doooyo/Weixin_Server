@@ -102,4 +102,9 @@ public class UserServiceImpl implements UserService{
 		return userDao.deleteUserById(id);
 	}
 
+	@Override
+	public User findUserByPid(String pid) {
+		return userDao.findUserByPid(pid);
+	}
+
 }

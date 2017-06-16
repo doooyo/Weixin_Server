@@ -11,7 +11,7 @@ import com.whayer.wx.product.vo.Product;
 @Repository
 public interface ProductDao  extends DAO{
 	
-	public List<Product> getProductList();
+	public List<Product> getProductList(@Param("name") String name);
 	
 	public List<Product> getProductListByUserType(@Param("code") String code);
 	
@@ -28,5 +28,7 @@ public interface ProductDao  extends DAO{
 	public Integer associate(@Param("role") String role, @Param("ids") String... ids);
 	
 	public Integer deleteAssociation(@Param("id") String id);
+	
+	public Integer deleteAssociates(@Param("role") String role, @Param("ids") String... ids);
 	
 }

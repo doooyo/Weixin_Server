@@ -48,16 +48,20 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:smvc-servlet.xml</param-value>
 	</init-param>
-	<load-on-startup>2</load-on-startup>
+	<load-on-startup>1</load-on-startup>
+	<!-- 开启支持异步 -->
+	<async-supported>true</async-supported>
 </servlet>
 <servlet-mapping>
 	<servlet-name>springmvc</servlet-name>
-	<url-pattern>/</url-pattern>
+	<url-pattern>/*</url-pattern>
 </servlet-mapping>
 
 <filter>
 	<filter-name>CharacterEncodingFilter</filter-name>
 	<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+	<!-- 记得servlet也要开启异步 -->
+	<async-supported>true</async-supported>
 	<init-param>
 		<param-name>encoding</param-name>
 		<param-value>utf-8</param-value>
@@ -74,12 +78,13 @@
 </filter-mapping>
 
 <session-config>
-   <session-timeout>20</session-timeout>
+   <session-timeout>720</session-timeout>
 </session-config>
 
 <filter>
     <filter-name>DruidWebStatFilter</filter-name>
     <filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+    <async-supported>true</async-supported>
     <init-param>
         <param-name>exclusions</param-name>
         <param-value>/static/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
@@ -93,6 +98,7 @@
 <servlet>
     <servlet-name>DruidStatView</servlet-name>
     <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+    <async-supported>true</async-supported>
 </servlet>
 <servlet-mapping>
     <servlet-name>DruidStatView</servlet-name>

@@ -36,6 +36,7 @@ public class Order implements Serializable{
 	private Coupon coupon;           //订单的优惠卷(限一个)
 	private Examinee examinee;       //订单的体检人
 	private User user;               //订单所属用户
+	private String detectionboxId;   //检测盒id
 	
 	public String getId() {
 		return id;
@@ -130,11 +131,19 @@ public class Order implements Serializable{
 	public void setUser(User user) {
 		this.user = user;
 	}
+	public String getDetectionboxId() {
+		return detectionboxId;
+	}
+	public void setDetectionboxId(String detectionboxId) {
+		this.detectionboxId = detectionboxId;
+	}
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", userId=" + userId + ", productIdList=" + productIdList + ", couponId=" + couponId
 				+ ", vouchersId=" + vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state="
 				+ state + ", isInvoice=" + isInvoice + ", createTime=" + createTime + ", products=" + products
-				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + ", user=" + user + "]";
+				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + ", user=" + user
+				+ ", detectionboxId=" + detectionboxId + "]";
 	}
+	
 }

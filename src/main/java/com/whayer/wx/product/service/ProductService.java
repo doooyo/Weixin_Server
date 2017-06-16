@@ -8,9 +8,11 @@ public interface ProductService {
 	
 	/**
 	 * 获取所有产品列表
+	 * @param name
+	 * @param pagination
 	 * @return
 	 */
-	public PageInfo<Product> getProductList(Pagination pagination);
+	public PageInfo<Product> getProductList(String name, Pagination pagination);
 	
 	/**
 	 * 通过角色编码获取产品列表
@@ -59,10 +61,11 @@ public interface ProductService {
 	/**
 	 * 角色关联产品
 	 * @param role  角色编码
-	 * @param ids   产品id数组
+	 * @param addIds   添加的产品id数组
+	 * @param delIds   删除的产品id数组
 	 * @return
 	 */
-	public Integer associate(String role, String... ids);
+	public Integer associate(String role, String[] addIds, String[] delIds);
 	
 	/**
 	 * 删除某产品id与所有角色的关联

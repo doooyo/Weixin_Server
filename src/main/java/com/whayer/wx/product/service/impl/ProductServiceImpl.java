@@ -23,9 +23,9 @@ public class ProductServiceImpl implements ProductService{
 	 * 获取所有产品列表
 	 */
 	@Override
-	public PageInfo<Product> getProductList(Pagination pagination) {
+	public PageInfo<Product> getProductList(String name, Pagination pagination) {
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
-		List<Product> list =  productDao.getProductList();
+		List<Product> list =  productDao.getProductList(name);
 		PageInfo<Product> pageInfo = new PageInfo<Product>(list, pagination.getNavigationSize());
 		return pageInfo;
 	}
@@ -68,12 +68,18 @@ public class ProductServiceImpl implements ProductService{
 	
 	/**
 	 * 角色关联产品(打标)
+	 * 注意勾选与反选所需要注意的问题,由于是码表,所以要做差集
 	 * @param ids 
 	 * @return
 	 */
 	@Override
-	public Integer associate(String role, String... ids) {
-		return productDao.associate(role, ids);
+	public Integer associate(String role, String[] addIds, String[] delIds) {
+		int i = 0, j = 0;
+		if(null != addIds && addIds.length > 0)
+			i =  productDao.associate(role, addIds);
+		if(null != delIds && delIds.length > 0)
+			j = productDao.deleteAssociates(role, delIds);
+		return i + j;
 	}
 
 	@Override

@@ -52,7 +52,9 @@ public class ProductController extends BaseController{
 		log.info("ProductController.getList()");
 		Box box = loadNewBox(request);
 		
-		PageInfo<Product> pi = productService.getProductList(box.getPagination());
+		String name = box.$p("name");
+		
+		PageInfo<Product> pi = productService.getProductList(name, box.getPagination());
 		
 		return pagerResponse(pi);
 	}
@@ -87,7 +89,7 @@ public class ProductController extends BaseController{
 	}
 	
 	/**
-	 * 获取所有产品,并指明和当前角色是否有关联(标识哪些产品是以做关联)
+	 * 获取所有产品,并指明和当前角色是否有关联(标识哪些产品是已做关联)
 	 * @param request
 	 * @param response
 	 * @return
@@ -129,7 +131,7 @@ public class ProductController extends BaseController{
 		
 		
 		String id = box.$p("id");
-		if(null == id){
+		if(isNullOrEmpty(id)){
 			return getResponse(false);
 		}
 		Product product = productService.getProductById(id);
@@ -149,7 +151,7 @@ public class ProductController extends BaseController{
 		
 		
 		String id = box.$p("id");
-		if(null == id){
+		if(isNullOrEmpty(id)){
 			return getResponse(false);
 		}
 		
@@ -193,7 +195,7 @@ public class ProductController extends BaseController{
 		BigDecimal price = new BigDecimal(box.$p("price"));
 		String description = box.$p("description");
 		
-		if(null == name || null == price){
+		if(isNullOrEmpty(name) || isNullOrEmpty(price)){
 			return getResponse(false);
 		}
 		Product product = new Product();

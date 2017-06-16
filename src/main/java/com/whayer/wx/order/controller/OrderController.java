@@ -127,9 +127,13 @@ public class OrderController extends BaseController{
 			return getResponse(X.FALSE);
 		}
 		
-		orderService.getOrderDetailById(id);
+		Order order = orderService.getOrderDetailById(id);
 		
-		return getResponse(X.TRUE);
+		ResponseCondition res = getResponse(X.TRUE);
+		List<Order> list = new ArrayList<>();
+		list.add(order);
+		res.setList(list);
+		return res;
 	}
 	
 	/**

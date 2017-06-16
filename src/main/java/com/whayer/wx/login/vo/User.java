@@ -19,7 +19,13 @@ public class User implements Serializable{
 	private Integer userType;        //用户类型    0:代理用户 1:集团用户
 	private String mobile;      //手机
 	private String nickName;    //昵称(主要用于集团用户)
-	private String headImg;   //头像地址
+	private String headImg;     //头像地址
+	
+	private String email;     //邮件
+	private String idCardNo;  //身份证ID
+	private String bank;      //开户银行
+	private String bankCardNo;//银行卡号
+	private String idCardImg; //身份证图片
 	
 	
 	public String getId() {
@@ -97,11 +103,43 @@ public class User implements Serializable{
 	public void setHeadImg(String headImg) {
 		this.headImg = headImg;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getIdCardNo() {
+		return idCardNo;
+	}
+	public void setIdCardNo(String idCardNo) {
+		this.idCardNo = idCardNo;
+	}
+	public String getBank() {
+		return bank;
+	}
+	public void setBank(String bank) {
+		this.bank = bank;
+	}
+	public String getBankCardNo() {
+		return bankCardNo;
+	}
+	public void setBankCardNo(String bankCardNo) {
+		this.bankCardNo = bankCardNo;
+	}
+	public String getIdCardImg() {
+		return idCardImg;
+	}
+	public void setIdCardImg(String idCardImg) {
+		this.idCardImg = idCardImg;
+	}
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
 				+ points + ", photo=" + Arrays.toString(photo) + ", isAudit=" + isAudit + ", isAgent=" + isAgent
 				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + ", headImg=" + headImg
-				+ "]";
+				+ ", email=" + email + ", idCardNo=" + idCardNo + ", bank=" + bank + ", bankCardNo=" + bankCardNo
+				+ ", idCardImg=" + idCardImg + "]";
 	}
+	
 }

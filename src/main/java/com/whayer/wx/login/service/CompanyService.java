@@ -9,7 +9,7 @@ import com.whayer.wx.login.vo.Role;
 
 public interface CompanyService {
 	
-	public PageInfo<Company> getCompanyList(Pagination pagination);
+	public PageInfo<Company> getCompanyList(String name, Pagination pagination);
 	
 	public List<Company> getAllCompanyList();
 	
@@ -21,7 +21,7 @@ public interface CompanyService {
 	
 	public int update(Company company, Role role);
 	
-	public int updateCompanyName(String id, String name);
+	//public int updateCompanyName(String id, String name);
 	
 	public int deleteById(String id);
 }

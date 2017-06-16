@@ -44,19 +44,24 @@ public class Product2RoleController extends BaseController{
 	 */
 	@RequestMapping(value = "/associate", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition associate(@RequestParam("ids[]") String[] ids, String role, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseCondition associate(
+			@RequestParam(value = "addIds[]", required = false) String[] addIds, 
+			@RequestParam(value = "delIds[]", required = false) String[] delIds, 
+			@RequestParam("role") String role, 
+			HttpServletRequest request, HttpServletResponse response) {
 		log.info("Product2RoleController.associate()");
 		
 		//Box box = loadNewBox(request);
 		
 		//String role = box.$p("role");
 		
-		if(isNullOrEmpty(ids) || isNullOrEmpty(role)){
-			getResponse(X.FALSE);
+		//不能同时为空
+		if(isNullOrEmpty(addIds) && isNullOrEmpty(delIds)){
+			return getResponse(X.FALSE);
 		}
 		
 		//插入中间表
-		int count = productService.associate(role, ids);
+		int count = productService.associate(role, addIds, delIds);
 		
 		if(count > 0){
 			return getResponse(X.TRUE);

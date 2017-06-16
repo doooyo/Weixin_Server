@@ -3,6 +3,7 @@ package com.whayer.wx.login.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +13,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -89,14 +91,29 @@ public class LoginController extends BaseVerificationController {
 			return getResponse(X.FALSE);
 		}
 		
-		code = MD5.md5Encode(code);
+		code = aes.encrypt(code.trim());
 		
 		Company company = companyService.findByCode(code);
 		
-		if(null == company){
-			ResponseCondition res = getResponse(X.FALSE);
-			res.setErrorMsg("没有此集团用户");
-			return res;
+		ResponseCondition errRes = getResponse(X.FALSE);
+		
+		if(isNullOrEmpty(company)){
+			errRes.setErrorMsg("没有此集团用户");
+			return errRes;
+		}
+		
+		Date beginTime = company.getActiveBeginTime();
+		Date endTime = company.getActiveEndTime();
+		
+		if(!isNullOrEmpty(beginTime) && !isNullOrEmpty(endTime)){
+			if(beginTime.compareTo(new Date()) > 0){
+				errRes.setErrorMsg("不在活动期间");
+				return errRes;
+			}
+			if(endTime.compareTo(new Date()) < 0){
+				errRes.setErrorMsg("活动已过期");
+				return errRes;
+			}
 		}
 		
 		ResponseCondition res = getResponse(true);
@@ -179,15 +196,16 @@ public class LoginController extends BaseVerificationController {
 					
 					// TODO update login time /IP /last_session
 					HtmlParser.GetClientIp(request);
-		            String sessionid = MD5.md5Encode(X.uuid());
+					String sessionid = X.uuid(); //aes.encrypt(X.uuid());
+		            String userId = user.getId();
 
-					Cookie uidc = new Cookie(X.USERID, user.getId().toString());
+					Cookie uidc = new Cookie(X.ENCRYPTED + X.USERID, userId);
 					uidc.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.USERID, uidc);
-					Cookie userType = new Cookie(X.USER_TYPE, Boolean.toString(user.getIsAgent()));
+					Cookie userType = new Cookie(X.ENCRYPTED + X.USER_TYPE, Boolean.toString(user.getIsAgent()));
 					userType.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.USER_TYPE, userType);
-					Cookie sessioncookie = new Cookie(X.SESSION_ID, user.getId().toString());
+					Cookie sessioncookie = new Cookie(X.ENCRYPTED + X.SESSION_ID, sessionid);
 					sessioncookie.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.SESSION_ID, sessioncookie);
 					
@@ -305,15 +323,17 @@ public class LoginController extends BaseVerificationController {
 					
 					// TODO update login time /IP /last_session
 					HtmlParser.GetClientIp(request);
-		            String sessionid = MD5.md5Encode(X.uuid());
+					
+		            String sessionid = X.uuid(); //aes.encrypt(X.uuid());
+		            String userId = user.getId();
 
-					Cookie uidc = new Cookie(X.USERID, user.getId().toString());
+					Cookie uidc = new Cookie(X.ENCRYPTED + X.USERID, userId);
 					uidc.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.USERID, uidc);
-					Cookie userType = new Cookie(X.USER_TYPE, Boolean.toString(user.getIsAgent()));
+					Cookie userType = new Cookie(X.ENCRYPTED + X.USER_TYPE, Boolean.toString(user.getIsAgent()));
 					userType.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.USER_TYPE, userType);
-					Cookie sessioncookie = new Cookie(X.SESSION_ID, user.getId().toString());
+					Cookie sessioncookie = new Cookie(X.ENCRYPTED + X.SESSION_ID, sessionid);
 					sessioncookie.setMaxAge(60 * 60 * 6);
 					box.getCookie().put(X.SESSION_ID, sessioncookie);
 					
@@ -327,6 +347,7 @@ public class LoginController extends BaseVerificationController {
 
 					ResponseCondition res = getResponse(X.TRUE);
 					List<User> list = new ArrayList<>();
+					user.setPassword(null);
 					list.add(user);
 					res.setList(list);
 					
@@ -344,7 +365,7 @@ public class LoginController extends BaseVerificationController {
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping("/logout")
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition signOut(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Box box = loadNewBox(request);
@@ -360,7 +381,7 @@ public class LoginController extends BaseVerificationController {
 		writeCookies(box, response);
 		request.getSession().setAttribute(X.USER, null);
 		request.getSession().setAttribute(X.SESSION_ID, null);
-		return new ResponseCondition();
+		return getResponse(X.TRUE);
 	}
 	
 	/**
@@ -373,7 +394,7 @@ public class LoginController extends BaseVerificationController {
 	@RequestMapping(value = "/register/agent", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition registerAgent(
-			@RequestParam(value = "file", required = false) MultipartFile file, 
+			@RequestParam(value = "files", required = false) MultipartFile[] files, 
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("LoginController.registerAgent()");
 		
@@ -388,8 +409,16 @@ public class LoginController extends BaseVerificationController {
 		String pid = box.$p("pid"); //父级代理电话/ID
 		String nickName = box.$p("nickName"); 
 		
+	    String email = box.$p("email");         //邮件
+	    String idCardNo = box.$p("idCardNo");   //身份证ID
+	    String bank = box.$p("bank");           //开户银行
+	    String bankCardNo = box.$p("bankCardNo");//银行卡号
+	    //String idCardImg = box.$p("idCardImg");  //身份证图片 
+		
 		if(isNullOrEmpty(username) || isNullOrEmpty(password) 
-				|| isNullOrEmpty(mobile) || isNullOrEmpty(file)){
+				|| isNullOrEmpty(mobile) || isNullOrEmpty(files) || files.length == 0
+				|| isNullOrEmpty(email) || isNullOrEmpty(nickName)
+				|| isNullOrEmpty(idCardNo) || isNullOrEmpty(bank) || isNullOrEmpty(bankCardNo)){
 			return getResponse(X.FALSE);
 		}
 		
@@ -399,49 +428,69 @@ public class LoginController extends BaseVerificationController {
 		user.setPassword(MD5.md5Encode(password.trim()));
 		user.setMobile(mobile);
 		user.setUserType(0); //0:代理用户 1:集团用户
-		user.setpId(pid);
+		//user.setpId(pid);
 		user.setNickName(nickName);
 		
+		user.setEmail(email);
+		user.setBank(bank);
+		user.setIdCardNo(idCardNo);
+		user.setBankCardNo(bankCardNo);
+		
 		User u = userService.findUser(user);
+		ResponseCondition res = getResponse(X.FALSE);
+		
 		if(isNullOrEmpty(u)){
 			//http://www.cnblogs.com/fjsnail/p/3491033.html
 //			<form action="/user/register/agent" method="post" enctype="multipart/form-data">  
 //			  <input type="file" name="file" />  
 //			  <input type="submit" value="上传" />  
 //			</form> 
-			if(!isNullOrEmpty(file)){
-				String originFileName = file.getOriginalFilename();
-				String extension = FileUtil.getExtension(originFileName);
-				originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
-				Pattern pattern = Pattern.compile(X.REGEX);
-				Matcher matcher = pattern.matcher(originFileName);
-				if (matcher.find()) {
-					originFileName = matcher.replaceAll("_").trim();
+			if(!isNullOrEmpty(files) && files.length > 0){
+				List<String> list = new ArrayList<>();
+				for(int i = 0; i < files.length; i++){
+					
+					String originFileName = files[i].getOriginalFilename();
+					String extension = FileUtil.getExtension(originFileName);
+					originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+					Pattern pattern = Pattern.compile(X.REGEX);
+					Matcher matcher = pattern.matcher(originFileName);
+					if (matcher.find()) {
+						originFileName = matcher.replaceAll("_").trim();
+					}
+					originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+					
+					if (files[i].getSize() == 0 || files[i].isEmpty()) {
+						log.error("文件不能为空");
+						res.setErrorMsg("文件不能为空");
+						return res;
+					}
+					// check if too large
+					int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+					if (files[i].getSize() > maxSize) {
+						log.error("文件太大");
+						res.setErrorMsg("文件太大");
+						return res;
+					}
+					
+					String uploadPath = X.getConfig("file.upload.dir");
+					uploadPath += "/idcard";//header
+					X.makeDir(uploadPath);
+					File targetFile = new File(uploadPath, originFileName);
+				    files[i].transferTo(targetFile);
+				    list.add(originFileName);
 				}
-				originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
 				
-				ResponseCondition res = getResponse(X.FALSE);
-				if (file.getSize() == 0 || file.isEmpty()) {
-					log.error("文件不能为空");
-					res.setErrorMsg("文件不能为空");
-					return res;
-				}
-				// check if too large
-				int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
-				if (file.getSize() > maxSize) {
-					log.error("文件太大");
-					res.setErrorMsg("文件太大");
-					return res;
-				}
-				
-				String uploadPath = X.getConfig("file.upload.dir");
-				uploadPath += "/header";
-				X.makeDir(uploadPath);
-				File targetFile = new File(uploadPath, originFileName);
-			    file.transferTo(targetFile);
-			    
+			    String imgs = StringUtils.join(list, "|");
 				//设置头像路径
-			    user.setHeadImg(originFileName);
+			    user.setIdCardImg(imgs);
+			}
+			
+			//获取父级pid指定的父级用户
+			if(!isNullOrEmpty(pid)){
+				User user2 = userService.findUserByPid(pid);
+				if(!isNullOrEmpty(user2)){
+					user.setpId(user2.getId());
+				}
 			}
 			
 		    
@@ -449,13 +498,11 @@ public class LoginController extends BaseVerificationController {
 			if(result > 0)
 				return getResponse(X.TRUE);
 			else{
-				ResponseCondition res = getResponse(X.FALSE);
 				res.setErrorMsg("更新代理商失败!");
 				return res;
 			}
 		}
 		else{
-			ResponseCondition res = getResponse(X.FALSE);
 			res.setErrorMsg("用户已存在!");
 			return res;
 		}
@@ -470,7 +517,7 @@ public class LoginController extends BaseVerificationController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/register/company")
+	@RequestMapping(value = "/register/company", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition registerItd(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		log.info("LoginController.registerItd()");
@@ -484,21 +531,20 @@ public class LoginController extends BaseVerificationController {
 		if(isNullOrEmpty(name) || isNullOrEmpty(code)){
 			return getResponse(X.FALSE);
 		}
-		
-		//MD5加密
-		code = MD5.md5Encode(code.trim());
+		name = name.trim();
+		code = code.trim();
 		
 		Company c = companyService.findByCode(code);
 		if(isNullOrEmpty(c)){
-			
+			String id = X.uuidPure();
 			Company company = new Company();
-			company.setId(X.uuidPure());
-			company.setName(name.trim());
+			company.setId(id);
+			company.setName(name);
 			company.setCode(code);
 			
 			Role role = new Role();
-			role.setId(X.uuidPure());
-			role.setName(name.trim());
+			role.setId(id);
+			role.setName(name);
 			role.setCode(code);
 			
 			//注册集团用户时,需要添加此集团角色
@@ -517,7 +563,7 @@ public class LoginController extends BaseVerificationController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping("/validatePid")
+	@RequestMapping(value = "/validatePid", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition validatePid(HttpServletRequest request, HttpServletResponse response){
 		log.info("LoginController.validatePid()");
@@ -540,7 +586,7 @@ public class LoginController extends BaseVerificationController {
 		}
 	}
 	
-	@RequestMapping("/getUserListByType")
+	@RequestMapping(value = "/getUserListByType", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseCondition getListByType(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("LoginController.getListByType()");
@@ -769,32 +815,32 @@ public class LoginController extends BaseVerificationController {
 		}else return getResponse(X.FALSE);
 	}
 	
-	/**
-	 * 更新集团用户信息
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/updateCompany", method = RequestMethod.POST)
-	@ResponseBody
-	public ResponseCondition updateCompany(HttpServletRequest request, HttpServletResponse response) {
-		log.info("LoginController.updateCompany()");
-		
-		Box box = loadNewBox(request);
-		String id = box.$p("id");
-		String name = box.$p("name");
-		
-		if(isNullOrEmpty(id) || isNullOrEmpty(name)){
-			return getResponse(X.FALSE);
-		}
-		
-		int result = companyService.updateCompanyName(id, name);
-		
-		if(result > 0){
-			return getResponse(X.TRUE);
-		}else return getResponse(X.FALSE);
-	}
+//	/**
+//	 * 更新集团用户信息
+//	 * @param request
+//	 * @param response
+//	 * @return
+//	 * @throws Exception
+//	 */
+//	@RequestMapping(value = "/updateCompany", method = RequestMethod.POST)
+//	@ResponseBody
+//	public ResponseCondition updateCompany(HttpServletRequest request, HttpServletResponse response) {
+//		log.info("LoginController.updateCompany()");
+//		
+//		Box box = loadNewBox(request);
+//		String id = box.$p("id");
+//		String name = box.$p("name");
+//		
+//		if(isNullOrEmpty(id) || isNullOrEmpty(name)){
+//			return getResponse(X.FALSE);
+//		}
+//		
+//		int result = companyService.updateCompanyName(id, name);
+//		
+//		if(result > 0){
+//			return getResponse(X.TRUE);
+//		}else return getResponse(X.FALSE);
+//	}
 	
 	/**
 	 * 删除代理商
@@ -817,11 +863,11 @@ public class LoginController extends BaseVerificationController {
 		User user = new User();
 		user.setId(id);
 		user = userService.findUser(user);
-		String headImg = user.getHeadImg();
+		//String headImg = user.getHeadImg();
 		
 		int result = userService.deleteUserById(id);
 		if(result > 0){
-			if(!isNullOrEmpty(headImg)){
+			if(!isNullOrEmpty(user) && !isNullOrEmpty(user.getHeadImg())){
 				String uploadPath = X.getConfig("file.upload.dir");
 				uploadPath += "/header";
 			    

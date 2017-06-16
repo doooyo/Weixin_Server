@@ -1,5 +1,10 @@
 package com.whayer.wx.common.algorithm;
 
+/**
+ * 将 {@code QuickSort} 分解步骤
+ * @author duyu
+ *
+ */
 public class QuickSortV2 {
 
 	public static void main(String[] args) {
