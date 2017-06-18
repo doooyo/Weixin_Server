@@ -4,6 +4,7 @@ import java.io.Serializable;
 //import java.sql.Blob;
 import java.util.Arrays;
 
+
 public class User implements Serializable{
 
 	private static final long serialVersionUID = -9040151004036751096L;
@@ -26,6 +27,9 @@ public class User implements Serializable{
 	private String bank;      //开户银行
 	private String bankCardNo;//银行卡号
 	private String idCardImg; //身份证图片
+	
+	private String bankCardName; //银行卡户名
+	private String address;      //收件地址
 	
 	
 	public String getId() {
@@ -133,13 +137,24 @@ public class User implements Serializable{
 	public void setIdCardImg(String idCardImg) {
 		this.idCardImg = idCardImg;
 	}
+	public String getBankCardName() {
+		return bankCardName;
+	}
+	public void setBankCardName(String bankCardName) {
+		this.bankCardName = bankCardName;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", pId=" + pId + ", username=" + username + ", password=" + password + ", points="
 				+ points + ", photo=" + Arrays.toString(photo) + ", isAudit=" + isAudit + ", isAgent=" + isAgent
 				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + ", headImg=" + headImg
 				+ ", email=" + email + ", idCardNo=" + idCardNo + ", bank=" + bank + ", bankCardNo=" + bankCardNo
-				+ ", idCardImg=" + idCardImg + "]";
+				+ ", idCardImg=" + idCardImg + ", bankCardName=" + bankCardName + ", address=" + address + "]";
 	}
-	
 }

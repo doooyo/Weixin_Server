@@ -24,7 +24,9 @@
 		id_card_no,
 		bank,
 		bank_card_no,
-		id_card_img
+		id_card_img,
+		bank_card_name,
+		address
 	</sql>
 
 	<!-- 根据用户名查询用户 -->
@@ -119,6 +121,12 @@
 			    <if test="idCardImg != null and idCardImg != ''">
 			      id_card_img = #{idCardImg},
 			    </if>
+			    <if test="bankCardName != null and bankCardName != ''">
+			      bank_card_name = #{bankCardName},
+			    </if>
+			    <if test="address != null and address != ''">
+			      address = #{address},
+			    </if>
 		    </trim>
 			<where>
 		      id=#{id}
@@ -163,7 +171,9 @@
   		#{idCardNo},
   		#{bank},
   		#{bankCardNo},
-  		#{idCardImg}
+  		#{idCardImg},
+  		#{bankCardName},
+  		#{address}
   		)
   	</insert>
   	
@@ -186,6 +196,8 @@
         <result column="bank" property="bank" />
         <result column="bank_card_no" property="bankCardNo" />
         <result column="id_card_img" property="idCardImg" />
+        <result column="bank_card_name" property="bankCardName" />
+        <result column="address" property="address" />
     </resultMap>
     
   	<select id="getUserListByType" resultType="User">

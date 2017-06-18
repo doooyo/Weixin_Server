@@ -13,7 +13,9 @@
 		gender,
 		mobile,
 		identity_id,
-		birthday
+		birthday,
+		email,
+		wechat
 	</sql>
 	
 	<resultMap id="examineeListMap" type="Examinee">
@@ -25,6 +27,8 @@
         <result column="mobile" property="mobile" />
         <result column="identity_id" property="identityId" />
         <result column="birthday" property="birthday" />
+        <result column="email" property="email" />
+        <result column="wechat" property="wechat" />
     </resultMap>
 
 	<select id="getExamineeList" parameterType="String" resultMap="examineeListMap" >
@@ -48,7 +52,9 @@
 			gender,
 			mobile,
 			identity_id,
-			birthday
+			birthday,
+			email,
+			wechat
   		) 
   		values(
   		#{id},
@@ -57,7 +63,9 @@
   		#{gender},
   		#{mobile},
   		#{identityId},
-  		#{birthday}
+  		#{birthday},
+  		#{email},
+  		#{wechat}
   		)
 	</insert>
 	

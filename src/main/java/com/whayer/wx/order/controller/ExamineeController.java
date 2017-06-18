@@ -103,8 +103,12 @@ public class ExamineeController extends BaseController{
 		String identityId = box.$p("identityId");
 		String birthday = box.$p("birthday");
 		
+		String email = box.$p("email");
+		String wechat = box.$p("wechat");
+		
 		if(isNullOrEmpty(name) || isNullOrEmpty(gender) || isNullOrEmpty(address) 
-				|| isNullOrEmpty(mobile) || isNullOrEmpty(identityId) || isNullOrEmpty(birthday)){
+				|| isNullOrEmpty(mobile) || isNullOrEmpty(identityId) || isNullOrEmpty(birthday)
+				|| isNullOrEmpty(email) || isNullOrEmpty(wechat)){
 			return getResponse(false);
 		}
 		boolean sex = gender.equals("0") ? false : true; // 0:男 1:女
@@ -119,6 +123,8 @@ public class ExamineeController extends BaseController{
 		if(!isNullOrEmpty(age)){
 			examinee.setAge(X.string2int(age));
 		}
+		examinee.setEmail(email);
+		examinee.setWechat(wechat);
 		
 		int count = examineeService.saveExaminee(examinee);
 		

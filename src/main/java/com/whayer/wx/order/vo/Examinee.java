@@ -21,6 +21,10 @@ public class Examinee implements Serializable{
 	private String identityId; //身份证ID
 	private Date birthday;     //出生日期
 	
+	private String email;   //邮件
+	private String wechat; //微信号
+	
+	
 	public String getId() {
 		return id;
 	}
@@ -72,9 +76,23 @@ public class Examinee implements Serializable{
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getWechat() {
+		return wechat;
+	}
+	public void setWechat(String wechat) {
+		this.wechat = wechat;
+	}
 	@Override
 	public String toString() {
 		return "Examinee [id=" + id + ", name=" + name + ", age=" + age + ", address=" + address + ", gender=" + gender
-				+ ", mobile=" + mobile + ", identityId=" + identityId + ", birthday=" + birthday + "]";
+				+ ", mobile=" + mobile + ", identityId=" + identityId + ", birthday=" + birthday + ", email=" + email
+				+ ", wechat=" + wechat + "]";
 	}
+	
 }

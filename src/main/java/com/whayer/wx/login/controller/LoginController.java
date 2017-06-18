@@ -414,11 +414,14 @@ public class LoginController extends BaseVerificationController {
 	    String bank = box.$p("bank");           //开户银行
 	    String bankCardNo = box.$p("bankCardNo");//银行卡号
 	    //String idCardImg = box.$p("idCardImg");  //身份证图片 
+	    String bankCardName = box.$p("bankCardName"); //银行卡户名
+	    String address = box.$p("address"); //收件地址
 		
 		if(isNullOrEmpty(username) || isNullOrEmpty(password) 
 				|| isNullOrEmpty(mobile) || isNullOrEmpty(files) || files.length == 0
 				|| isNullOrEmpty(email) || isNullOrEmpty(nickName)
-				|| isNullOrEmpty(idCardNo) || isNullOrEmpty(bank) || isNullOrEmpty(bankCardNo)){
+				|| isNullOrEmpty(idCardNo) || isNullOrEmpty(bank) || isNullOrEmpty(bankCardNo)
+				|| isNullOrEmpty(bankCardName) || isNullOrEmpty(address)){
 			return getResponse(X.FALSE);
 		}
 		
@@ -435,6 +438,9 @@ public class LoginController extends BaseVerificationController {
 		user.setBank(bank);
 		user.setIdCardNo(idCardNo);
 		user.setBankCardNo(bankCardNo);
+		
+		user.setBankCardName(bankCardName);
+		user.setAddress(address);
 		
 		User u = userService.findUser(user);
 		ResponseCondition res = getResponse(X.FALSE);
@@ -753,7 +759,12 @@ public class LoginController extends BaseVerificationController {
 		String mobile = box.$p("mobile");
 		String nickName = box.$p("nickName");
 		String id = box.$p("id");
-		if(isNullOrEmpty(id)){
+		
+		String bankCardName = box.$p("bankCardName"); 
+	    String address = box.$p("address"); 
+	    
+		if(isNullOrEmpty(id) || isNullOrEmpty(mobile) || isNullOrEmpty(address)
+				|| isNullOrEmpty(nickName) || isNullOrEmpty(bankCardName)){
 			return getResponse(X.FALSE);
 		}
 		
@@ -808,6 +819,8 @@ public class LoginController extends BaseVerificationController {
 		
 	    user.setMobile(mobile);
 	    user.setNickName(nickName);
+	    user.setBankCardName(bankCardName);
+	    user.setAddress(address);
 		
 		int result = userService.updateUserById(user);
 		if(result > 0){
