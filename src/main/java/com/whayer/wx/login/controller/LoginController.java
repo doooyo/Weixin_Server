@@ -91,9 +91,7 @@ public class LoginController extends BaseVerificationController {
 			return getResponse(X.FALSE);
 		}
 		
-		code = aes.encrypt(code.trim());
-		
-		Company company = companyService.findByCode(code);
+		Company company = companyService.findByCode(code.trim());
 		
 		ResponseCondition errRes = getResponse(X.FALSE);
 		
