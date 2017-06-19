@@ -38,6 +38,12 @@ public class Order implements Serializable{
 	private User user;               //订单所属用户
 	private String detectionboxId;   //检测盒id
 	
+	//2017-06-20
+	private String recipientName;    //订单发票收件人姓名
+	private String recipientPhone;   //订单发票收件人手机号
+	private String recipientAddress; //订单发票收件人地址
+	private String invoiceHeader;    //订单发票抬头
+	
 	public String getId() {
 		return id;
 	}
@@ -137,13 +143,37 @@ public class Order implements Serializable{
 	public void setDetectionboxId(String detectionboxId) {
 		this.detectionboxId = detectionboxId;
 	}
+	public String getRecipientName() {
+		return recipientName;
+	}
+	public void setRecipientName(String recipientName) {
+		this.recipientName = recipientName;
+	}
+	public String getRecipientPhone() {
+		return recipientPhone;
+	}
+	public void setRecipientPhone(String recipientPhone) {
+		this.recipientPhone = recipientPhone;
+	}
+	public String getRecipientAddress() {
+		return recipientAddress;
+	}
+	public void setRecipientAddress(String recipientAddress) {
+		this.recipientAddress = recipientAddress;
+	}
+	public String getInvoiceHeader() {
+		return invoiceHeader;
+	}
+	public void setInvoiceHeader(String invoiceHeader) {
+		this.invoiceHeader = invoiceHeader;
+	}
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", userId=" + userId + ", productIdList=" + productIdList + ", couponId=" + couponId
 				+ ", vouchersId=" + vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state="
 				+ state + ", isInvoice=" + isInvoice + ", createTime=" + createTime + ", products=" + products
 				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + ", user=" + user
-				+ ", detectionboxId=" + detectionboxId + "]";
+				+ ", detectionboxId=" + detectionboxId + ", recipientName=" + recipientName + ", recipientPhone="
+				+ recipientPhone + ", recipientAddress=" + recipientAddress + ", invoiceHeader=" + invoiceHeader + "]";
 	}
-	
 }

@@ -194,27 +194,28 @@ public class PayV2Controller extends BaseController{
 		log.debug("回调参数" + map.toString());
 		
 		String sign = map.get("sign");
-		map.put("sign", "");
-		map.put("result_code", "");
-		map.put("return_code", "");
-		map.put("return_msg", "");
+		//TODO Signature需要过滤掉【sign】,此参数不参与签名
+		//map.put("sign", "");
 		
 		String calcSign = Signature.getSign(map);
 		log.debug("sign:" + sign);
 		log.debug("calcSign:" + calcSign);
 		
-//		if(!sign.equals(calcSign)){
-//			response.getWriter().append(getWxReturnMessage(X.FALSE, "签名验证失败"));
-//		}else{
+		if(!sign.equals(calcSign)){
+			log.error("回调签名验证失败");
+			response.getWriter().append(getWxReturnMessage(X.FALSE, "回调签名验证失败"));
+		}else{
 			String out_trade_no = map.get("out_trade_no");
 			log.debug("out_trade_no:" + out_trade_no);
 			if(isNullOrEmpty(out_trade_no)){
+				log.error("支付结果中微信订单号不存在");
 				response.getWriter().append(getWxReturnMessage(X.FALSE, "支付结果中微信订单号不存在"));
 			}else{
 				Order order = orderService.getOrderById(out_trade_no);
 				log.debug("业务订单信息: " + order.toString());
 				if(isNullOrEmpty(order)){
-					response.getWriter().append(getWxReturnMessage(X.FALSE, "订单查询失败"));
+					log.error("业务订单查询失败");
+					response.getWriter().append(getWxReturnMessage(X.FALSE, "业务订单查询失败"));
 				}else{
 					
 					OrderQuery orderQuery = new OrderQuery();
@@ -242,14 +243,13 @@ public class PayV2Controller extends BaseController{
 							log.debug("更新业务订单成功");
 							response.getWriter().append(getWxReturnMessage(X.TRUE, "OK"));
 						}else{
-							log.error("更新业务订单失败");
-							response.getWriter().append(getWxReturnMessage(X.FALSE, "更新业务订单失败"));
+							log.error("更新业务订单状态失败");
+							response.getWriter().append(getWxReturnMessage(X.FALSE, "更新业务订单状态失败"));
 						}
 					//}
 				}
 			}
-			
-		//}
+		}
 	}
 	
 	private String getWxReturnMessage(boolean state, String message){

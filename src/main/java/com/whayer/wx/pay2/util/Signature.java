@@ -33,7 +33,8 @@ public class Signature {
             	XStreamAlias anno = f.getAnnotation(XStreamAlias.class);
             	if(anno != null)
             		name = anno.value();
-                list.add(name + "=" + f.get(o) + "&");
+            	if(!"sign".equals(name))
+            		list.add(name + "=" + f.get(o) + "&");
             }
         }
         int size = list.size();
@@ -52,11 +53,13 @@ public class Signature {
         return result;
     }
 
-    public static String getSign(Map<String,Object> map) throws Exception{
+    public static String getSign(Map<String,String> map) throws Exception{
         ArrayList<String> list = new ArrayList<String>();
-        for(Map.Entry<String,Object> entry:map.entrySet()){
-            if(entry.getValue()!=""){
-                list.add(entry.getKey() + "=" + entry.getValue() + "&");
+        for(Map.Entry<String,String> entry:map.entrySet()){
+        	String k = entry.getKey();
+        	String v = entry.getValue();
+            if(!"".equals(v) && null != v && !"sign".equals(k)){
+                list.add(k + "=" + v + "&");
             }
         }
         int size = list.size();

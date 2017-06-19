@@ -15,7 +15,11 @@
 		amount,
 		state,
 		is_invoice,
-		create_time
+		create_time,
+		recipient_name,
+		recipient_phone,
+		recipient_address,
+		invoice_header
 	</sql>
 	
 	<resultMap type="Order" id="allOrderMapV2">
@@ -29,6 +33,10 @@
 	    <result property="state" column="o_state" />
 	    <result property="isInvoice" column="o_is_invoice" />
 	    <result property="createTime" column="o_create_time" />
+	    <result property="recipientName" column="o_recipient_name" />
+	    <result property="recipientPhone" column="o_recipient_phone" />
+	    <result property="recipientAddress" column="o_recipient_address" />
+	    <result property="invoiceHeader" column="o_invoice_header" />
 	    
 	    <result property="detectionboxId" column="d_detectionbox_id" />
 	    
@@ -60,6 +68,10 @@
 	    <result property="state" column="o_state" />
 	    <result property="isInvoice" column="o_is_invoice" />
 	    <result property="createTime" column="o_create_time" />
+	    <result property="recipientName" column="o_recipient_name" />
+	    <result property="recipientPhone" column="o_recipient_phone" />
+	    <result property="recipientAddress" column="o_recipient_address" />
+	    <result property="invoiceHeader" column="o_invoice_header" />
 	    
 	    <result property="user.id" column="u_id" />
 	    <result property="user.pId" column="u_p_id" />
@@ -118,6 +130,10 @@
 		o.state as o_state,
 		o.is_invoice as o_is_invoice,
 		o.create_time as o_create_time,
+		o.recipient_name as o_recipient_name,
+		o.recipient_phone as o_recipient_phone,
+		o.recipient_address as o_recipient_address,
+		o.invoice_header as o_invoice_header,
 		
 		d.detectionbox_id as d_detectionbox_id,
 		
@@ -233,6 +249,10 @@
 		o.state as o_state,
 		o.is_invoice as o_is_invoice,
 		o.create_time as o_create_time,
+		o.recipient_name as o_recipient_name,
+		o.recipient_phone as o_recipient_phone,
+		o.recipient_address as o_recipient_address,
+		o.invoice_header as o_invoice_header,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,
@@ -304,7 +324,11 @@
 			amount,
 			state,
 			is_invoice,
-			create_time
+			create_time,
+			recipient_name,
+			recipient_phone,
+			recipient_address,
+			invoice_header
   		) 
   		values(
   		#{id},
@@ -316,7 +340,11 @@
   		#{amount},
   		0,
   		#{isInvoice},
-  		now()
+  		now(),
+  		#{recipientName},
+  		#{recipientPhone},
+  		#{recipientAddress},
+  		#{invoiceHeader}
   		)
 	</insert>
 	
@@ -382,6 +410,10 @@
 		o.state as o_state,
 		o.is_invoice as o_is_invoice,
 		o.create_time as o_create_time,
+		o.recipient_name as o_recipient_name,
+		o.recipient_phone as o_recipient_phone,
+		o.recipient_address as o_recipient_address,
+		o.invoice_header as o_invoice_header,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,
@@ -538,6 +570,10 @@
 		o.state as o_state,
 		o.is_invoice as o_is_invoice,
 		o.create_time as o_create_time,
+		o.recipient_name as o_recipient_name,
+		o.recipient_phone as o_recipient_phone,
+		o.recipient_address as o_recipient_address,
+		o.invoice_header as o_invoice_header,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,
