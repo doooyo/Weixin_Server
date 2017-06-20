@@ -19,6 +19,13 @@ public interface OrderService {
 	public PageInfo<Order> getOrderList(String uid, Pagination pagination);
 	
 	/**
+	 * 未分页版本
+	 * @param uid
+	 * @return
+	 */
+	public List<Order> getOrderList(String uid);
+	
+	/**
 	 * 获取订单详情
 	 * @param id
 	 * @return

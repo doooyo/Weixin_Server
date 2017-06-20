@@ -71,9 +71,14 @@ public class OrderController extends BaseController{
 		String id = box.$p("userId");
 		//如果id为空,查询所有订单
 		//如果id不为空, 查询当前用户id的订单
-		PageInfo<Order> pi = orderService.getOrderList(id, box.getPagination());
+		//PageInfo<Order> pi = orderService.getOrderList(id, box.getPagination());
 		
-		return pagerResponse(pi);
+		//return pagerResponse(pi);
+		
+		List<Order> list = orderService.getOrderList(id);
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		return res;
 	}
 	
 	/**

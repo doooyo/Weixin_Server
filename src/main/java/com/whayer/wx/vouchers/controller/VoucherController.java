@@ -111,7 +111,7 @@ public class VoucherController extends BaseController{
 		
 		//uid = isNullOrEmpty(uid) ? ((User)request.getSession().getAttribute(X.USER)).getId() : uid;
 		
-		String id = X.uuidPure8Bit();
+		String id = X.uuidPure8Bit().toUpperCase();
 		String userId = box.$p("userId");
 		String deadline = box.$p("deadline");
 		String createUserId = uid;

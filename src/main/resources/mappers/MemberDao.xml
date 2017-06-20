@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.whayer.wx.order.dao.MemberDao">
+	
+	<sql id="memberFields">
+		id,
+		account,
+		password,
+		create_time
+	</sql>
+
+	<resultMap id="memberListMap" type="Member">
+        <id column="id" property="id" />
+        <result column="account" property="account" />
+        <result column="password" property="password" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+	
+	<select id="getMemberList" resultMap="memberListMap">
+		select 
+        <include refid="memberFields" /> 
+        from sk_member 
+        <where>  
+			1=1  
+			<!-- <if test="name != null and name != ''">
+           	 	AND name LIKE CONCAT('%',#{name},'%') 
+           	</if> -->
+           	ORDER BY create_time DESC
+        </where>
+	</select>
+	
+	<insert id="saveMember" parameterType="Member">
+		insert into sk_member(
+  			<include refid="memberFields" />
+  		) 
+  		values(
+  		#{id},
+  		#{account},
+  		#{password},
+  		now()
+  		)
+	</insert>
+	
+	<select id="isAccountExist" parameterType="String" resultType="Integer">
+		select COUNT(*) 
+		FROM sk_member
+		WHERE account = #{account}
+	</select>
+</mapper>

@@ -73,6 +73,8 @@
 	    <result property="recipientAddress" column="o_recipient_address" />
 	    <result property="invoiceHeader" column="o_invoice_header" />
 	    
+	    <result property="detectionboxId" column="d_detectionbox_id" />
+	    
 	    <result property="user.id" column="u_id" />
 	    <result property="user.pId" column="u_p_id" />
 	    <result property="user.username" column="u_username" />
@@ -254,6 +256,8 @@
 		o.recipient_address as o_recipient_address,
 		o.invoice_header as o_invoice_header,
 		
+		d.detectionbox_id as d_detectionbox_id,
+		
 		c.id as c_id,
 		c.user_id as c_user_id,
 		c.amount as c_amount,
@@ -301,6 +305,8 @@
 		     on v.id = ov.voucher_id
 		left join sk_product p
 		     on p.id = op.product_id 
+		left join sk_order_detectionbox d
+		     on o.id = d.order_id
 		<!-- <where>
 			<if test="uid != null and id != ''">
 				o.user_id =#{uid}
@@ -308,7 +314,7 @@
 		</where> -->    
 		<trim prefix="WHERE" prefixOverrides="AND|OR">  
 		    <if test="uid != null and uid !='' ">  
-		        o.user_id =#{uid}  ORDER BY o.create_time DESC 
+		        o.user_id=#{uid} OR e.mobile=#{uid} ORDER BY o.create_time DESC 
 		    </if>  
 		</trim>	
 	</select>

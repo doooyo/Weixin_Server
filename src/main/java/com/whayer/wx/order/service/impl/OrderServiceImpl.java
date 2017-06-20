@@ -13,9 +13,11 @@ import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.coupon.dao.CouponDao;
 import com.whayer.wx.order.dao.ExamineeDao;
+import com.whayer.wx.order.dao.MemberDao;
 import com.whayer.wx.order.dao.OrderDao;
 import com.whayer.wx.order.service.OrderService;
 import com.whayer.wx.order.vo.Examinee;
+import com.whayer.wx.order.vo.Member;
 import com.whayer.wx.order.vo.Order;
 import com.whayer.wx.order.vo.OrderStatistics;
 import com.whayer.wx.vouchers.dao.VoucherDao;
@@ -35,12 +37,21 @@ public class OrderServiceImpl implements OrderService{
 	@Resource
 	private VoucherDao voucherDao;
 	
+	@Resource
+	private MemberDao memberDao;
+	
 	@Override
 	public PageInfo<Order> getOrderList(String uid, Pagination pagination) {
 		PageHelper.startPage(pagination.getPageNum(), pagination.getPageSize());
 		List<Order> list =  orderDao.getOrderList(uid);
 		PageInfo<Order> pageInfo = new PageInfo<Order>(list, pagination.getNavigationSize());
 		return pageInfo;
+	}
+	
+	@Override
+	public List<Order> getOrderList(String uid) {
+		List<Order> list =  orderDao.getOrderList(uid);
+		return list;
 	}
 
 	@Override
@@ -49,8 +60,9 @@ public class OrderServiceImpl implements OrderService{
 		 * 1.保存体检人(设置id)
 		 * 2.拿到体检人id并保存订单(设置订单id)
 		 * 3.保存产品id到sk_order_product(id/order_id/product_id)中间表
-		 * 4.若有代金劵,保存代金劵id到 sk_order_voucher(id/order_id/voucher_id)中间表
-		 * 5.设置代金劵与优惠卷的is_effect/use_date 
+		 * 4.保存体检人到会员表,密码是手机号末6位,账号是体检人手机号
+		 * 5.若有代金劵,保存代金劵id到 sk_order_voucher(id/order_id/voucher_id)中间表
+		 * 6.设置代金劵与优惠卷的is_effect/use_date 
 		 */
 		//保存体检人
 		String examineeId = X.uuidPure();
@@ -71,6 +83,19 @@ public class OrderServiceImpl implements OrderService{
 			op = orderDao.saveOrder2Product(order.getId(), pids);
 		}
 		
+		//保存体检人到会员表
+		String account = examinee.getMobile();
+		
+		int m = 0;
+		int len = memberDao.isAccountExist(account);
+		if(len <= 0){
+			Member member = new Member();
+			member.setId(X.uuidPure());
+			member.setAccount(account);
+			member.setPassword(account.substring(account.length() - 6, account.length()));
+			m = memberDao.saveMember(member);
+		}
+		
 		//若有代金劵,保存代金劵id至中间表
 		String[] vids = order.getVouchersId().split(",");
 		int vp = 0;
@@ -88,7 +113,7 @@ public class OrderServiceImpl implements OrderService{
 		if(vids.length > 0){
 			vus = voucherDao.updateStateByIds(vids);
 		}
-		System.out.println(e + o + op + vp + cus + vus); //6次数据库操作,AOP保证事物
+		System.out.println(e + o + op + vp + cus + vus + m); //7次数据库操作,AOP保证事物
 		
 		return orderId; 
 	}
