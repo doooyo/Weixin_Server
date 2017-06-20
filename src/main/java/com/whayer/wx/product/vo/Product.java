@@ -15,6 +15,8 @@ public class Product implements Serializable{
 	private String description;//产品描述
 	private Date createTime;   //创建时间
 	
+	private Boolean isOff;   //是否下架
+	
 	public String getId() {
 		return id;
 	}
@@ -54,11 +56,15 @@ public class Product implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+	public Boolean getIsOff() {
+		return isOff;
+	}
+	public void setIsOff(Boolean isOff) {
+		this.isOff = isOff;
+	}
 	@Override
 	public String toString() {
 		return "Product [id=" + id + ", name=" + name + ", imgUrl=" + imgUrl + ", price=" + price + ", description="
-				+ description + ", createTime=" + createTime + "]";
+				+ description + ", createTime=" + createTime + ", isOff=" + isOff + "]";
 	}
-	
 }

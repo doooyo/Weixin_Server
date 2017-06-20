@@ -41,7 +41,7 @@ public class ProductController extends BaseController{
 	ProductService productService;
 	
 	/**
-	 * 获取所有产品
+	 * 获取所有产品 (PC)
 	 * @param request
 	 * @param response
 	 * @return
@@ -60,7 +60,7 @@ public class ProductController extends BaseController{
 	}
 	
 	/**
-	 * 根据角色(用户编码)获取具有权限的产品列表
+	 * 根据角色(用户编码)获取具有权限的产品列表 (wechat)
 	 * @param request
 	 * @param response
 	 * @return
@@ -327,6 +327,30 @@ public class ProductController extends BaseController{
 		}else{
 			res.setErrorMsg("更新产品失败");
 			log.error("更新产品失败");
+			return res;
+		}
+	}
+	
+	@RequestMapping(value = "/updateOnOrOff", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseCondition updateOnOrOff(HttpServletRequest request, HttpServletResponse response) {
+		log.info("ProductController.updateOnOrOff()");
+		Box box = loadNewBox(request);
+		String id = box.$p("id");
+		String value = box.$p("isOff");
+		if(isNullOrEmpty(id) || isNullOrEmpty(value)){
+			return getResponse(X.FALSE);
+		}
+		Integer isOff = X.string2int(value);
+		
+		int count = productService.updateOnOrOff(id, isOff);
+		
+		if(count > 0){
+			return getResponse(X.TRUE);
+		}else{
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("更新产品上下架失败");
+			log.error("更新产品上下架失败");
 			return res;
 		}
 	}

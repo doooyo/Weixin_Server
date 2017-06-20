@@ -11,7 +11,8 @@
 		img_url,
 		price,
 		description,
-		create_time
+		create_time,
+		is_off
 	</sql>
 	
 	<sql id="product2RoleFields">
@@ -22,11 +23,13 @@
 
 	
 	<resultMap id="productListMap" type="Product">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="imgUrl" property="img_url" />
-        <result column="price" property="price" />
-        <result column="description" property="description" />
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="imgUrl" column="img_url" />
+        <result property="price" column="price" />
+        <result property="description" column="description" />
+        <result property="createTime" column="create_time" />
+        <result property="isOff" column="is_off" />
     </resultMap>
 	
 	<select id="getProductList"  resultMap="productListMap" >
@@ -50,7 +53,8 @@
 				img_url,
 				price,
 				description,
-				create_time
+				create_time,
+				is_off
 				)
 				values(
 				#{id},
@@ -58,7 +62,8 @@
 				#{imgUrl},
 				#{price},
 				#{description},
-				now()
+				now(),
+				0
 			)
 		]]>
 	</insert>
@@ -97,6 +102,7 @@
 		]]>
 	</delete>
 	
+	<!-- 打标的产品必定是上架状态的产品 -->
 	<select id="getProductListByUserType" resultType="Product">
 		<!-- 
 			code:  1:个人代理编码 2:区域代理编码 xxx:集团用户编码
@@ -107,7 +113,7 @@
 		where t.id in 
 		(
 		  select u.product_id from sk_product_role u where u.user_code=#{code}
-		)
+		) AND t.is_off=0 
 	</select>
 	
 	<select id="getProductList2Role" resultType="ProductIsSelected">
@@ -121,7 +127,7 @@
 		where id in 
 		(
 		  select u.product_id from sk_product_role u where u.user_code=#{code}
-		)
+		) AND is_off=0 
 		union all
 		select
 			<include refid="productFields" />,
@@ -130,7 +136,7 @@
 		where id not in 
 		(
 		  select u.product_id from sk_product_role u where u.user_code=#{code}
-		)
+		) AND is_off=0 
 	</select>
 	
 	<!-- 产品打标关联 -->
@@ -158,9 +164,22 @@
         AND user_code=#{role}
 	</delete>
 	
+	<!-- 单个删除产品关联 -->
 	<delete id="deleteAssociation" parameterType="String">
 		<![CDATA[
 			DELETE FROM sk_product_role WHERE product_id=#{id}
 		]]>
 	</delete>
+	
+	<update id="updateOnOrOff">
+		UPDATE sk_product 
+		    <trim prefix="SET" suffixOverrides=",">
+			    <if test="isOff != null">
+			      is_off = #{isOff},
+			    </if>
+		    </trim>
+			<where>
+		      id=#{id}
+		    </where>
+	</update>
 </mapper>

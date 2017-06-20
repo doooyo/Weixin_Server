@@ -31,4 +31,6 @@ public interface ProductDao  extends DAO{
 	
 	public Integer deleteAssociates(@Param("role") String role, @Param("ids") String... ids);
 	
+	public Integer updateOnOrOff(@Param("id") String id, @Param("isOff") Integer isOff);
+	
 }

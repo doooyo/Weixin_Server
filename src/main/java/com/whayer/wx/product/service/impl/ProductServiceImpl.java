@@ -104,4 +104,10 @@ public class ProductServiceImpl implements ProductService{
 		return productDao.updateProduct(product);
 	}
 
+	@Override
+	public Integer updateOnOrOff(String id, int isOff) {
+		
+		return productDao.updateOnOrOff(id, isOff);
+	}
+
 }

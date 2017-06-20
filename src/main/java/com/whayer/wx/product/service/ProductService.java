@@ -74,4 +74,12 @@ public interface ProductService {
 	 */
 	public Integer deleteAssociation(String id);
 	
+	/**
+	 * 更新产品上下架状态
+	 * @param id
+	 * @param isOff
+	 * @return
+	 */
+	public Integer updateOnOrOff(String id, int isOff);
+	
 }
