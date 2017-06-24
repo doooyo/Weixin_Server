@@ -190,16 +190,18 @@ public class ProductController extends BaseController{
 		
 		
 		String id = X.uuidPure();
+		String categoryId = box.$p("categoryId");
 		String name = box.$p("name");
 		//String imgUrl = box.$p("imgUrl");
 		BigDecimal price = new BigDecimal(box.$p("price"));
 		String description = box.$p("description");
 		
-		if(isNullOrEmpty(name) || isNullOrEmpty(price)){
+		if(isNullOrEmpty(name) || isNullOrEmpty(price) || isNullOrEmpty(categoryId)){
 			return getResponse(false);
 		}
 		Product product = new Product();
 		product.setId(id);
+		product.setCategoryId(categoryId);
 		//product.setImgUrl(imgUrl);
 		product.setName(name);
 		product.setPrice(price);
@@ -261,22 +263,25 @@ public class ProductController extends BaseController{
 		Box box = loadNewBox(request);
 		
 		String id = box.$p("id");
+		String categoryId = box.$p("categoryId");
 		String name = box.$p("name");
 		BigDecimal price = new BigDecimal(box.$p("price"));
 		String description = box.$p("description");
 		
 		ResponseCondition res = getResponse(X.FALSE);
 		
-		if(isNullOrEmpty(id)){
+		if(isNullOrEmpty(id) || isNullOrEmpty(categoryId)){
 			return res;
 		}
 		
 		Product product = productService.getProductById(id);
+		
 		if(isNullOrEmpty(product)){
 			res.setErrorMsg("没有此产品!");
 			return res;
 		}
 		
+		product.setCategoryId(categoryId);
 		product.setName(name);
 		product.setDescription(description);
 		product.setPrice(price);
@@ -331,6 +336,12 @@ public class ProductController extends BaseController{
 		}
 	}
 	
+	/**
+	 * 更新产品上下线状态
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = "/updateOnOrOff", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition updateOnOrOff(HttpServletRequest request, HttpServletResponse response) {

@@ -12,7 +12,8 @@
 		price,
 		description,
 		create_time,
-		is_off
+		is_off,
+		category_id
 	</sql>
 	
 	<sql id="product2RoleFields">
@@ -30,6 +31,7 @@
         <result property="description" column="description" />
         <result property="createTime" column="create_time" />
         <result property="isOff" column="is_off" />
+        <result property="categoryId" column="category_id" />
     </resultMap>
 	
 	<select id="getProductList"  resultMap="productListMap" >
@@ -54,7 +56,8 @@
 				price,
 				description,
 				create_time,
-				is_off
+				is_off,
+				category_id
 				)
 				values(
 				#{id},
@@ -63,7 +66,8 @@
 				#{price},
 				#{description},
 				now(),
-				0
+				0,
+				#{categoryId}
 			)
 		]]>
 	</insert>
@@ -82,6 +86,9 @@
 			    </if>
 			    <if test="imgUrl != null and imgUrl != ''">
 			      img_url = #{imgUrl},
+			    </if>
+			    <if test="categoryId != null and categoryId != ''">
+			      category_id = #{categoryId},
 			    </if>
 		    </trim>
 			<where>

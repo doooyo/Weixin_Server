@@ -9,6 +9,7 @@ public class Product implements Serializable{
 	private static final long serialVersionUID = 4115547525003132617L;
 	
 	private String id;
+	private String categoryId;//产品分类id
 	private String name;     //产品名
 	private String imgUrl;   //产品图片相对路径
 	private BigDecimal price;//产品价格
@@ -22,6 +23,13 @@ public class Product implements Serializable{
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(String categoryId) {
+		this.categoryId = categoryId;
 	}
 	public String getName() {
 		return name;
@@ -64,7 +72,8 @@ public class Product implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", imgUrl=" + imgUrl + ", price=" + price + ", description="
-				+ description + ", createTime=" + createTime + ", isOff=" + isOff + "]";
+		return "Product [id=" + id + ", categoryId=" + categoryId + ", name=" + name + ", imgUrl=" + imgUrl + ", price="
+				+ price + ", description=" + description + ", createTime=" + createTime + ", isOff=" + isOff + "]";
 	}
+	
 }
