@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.whayer.wx.product.dao.ProductCategoryDao">
+
+	<sql id="productCategoryFields">
+		id,
+		name
+	</sql>
+	
+	<select id="getCategoryList" parameterType="String" resultType="ProductCategory">
+		select
+		<include refid="productCategoryFields" />
+		from sk_product_category 
+		<trim prefix="WHERE" prefixOverrides="AND|OR">  
+		    <if test="name != null and name !='' ">  
+		        AND name LIKE CONCAT('%',#{name},'%')
+		    </if>  
+		</trim>	
+	</select>
+	
+	<insert id="saveCategory">
+		insert into sk_product_category(
+  			<include refid="productCategoryFields" />
+  		) 
+  		values(
+  		#{id},
+  		#{name}
+  		)
+	</insert>
+	
+	<update id="updateCategory">
+		UPDATE sk_product_category SET name=#{name}
+    	WHERE id=#{id}
+	</update>
+	
+	<delete id="deleteCategoryById">
+		<![CDATA[
+			DELETE FROM sk_product_category WHERE id=#{id}
+		]]>
+	</delete>
+</mapper>

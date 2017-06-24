@@ -61,8 +61,9 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 			return true;
 		} else {
 			//request.getRequestDispatcher("/login").forward(request, response); //只提供RESTful接口,不提供后台跳转
+			return false;
 		}
-		return false;
+		
 	}
 
 	private boolean isExclude(final HttpServletRequest request) {

@@ -238,7 +238,7 @@ public class PayV2Controller extends BaseController{
 //						log.debug("微信没有此订单");
 //						response.getWriter().append(getWxReturnMessage(X.FALSE, "微信订单查询失败"));
 //					}else{
-						int count = orderService.updateOrderStatusById(out_trade_no, 1);
+						int count = orderService.updateOrderStatusByIdV2(out_trade_no, X.OrderState.PAID, order.getAmount().intValue(), order.getUserId());
 						if(count > 0){
 							log.debug("更新业务订单成功");
 							response.getWriter().append(getWxReturnMessage(X.TRUE, "OK"));

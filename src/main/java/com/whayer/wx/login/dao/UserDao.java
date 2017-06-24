@@ -72,4 +72,11 @@ public interface UserDao extends DAO{
 	 * @return
 	 */
 	public int deleteUserById(@Param("id") String id);
+	
+	/**
+	 * 更新用户积分
+	 * @param points
+	 * @return
+	 */
+	public int updatePoints(@Param("userId") String userId, @Param("points") Integer points);
 }

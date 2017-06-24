@@ -643,4 +643,45 @@ public final class X implements Constant{
 	    }
 	    return m;
 	  }
+	  
+	  /**
+	   * 订单状态
+	   * state 0:未付款, 1:已付款 2:已结算 3:已取消
+	   */
+	public static enum OrderState {
+		UNPAID("未付款", 0), PAID("已付款", 1), SETTLED("已结算", 2), CANCELED("已取消", 3);
+
+		private String name;
+		private int state;
+
+		private OrderState(String name, int state) {
+			this.name = name;
+			this.state = state;
+		}
+
+		public static String getName(int state) {
+			for (OrderState c : OrderState.values()) {
+				if (c.getState() == state) {
+					return c.name;
+				}
+			}
+			return null;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getState() {
+			return state;
+		}
+
+		public void setState(int state) {
+			this.state = state;
+		}
+	}
 }

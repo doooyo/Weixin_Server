@@ -12,12 +12,12 @@ public class TestController {
 	private final static Logger log = LoggerFactory.getLogger(TestController.class);
 
 	@RequestMapping("/index")
-	@ResponseBody
+	//@ResponseBody
 	public String index() {
 		log.info("TestController.index()");
 //		TestBean bean = (TestBean)BeanFactory.getBean("testBean");
 //		TestBean bean = (TestBean)SpringFactory.getBean("testBean");
 //		bean.hello();
-		return "test";
+		return "index.jsp";
 	}
 }

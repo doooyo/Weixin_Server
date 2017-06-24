@@ -12,6 +12,7 @@ import com.github.pagehelper.PageInfo;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.coupon.dao.CouponDao;
+import com.whayer.wx.login.dao.UserDao;
 import com.whayer.wx.order.dao.ExamineeDao;
 import com.whayer.wx.order.dao.MemberDao;
 import com.whayer.wx.order.dao.OrderDao;
@@ -39,6 +40,9 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Resource
 	private MemberDao memberDao;
+	
+	@Resource 
+	private UserDao userDao;
 	
 	@Override
 	public PageInfo<Order> getOrderList(String uid, Pagination pagination) {
@@ -138,7 +142,7 @@ public class OrderServiceImpl implements OrderService{
 		}
 		
 		//取消订单
-		orderDao.updateOrderStatusById(id, 3);
+		orderDao.updateOrderStatusById(id, X.OrderState.CANCELED.getState());
 		
 		return 1;
 		
@@ -194,6 +198,13 @@ public class OrderServiceImpl implements OrderService{
 		List<Order> list =  orderDao.getListByTypeV2(type, userId, beginTime, endTime, nickname, examineeName);
 		PageInfo<Order> pageInfo = new PageInfo<Order>(list, pagination.getNavigationSize());
 		return pageInfo;
+	}
+
+	@Override
+	public int updateOrderStatusByIdV2(String orderId, X.OrderState state, int points, String userId) {
+		int i = updateOrderStatusById(orderId, state.getState());
+		int j = userDao.updatePoints(userId, points);
+		return i + j;
 	}
 
 }

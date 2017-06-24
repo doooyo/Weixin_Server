@@ -75,6 +75,8 @@
 <filter-mapping>
 	<filter-name>CharacterEncodingFilter</filter-name>
 	<url-pattern>/*</url-pattern>
+	<!-- 不填则默认对所有servlet生效 -->
+	<servlet-name>springmvc</servlet-name>
 </filter-mapping>
 
 <session-config>

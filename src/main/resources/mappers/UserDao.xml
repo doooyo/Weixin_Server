@@ -259,4 +259,12 @@
    			DELETE FROM sk_user WHERE id=#{id}
    		]]>
 	</delete>
+	
+	<!-- 更新积分 -->
+	<update id="updatePoints">
+		UPDATE sk_user SET points=points+#{points}
+    	<where>
+	      	id=#{userId}
+    	</where>  
+	</update>
 </mapper>

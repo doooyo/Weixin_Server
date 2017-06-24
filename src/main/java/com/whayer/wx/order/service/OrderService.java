@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.github.pagehelper.PageInfo;
+import com.whayer.wx.common.X.OrderState;
 import com.whayer.wx.common.mvc.Pagination;
 import com.whayer.wx.order.vo.Order;
 import com.whayer.wx.order.vo.OrderStatistics;
@@ -104,4 +105,14 @@ public interface OrderService {
 	 * @return
 	 */
 	public int updateOrderStatusById(String orderId, int state);
+	
+	/**
+	 * 更新订单状态(同时更新积分)
+	 * @param orderId
+	 * @param state
+	 * @param points
+	 * @param userId
+	 * @return
+	 */
+	public int updateOrderStatusByIdV2(String orderId, OrderState state, int points, String userId);
 }

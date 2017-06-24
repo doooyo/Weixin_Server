@@ -14,9 +14,46 @@ import com.whayer.wx.async.service.impl.LongTimeAsyncCallService;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.mvc.BaseController;
 
+/**
+ * 【Callable】:spring mvc 内部交由TaskExcutor执行
+ * 【DeferredResult】: DeferredResult则由其他线程(自己实现的)执行返回结果,需要自己手动去回调
+ * 【WebAsyncTask】:核心也是Callable,只是包装了【timeout回调】以及【complete回调】
+ * @author duyu
+ *
+ */
 @Controller
 @RequestMapping("/async")
 public class AsyncTestController  extends BaseController{
+	
+	/**
+	 * 
+	 * 首先,我们来测试如果不使用【Callable】,【DeferredResult】,【WebAsyncTask】等异步请求
+	 * 而是直接开启另一个线程来处理耗时任务,看是否
+	 * @return
+	 */
+	@RequestMapping(value="/test0", method=RequestMethod.GET)  
+	@ResponseBody
+    public String test0() {  
+		System.out.println("请求开始时间：" + X.nowString());
+		System.out.println("/test2 调用！thread id is : " + Thread.currentThread().getId());
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(6000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("异步任务完成时间：" + X.nowString());
+				System.out.println("/异步调用完成！thread id is : " + Thread.currentThread().getId());
+			}
+		}).start();
+		
+		System.out.println("请求返回时间：" + X.nowString());
+		return "请求完成";
+    }  
 	
 	/**
 	 * 返回Callable, springmvc处理过程如下
@@ -71,7 +108,7 @@ public class AsyncTestController  extends BaseController{
 	}
 	
 	/**
-	 * 其核心也是一个Callable,即SpringMVC内部交由TaskExecutor处理;
+	 * WebAsyncTask 其核心也是一个Callable,即SpringMVC内部交由TaskExecutor处理;
 	 * 再包裹一层的目的是为了更好的支持业务; 比如超时时间
 	 * @return
 	 */

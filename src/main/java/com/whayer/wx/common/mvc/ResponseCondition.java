@@ -9,7 +9,7 @@ public class ResponseCondition implements Serializable{
 	private static final long serialVersionUID = -8173852245814158731L;
 	
 	//private Integer errorCode;         //业务错误码
-	//private Integer httpCode = 200;    //HTTP状态码
+	private Integer httpCode = 200;    //HTTP状态码
 	private String  errorMsg = "";     //错误堆栈
 	private Boolean isSuccess = true;  //是否成功
 	private List<?> list;              //返回集合
@@ -82,10 +82,16 @@ public class ResponseCondition implements Serializable{
 	public void setPages(int pages) {
 		this.pages = pages;
 	}
+	public Integer getHttpCode() {
+		return httpCode;
+	}
+	public void setHttpCode(Integer httpCode) {
+		this.httpCode = httpCode;
+	}
 	@Override
 	public String toString() {
-		return "ResponseCondition [errorMsg=" + errorMsg + ", isSuccess=" + isSuccess + ", list=" + list + ", pageSize="
-				+ pageSize + ", pageIndex=" + pageIndex + ", total=" + total + ", pages=" + pages + "]";
+		return "ResponseCondition [httpCode=" + httpCode + ", errorMsg=" + errorMsg + ", isSuccess=" + isSuccess
+				+ ", list=" + list + ", pageSize=" + pageSize + ", pageIndex=" + pageIndex + ", total=" + total
+				+ ", pages=" + pages + "]";
 	}
-	
 }
