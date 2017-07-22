@@ -1,6 +1,7 @@
 package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
+import com.mysql.fabric.xmlrpc.base.Array;
+import com.sun.tools.javac.util.List;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.SHA1;
 import com.whayer.wx.common.mvc.BaseController;
@@ -59,7 +62,7 @@ public class Update2MiniCardController extends BaseController{
 		String encrypt_code = box.$p("encrypt_code");//"GZ%2BsckbRF4OBDD8U%2FdMpqdd0pqS%2Fsg8MlzlLB2nHjgg%3D";
 		String openid = box.$p("openid");//"owN5lwKtQBu0m2sx3kbvz1JESe-k";
 				
-		encrypt_code = URLDecoder.decode(encrypt_code, "UTF-8");
+		//encrypt_code = URLDecoder.decode(encrypt_code, "UTF-8");
 		log.info("card_id:" + card_id +", encrypt_code:"+ encrypt_code + ",openid:"+openid);
 		
 		if(isNullOrEmpty(card_id) || isNullOrEmpty(encrypt_code)){
@@ -100,6 +103,44 @@ public class Update2MiniCardController extends BaseController{
 		log.info(JSONObject.toJSONString("更新结果为："+result2));
 		response.getWriter().print("卡劵升级成功！");
 		
+	}
+	
+	/**
+	 * code解码
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping("/decryptCode")
+	@ResponseBody
+	public ResponseCondition decryptCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.debug("Update2MiniCardController.decryptCode()");
+		
+		Box box = loadNewBox(request);
+		
+		String code = box.$p("code");
+		
+		if(isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		//springmvc接收已经是解码后的参数
+		//code = URLDecoder.decode(code, "utf-8");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("encrypt_code", code);
+		Map<String, Object> result = wcs.decryptCard(JSONObject.toJSONString(params));
+		String real_code = String.valueOf(result.get("code"));
+		
+		log.info("解码后的code："+real_code);
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(real_code);
+		res.setList(list);
+		
+		return res;
 	}
 	
 	/**
