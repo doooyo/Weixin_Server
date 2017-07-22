@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,30 +15,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
+import com.sun.tools.javac.util.List;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.SHA1;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.pay.util.RandomUtils;
+import com.whayer.wx.pay2.service.PayV2Service;
 import com.whayer.wx.wechat.util.Constant;
 
 @Controller
-public class Update2MiniCardController extends BaseController{
+public class WxCardController extends BaseController{
 	
-	private final static Logger log = LoggerFactory.getLogger(Update2MiniCardController.class);
+	private final static Logger log = LoggerFactory.getLogger(WxCardController.class);
+	
+	@Resource
+	private PayV2Service payV2Service;
 	
 	private WxVipService wcs = null;
 	private BaseConfig bc = null;
 	
-	public Update2MiniCardController() {
+	public WxCardController() {
 		wcs = new WxVipService();
 		bc = new BaseConfig();
 		bc.setGetToken(true);
@@ -46,6 +51,12 @@ public class Update2MiniCardController extends BaseController{
 		wcs.setBaseConfig(bc);
 	}
 	
+	/**
+	 * 升级公众号卡劵
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
 	//http://duyu.ngrok.cc/update2minicard?card_id=pwN5lwEEyGMIZob8Ws0YNUTOHy28&encrypt_code=GZ%2BsckbRF4OBDD8U%2FdMpqdd0pqS%2Fsg8MlzlLB2nHjgg%3D&openid=owN5lwKtQBu0m2sx3kbvz1JESe-k
 	@RequestMapping("/update2minicard")
 	@ResponseBody
@@ -68,6 +79,9 @@ public class Update2MiniCardController extends BaseController{
 			response.getWriter().print("参数缺失！");
 			return;
 		}
+		
+		//前端必须componentURI编码,后端再解码(否则'='会被解码为'#e')
+		encrypt_code = URLDecoder.decode(encrypt_code, "UTF-8");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("encrypt_code", encrypt_code);
@@ -104,6 +118,7 @@ public class Update2MiniCardController extends BaseController{
 		
 	}
 	
+	
 	/**
 	 * code解码
 	 * @param request
@@ -119,23 +134,14 @@ public class Update2MiniCardController extends BaseController{
 		Box box = loadNewBox(request);
 		
 		String code = box.$p("code");//"GZ+sckbRF4OBDD8U/dMpqbT8k+UFXOaYn+Ps3Q2UVfo=";//box.$p("code");
-		code = URLDecoder.decode(code, "UTF-8");
-		log.info("解码参数code:"+code);
-		
-//		if(code.equals("GZ+sckbRF4OBDD8U/dMpqbT8k+UFXOaYn+Ps3Q2UVfo=")){
-//			log.info("url获取正确");
-//		}else{
-//			log.info("url获取不正确");
-//		}
-		
-		
 		
 		if(isNullOrEmpty(code)){
 			return getResponse(X.FALSE);
 		}
 		
-		//springmvc接收已经是解码后的参数
-		//code = URLDecoder.decode(code, "utf-8");
+		//前端必须componentURI编码,后端再解码(否则'='会被解码为'#e')
+		code = URLDecoder.decode(code, "UTF-8");
+		log.info("解码参数code:"+code);
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("encrypt_code", code);
@@ -163,8 +169,6 @@ public class Update2MiniCardController extends BaseController{
 	@ResponseBody
 	public ResponseCondition addCardTest(HttpServletRequest request, HttpServletResponse response) {
 		log.debug("Update2MiniCardController.addCardTest()");
-//		request.setCharacterEncoding("utf-8");
-//		response.setCharacterEncoding("utf-8");
 		
 		Box box = loadNewBox(request);
 		
@@ -233,12 +237,11 @@ public class Update2MiniCardController extends BaseController{
 		
 		String[] cardIds = ids.split(",");
 		
-		String apiTicket = wcs.getWxCardTicket();
-		
 		
 		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
 		for (int i = 0; i < cardIds.length; i++) {
 			
+			String apiTicket = wcs.getWxCardTicket();
 			String nonceStr = RandomUtils.generateMixString(32);;
 			String timestamp = String.valueOf(System.currentTimeMillis()/1000);
 			
@@ -271,5 +274,47 @@ public class Update2MiniCardController extends BaseController{
 		ResponseCondition res = getResponse(X.TRUE);
 		res.setList(list);
         return res;
+	}
+	
+	/**
+	 * 获取用户已领取卡券列表
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "/getCardList")
+	@ResponseBody
+	public ResponseCondition getCardList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.debug("Update2MiniCardController.getCardList()");
+		
+		Box box = loadNewBox(request);
+		String code = box.$p("code");
+		String cardId = box.$p("card_id");
+		
+		if(isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		//获取小程序openid
+		String openId = payV2Service.getOpenId(code);
+		log.info("小程序openid：" + openId);
+		
+		if(isNullOrEmpty(openId)){
+			log.error("openid 获取失败");
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("openid 获取失败");
+			return res;
+		}
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		Map<String, Object> result = wcs.getCardIdList(openId, cardId);
+		
+		log.info("获取卡劵列表结果：" + JSONObject.toJSONString(result));
+		
+		@SuppressWarnings("unchecked")
+		List<JSONObject> list = (List<JSONObject>)result.get("card_list");
+		res.setList(list);
+		return res;
 	}
 }
