@@ -234,11 +234,14 @@ public class Update2MiniCardController extends BaseController{
 		String[] cardIds = ids.split(",");
 		
 		String apiTicket = wcs.getWxCardTicket();
-		String nonceStr = RandomUtils.generateMixString(32);;
-		String timestamp = String.valueOf(System.currentTimeMillis()/1000);
+		
 		
 		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
 		for (int i = 0; i < cardIds.length; i++) {
+			
+			String nonceStr = RandomUtils.generateMixString(32);;
+			String timestamp = String.valueOf(System.currentTimeMillis()/1000);
+			
 			String[] arr = {apiTicket, cardIds[i], nonceStr, timestamp};
 			Arrays.sort(arr, String.CASE_INSENSITIVE_ORDER);
 			
