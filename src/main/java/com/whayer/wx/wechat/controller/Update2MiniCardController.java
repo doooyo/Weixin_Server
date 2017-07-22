@@ -119,7 +119,17 @@ public class Update2MiniCardController extends BaseController{
 		
 		Box box = loadNewBox(request);
 		
-		String code = box.$p("code");
+		String code = box.$p("code");//"GZ+sckbRF4OBDD8U/dMpqbT8k+UFXOaYn+Ps3Q2UVfo=";//box.$p("code");
+		code = URLDecoder.decode(code, "UTF-8");
+		log.info("解码参数code:"+code);
+		
+//		if(code.equals("GZ+sckbRF4OBDD8U/dMpqbT8k+UFXOaYn+Ps3Q2UVfo=")){
+//			log.info("url获取正确");
+//		}else{
+//			log.info("url获取不正确");
+//		}
+		
+		
 		
 		if(isNullOrEmpty(code)){
 			return getResponse(X.FALSE);
@@ -131,6 +141,7 @@ public class Update2MiniCardController extends BaseController{
 		Map<String, Object> params = new HashMap<>();
 		params.put("encrypt_code", code);
 		Map<String, Object> result = wcs.decryptCard(JSONObject.toJSONString(params));
+		log.info("解码结果：" + JSONObject.toJSONString(result));
 		String real_code = String.valueOf(result.get("code"));
 		
 		log.info("解码后的code："+real_code);
