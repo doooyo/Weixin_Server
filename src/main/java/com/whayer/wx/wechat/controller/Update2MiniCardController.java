@@ -1,7 +1,6 @@
 package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,13 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
-import com.mysql.fabric.xmlrpc.base.Array;
-import com.sun.tools.javac.util.List;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.SHA1;
 import com.whayer.wx.common.mvc.BaseController;
@@ -155,7 +154,7 @@ public class Update2MiniCardController extends BaseController{
 	}
 	
 	/**
-	 * 用于添加卡劵测试
+	 * 用于添加单个卡劵测试
 	 * @param request
 	 * @param response
 	 * @throws IOException
@@ -210,7 +209,64 @@ public class Update2MiniCardController extends BaseController{
 		list.add(json);
 		res.setList(list);
         return res;
-
+	}
+	
+	/**
+	 * 用于批量添加卡劵测试
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/addCardTestV2")
+	@ResponseBody
+	public ResponseCondition addCardTestV2(
+			//@RequestParam(value = "cardIds[]", required = false) String[] cardIds,
+			HttpServletRequest request, HttpServletResponse response) {
+		log.debug("Update2MiniCardController.addCardTestV2()");
 		
+		Box box = loadNewBox(request);
+		String ids = box.$p("cardIds");
+				
+		if(isNullOrEmpty(ids)){
+			return getResponse(X.FALSE);
+		}
+		
+		String[] cardIds = ids.split(",");
+		
+		String apiTicket = wcs.getWxCardTicket();
+		String nonceStr = RandomUtils.generateMixString(32);;
+		String timestamp = String.valueOf(System.currentTimeMillis()/1000);
+		
+		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
+		for (int i = 0; i < cardIds.length; i++) {
+			String[] arr = {apiTicket, cardIds[i], nonceStr, timestamp};
+			Arrays.sort(arr, String.CASE_INSENSITIVE_ORDER);
+			
+			StringBuilder sb = new StringBuilder();
+	        for(int k = 0; k < arr.length; k ++) {
+	            sb.append(arr[k]);
+	        }
+	        String result = sb.toString();
+	        
+	        String signature = SHA1.getSha1(result);
+	        
+	        JSONObject json = new JSONObject();
+	        JSONObject child = new JSONObject();
+			
+			//json.put("ticket", apiTicket);
+			json.put("cardId", cardIds[i]);
+			
+			child.put("nonce_str", nonceStr);
+			child.put("timestamp", timestamp);
+			child.put("signature", signature);
+			
+			json.put("cardExt", JSONObject.toJSONString(child));
+			
+			list.add(json);
+		}
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+        return res;
 	}
 }
