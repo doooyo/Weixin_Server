@@ -44,6 +44,10 @@ public class Order implements Serializable{
 	private String recipientAddress; //订单发票收件人地址
 	private String invoiceHeader;    //订单发票抬头
 	
+	public Order(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

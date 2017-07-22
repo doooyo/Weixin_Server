@@ -18,6 +18,10 @@ public class Company implements Serializable{
 	private Date activeEndTime;
 	private float discount = 1;
 	
+	public Company(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

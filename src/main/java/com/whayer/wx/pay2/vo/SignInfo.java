@@ -18,6 +18,9 @@ public class SignInfo{
 	
 	private String signType; //签名方式
 	
+	public SignInfo(){
+		
+	}
 	
 	public String getAppId() {
 		return appId;

@@ -5,6 +5,10 @@ public class ProductIsSelected extends Product{
 	private static final long serialVersionUID = -5408372383790360320L;
 	
 	private Boolean isSelected;
+	
+	public ProductIsSelected(){
+		
+	}
 
 	public Boolean getIsSelected() {
 		return isSelected;

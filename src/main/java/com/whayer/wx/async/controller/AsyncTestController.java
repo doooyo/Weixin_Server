@@ -88,7 +88,7 @@ public class AsyncTestController  extends BaseController{
 	@RequestMapping(value="/test2", method = RequestMethod.GET)
 	@ResponseBody
 	public DeferredResult<String> test2(){
-	    DeferredResult<String> deferredResult = new DeferredResult<String>();
+	    final DeferredResult<String> deferredResult = new DeferredResult<String>();
 	    System.out.println("/test2 调用！thread id is : " + Thread.currentThread().getId());
 	    LongTimeAsyncCallService longTimeAsyncCallService = new LongTimeAsyncCallService();
 	    //记录请求处理线程开始时间

@@ -17,6 +17,9 @@ public class GiftRelease implements Serializable{
 	private Date releaseTime; //发放日期(当确认邮寄时)
 	private String orderId;
 	
+	public GiftRelease(){
+		
+	}
 	
 	public String getId() {
 		return id;

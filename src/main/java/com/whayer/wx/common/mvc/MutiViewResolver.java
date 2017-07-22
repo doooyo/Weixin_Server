@@ -25,7 +25,7 @@ public class MutiViewResolver implements ViewResolver {
 	private static final Logger log = LoggerFactory.getLogger(ViewResolver.class);
 	private HashMap<String, ViewResolver> resolvers;
 
-	//@Override
+	@Override
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
 		log.debug("@@@@Resolving view : " + viewName);
 		ViewResolver vr;

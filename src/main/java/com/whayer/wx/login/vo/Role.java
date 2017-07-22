@@ -17,6 +17,10 @@ public class Role implements Serializable{
 	private String name;  //角色名 
 	private Date createTime; //创建时间
 	
+	public Role(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

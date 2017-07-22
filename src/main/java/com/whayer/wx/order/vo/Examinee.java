@@ -24,6 +24,9 @@ public class Examinee implements Serializable{
 	private String email;   //邮件
 	private String wechat; //微信号
 	
+	public Examinee(){
+		
+	}
 	
 	public String getId() {
 		return id;

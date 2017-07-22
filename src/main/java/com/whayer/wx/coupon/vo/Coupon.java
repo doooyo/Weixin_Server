@@ -27,6 +27,10 @@ public class Coupon implements Serializable{
 	
 	private User user;            //优惠卷所属用户
 	
+	public Coupon(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

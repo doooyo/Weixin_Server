@@ -54,16 +54,19 @@
 			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 	</context:component-scan>
 	
+	<!-- spring自身处理静态资源 -->
 	<!-- <mvc:resources mapping="/static/**" location="/WEB-INF/static/" /> -->
+	<!-- 交由web容器servlet处理,注意目前只有tomcat与jetty的默认servlet才叫default -->
 	<mvc:default-servlet-handler default-servlet-name="default"/>
 
 	<bean id="aes" class="com.whayer.wx.common.encrypt.AES">
 		<constructor-arg value="2017.03_duyu_chengdu_china" />
 	</bean>
 	
-	<bean
+	<!-- FreeMarker置项 -->
+	<bean id="freemarkerConfig" 
 		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-		<property name="templateLoaderPath" value="/ftl/" />
+		<property name="templateLoaderPath" value="/WEB-INF/ftl/" />
 		<property name="freemarkerSettings">
 			<props>
 				<prop key="template_update_delay">10</prop>
@@ -76,19 +79,30 @@
 		</property>
 	</bean>
 	
+	<!--FreeMarker视图解释器 -->  
+	<bean id="viewResolver"  
+	      class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">  
+	    <property name="suffix" value=".ftl"/>  
+	    <property name="prefix" value=""/>    
+	    <property name="order" value="2"/> 
+	    <property name="contentType" value="text/html;charset=UTF-8"></property>  
+	</bean>  
+	
+	<!-- jstl视图解析器 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/jsp/" />
-		<property name="suffix" value=".jsp" />
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".html" />
+		<property name="viewClass" value="org.springframework.web.servlet.view.InternalResourceView" />
+		<property name="order" value="1"/>
 	</bean>
 	
-	<bean class="com.whayer.wx.common.mvc.MutiViewResolver">
+	<!-- <bean class="com.whayer.wx.common.mvc.MutiViewResolver">
 		<property name="resolvers">
 			<map>
 				<entry key="jsp">
 					<bean
 						class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-						<property name="prefix" value="/jsp/" />
+						<property name="prefix" value="/" />
 						<property name="suffix" value=".jsp" />
 						<property name="viewClass"
 							value="org.springframework.web.servlet.view.JstlView" />
@@ -103,7 +117,7 @@
 				</entry>
 			</map>
 		</property>
-	</bean>
+	</bean> -->
 	
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -141,7 +155,7 @@
 		</bean>
 	</mvc:interceptors> -->
 	
-	
+	<!-- 避免IE在ajax请求时，返回json出现下载 -->
 	<bean id="mappingJacksonHttpMessageConverter"
 		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 		<property name="supportedMediaTypes">
@@ -150,12 +164,16 @@
 			</list>
 		</property>
 	</bean>
+	
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    	<property name="cacheSeconds" value="0"></property>
 		<property name="messageConverters">
 			<list>
 				<ref bean="mappingJacksonHttpMessageConverter" />
+				<!-- <ref bean="mappingStringHttpMessageConverter"></ref> -->
 			</list>
 		</property>
+		<!-- <property name="webBindingInitializer" ref="webBindingInitializer"></property> -->
 	</bean>
 	
 </beans>   

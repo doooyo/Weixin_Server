@@ -10,6 +10,10 @@ public class ProductCategory implements Serializable{
 	private String id;   //分类id
 	private String name; //商品分类名
 	
+	public ProductCategory(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

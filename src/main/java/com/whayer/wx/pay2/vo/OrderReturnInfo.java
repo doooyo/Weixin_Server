@@ -20,6 +20,10 @@ public class OrderReturnInfo{
     private String prepay_id;
     private String trade_type;
     
+    public OrderReturnInfo(){
+    	
+    }
+    
 	public String getReturn_code() {
 		return return_code;
 	}

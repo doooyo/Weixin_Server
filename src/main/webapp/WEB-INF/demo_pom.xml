@@ -1,0 +1,109 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<!-- 指定当前pom的版本 -->
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>com.whayer+项目名</groupId>
+	
+	<artifactId>项目名+模块名</artifactId>
+	
+	<!-- 默认是jar，可以指定为war zip pom ear... -->
+	<packaging>war</packaging>
+	
+	<!-- 
+		版本号:一般为3个数字，第一个为大版本号，第二个为分之版本号，第三个为小版本号
+		snapshot 快照版本
+		alpha    内测版本
+		beta     公测版本
+		release  稳定版本
+		GA       正式发布版本
+	 -->
+	<version>0.0.1-SNAPSHOT</version>
+	<name>项目名称</name>
+	<url>项目地址</url>
+	<description>项目描述</description>
+	<!-- 开发者列表 -->
+	<developers>
+		<developer></developer>
+	</developers>
+	<!-- 许可列表 -->
+	<licenses>
+		<license></license>
+	</licenses>
+	
+	<!-- 依赖 -->
+	<dependencies>
+		<dependency>
+		    <groupId>ch.ethz.ganymed</groupId>
+		    <artifactId>ganymed-ssh2</artifactId>
+		    <version>262</version>
+		    <type></type>
+		    <!-- 
+		    	依赖范围（classpath），test表示此jar只在测试代码中才可以引用，主代码中引用会报错 
+		    	test     测试
+		    	compile  测试／编译／运行 (默认的范围)
+		    	provided 测试／编译      (比如servlet的api，不可以在运行时引入，因为容器如Tomcat已经依赖过了)
+		    	runtime  测试／运行      (如JDBC驱动)
+		    	system   同provided，但与操作系统相关联，移植性很差
+		    	import   导入范围，表示从其他pom中导入的dependency配置，只用于dependencyManagement节点
+		    	         即A<-B<-C，如果B声明为import，则将C导入到A中，而非传递依赖
+		    -->
+		    <scope>test</scope>
+		    <!-- 默认是false，即是继承的；为true则需要显式的引入该依赖 -->
+		    <optional>false</optional>
+		    <!-- 排除依赖传递列表，即A<-B<-C ，A传递依赖C；但是我们可能不需要C -->
+		    <exclusions>
+		    	<exclusion></exclusion>
+		    </exclusions>
+		</dependency>
+	</dependencies>
+	
+	<!-- 
+		依赖管理
+		定义在父模块中，供子模块使用；比如JUnit所有模块都需要，我们可以将JUnit添加到基础的Core.jar包中供各个项目的pom继承
+	 -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<!-- 构建行为，构建插件列表 -->
+	<build>
+		<finalName>weixin</finalName>
+		<plugins>  
+		    <plugin>  
+		        <groupId>org.apache.maven.plugins</groupId>  
+		        <artifactId>maven-compiler-plugin</artifactId>  
+		        <version>2.3.2</version>  
+		        <configuration>  
+		            <source>1.8</source>  
+		            <target>1.8</target>  
+		        </configuration>  
+		    </plugin>  
+		</plugins>  
+	</build>
+	
+	<!-- 用于子模块继承父模块的pom.xml文件 -->
+	<parent></parent>
+	
+	<!-- 聚合运行多个maven项目，不用挨个独自编译打包 -->
+	<modules>
+		<module></module>
+	</modules>
+	
+	<!-- 全局属性，${属性名} -->
+	<properties>
+		<commons-lang.version>2.6</commons-lang.version>
+		<slf4j.version>1.7.6</slf4j.version>
+		<spring.version>4.0.9.RELEASE</spring.version>
+	</properties>
+	
+</project>
+<!-- mvn compile install -DskipTests -->

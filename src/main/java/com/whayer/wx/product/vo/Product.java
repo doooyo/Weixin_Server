@@ -18,6 +18,10 @@ public class Product implements Serializable{
 	
 	private Boolean isOff;   //是否下架
 	
+	public Product(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

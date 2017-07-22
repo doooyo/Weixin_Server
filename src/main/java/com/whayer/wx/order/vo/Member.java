@@ -16,6 +16,10 @@ public class Member implements Serializable{
 	private String password;  //会员密码
 	private Date createTime;   //创建时间
 	
+	public Member(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

@@ -44,6 +44,10 @@ public class PayInfo {
     private String trade_type; //交易类型,JSAPI
     private String limit_pay;  //指定支付方式，no_credit  指定不能使用信用卡支付
     private String openid;     //登陆code换取openid 和 session_key
+    
+    public PayInfo(){
+    	
+    }
 
     public String getAppid() {
         return appid;

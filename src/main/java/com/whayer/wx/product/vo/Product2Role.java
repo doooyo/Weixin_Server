@@ -10,6 +10,10 @@ public class Product2Role implements Serializable {
 	private String productId;   //产品id
 	private String userCode;    //用户类型编码
 	
+	public Product2Role(){
+		
+	}
+	
 	public String getId() {
 		return id;
 	}

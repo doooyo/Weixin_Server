@@ -17,6 +17,9 @@ public class OrderQuery{
 	private String sign;
 	private String sign_type;
 	
+	public OrderQuery(){
+		
+	}
 	
 	public String getAppid() {
 		return appid;

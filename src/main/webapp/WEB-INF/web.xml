@@ -8,22 +8,21 @@
 <description>尚康阳光</description>
 
 <welcome-file-list>
-  <welcome-file>index.jsp</welcome-file>
-  <welcome-file>index.html</welcome-file>
+  <welcome-file>/</welcome-file>
 </welcome-file-list>
 
  <!-- TODO define those files -->
 <error-page>
    <error-code>404</error-code>
-   <location>/error404.html</location>
+   <location>/WEB-INF/jsp/error404.html</location>
 </error-page>
 <error-page>
    <error-code>500</error-code>
-   <location>/error500.html</location>
+   <location>/WEB-INF/jsp/error500.html</location>
 </error-page>
 <error-page>
    <exception-type>java.lang.Exception</exception-type>
-   <location>/except.html</location>
+   <location>/WEB-INF/jsp/except.html</location>
 </error-page>
 
 <context-param>
@@ -32,6 +31,12 @@
    <param-value>classpath*:IOC*.xml</param-value>
 </context-param>
 
+<context-param>
+   <param-name>test</param-name>
+   <param-value>doyo</param-value>
+</context-param>
+
+<!-- 此监听器作用是预读取applicationContext.xml配置 -->
 <listener>
 	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 </listener>
@@ -48,14 +53,21 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:smvc-servlet.xml</param-value>
 	</init-param>
+	<!-- 自动装载servlet,值越小,优先级越高 -->
 	<load-on-startup>1</load-on-startup>
 	<!-- 开启支持异步 -->
 	<async-supported>true</async-supported>
 </servlet>
 <servlet-mapping>
 	<servlet-name>springmvc</servlet-name>
-	<url-pattern>/*</url-pattern>
+	<url-pattern>/</url-pattern>
 </servlet-mapping>
+
+<!-- <servlet>
+	<servlet-name>initServlet</servlet-name>
+	<servlet-class>com.whayer.wx.wechat.servlet.InitServlet</servlet-class>
+	<load-on-startup>0</load-on-startup>
+</servlet> -->
 
 <filter>
 	<filter-name>CharacterEncodingFilter</filter-name>
@@ -78,6 +90,20 @@
 	<!-- 不填则默认对所有servlet生效 -->
 	<servlet-name>springmvc</servlet-name>
 </filter-mapping>
+
+<!-- <filter>
+	<filter-name>GZIPFilter</filter-name>
+	<filter-class>com.whayer.wx.common.filter.GzipFilter</filter-class>
+	<async-supported>true</async-supported>
+</filter>
+
+<filter-mapping>
+    <filter-name>GZIPFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher> 
+    <dispatcher>ERROR</dispatcher> 
+</filter-mapping> -->
+
 
 <session-config>
    <session-timeout>720</session-timeout>

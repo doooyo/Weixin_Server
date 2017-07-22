@@ -16,7 +16,7 @@ public class LongTimeAsyncCallService {
     private final int NeedSeconds = 10;
     //创建线程池
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(CorePoolSize);
-    public void makeRemoteCallAndUnknownWhenFinish(LongTimeTaskCallback callback){
+    public void makeRemoteCallAndUnknownWhenFinish(final LongTimeTaskCallback callback){
         System.out.println("完成此任务需要 : " + NeedSeconds + " 秒");
         scheduler.schedule(new Runnable() {
             @Override

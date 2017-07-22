@@ -18,6 +18,18 @@ public class TestController {
 //		TestBean bean = (TestBean)BeanFactory.getBean("testBean");
 //		TestBean bean = (TestBean)SpringFactory.getBean("testBean");
 //		bean.hello();
-		return "index.jsp";
+		return "index";
+	}
+	
+	@RequestMapping(value = {"/login", "/"})
+	public String login() {
+		log.info("TestController.login()");
+		return "login";
+	}
+	
+	@RequestMapping("/register")
+	public String register() {
+		log.info("TestController.register()");
+		return "register";
 	}
 }

@@ -132,17 +132,17 @@
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-tx</artifactId>
-		    <version>4.0.9.RELEASE</version>
+		    <!-- <version>4.0.9.RELEASE</version> -->
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-jdbc</artifactId>
-		    <version>4.0.9.RELEASE</version>
+		    <!-- <version>4.0.9.RELEASE</version> -->
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-context-support</artifactId>
-		    <version>4.0.9.RELEASE</version>
+		    <!-- <version>4.0.9.RELEASE</version> -->
 		</dependency>
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
@@ -180,7 +180,13 @@
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>servlet-api</artifactId>
 		    <version>2.5</version>
+		    <!-- 注意只在编译和测试时运行，如果在运行环境时运行会冲突的错误 -->
 		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>mohoo-wechat-card</groupId>
+			<artifactId>mohoo-wechat-card</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->

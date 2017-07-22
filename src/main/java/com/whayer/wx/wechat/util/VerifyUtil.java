@@ -1,4 +1,4 @@
-package com.whayer.wx.common.wechart;
+package com.whayer.wx.wechat.util;
 
 import java.util.Arrays;
 
@@ -14,7 +14,7 @@ public final class VerifyUtil {
 	/**
 	 * 自定义token
 	 */
-	public static final String token = "doyo"; 
+	public static final String token = "scskss"; 
 	
 	/**
 	 * 验证签名

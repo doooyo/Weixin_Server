@@ -12,4 +12,7 @@ public class Voucher extends Coupon{
 
 	private static final long serialVersionUID = -6208299314293311477L;
 	
+	public Voucher(){
+		
+	}
 }

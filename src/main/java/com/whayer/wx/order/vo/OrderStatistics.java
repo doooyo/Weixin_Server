@@ -16,6 +16,10 @@ public class OrderStatistics implements Serializable{
 	private Integer unsettledCount;    //未结算数量
 	private Integer settledCount;      //已结算数量
 	
+	public OrderStatistics(){
+		
+	}
+	
 	public BigDecimal getTotalFee() {
 		return totalFee;
 	}

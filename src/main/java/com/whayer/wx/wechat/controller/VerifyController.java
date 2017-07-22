@@ -1,4 +1,4 @@
-package com.whayer.wx.verify;
+package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.whayer.wx.common.wechart.VerifyUtil;
+import com.whayer.wx.wechat.util.VerifyUtil;
 
 /**
  * 验证微信token

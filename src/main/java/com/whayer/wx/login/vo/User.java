@@ -4,8 +4,19 @@ import java.io.Serializable;
 //import java.sql.Blob;
 import java.util.Arrays;
 
+import javax.servlet.http.HttpSessionActivationListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.HttpSessionEvent;
 
-public class User implements Serializable{
+/**
+ * HttpSessionBindingListener 监听HttpSession中User对象的状态
+ * HttpSessionActivationListener 支持服务关闭／重启时 Session钝化-活化
+ * Serializable 开启序列化才可钝化-活化
+ * @author duyu
+ *
+ */
+public class User implements HttpSessionBindingListener, HttpSessionActivationListener, Serializable{
 
 	private static final long serialVersionUID = -9040151004036751096L;
 	
@@ -31,6 +42,9 @@ public class User implements Serializable{
 	private String bankCardName; //银行卡户名
 	private String address;      //收件地址
 	
+	public User(){
+		
+	}
 	
 	public String getId() {
 		return id;
@@ -156,5 +170,29 @@ public class User implements Serializable{
 				+ ", userType=" + userType + ", mobile=" + mobile + ", nickName=" + nickName + ", headImg=" + headImg
 				+ ", email=" + email + ", idCardNo=" + idCardNo + ", bank=" + bank + ", bankCardNo=" + bankCardNo
 				+ ", idCardImg=" + idCardImg + ", bankCardName=" + bankCardName + ", address=" + address + "]";
+	}
+
+	@Override
+	public void sessionDidActivate(HttpSessionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sessionWillPassivate(HttpSessionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void valueBound(HttpSessionBindingEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void valueUnbound(HttpSessionBindingEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

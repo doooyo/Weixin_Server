@@ -15,6 +15,9 @@ public class Gift implements Serializable{
 	private Date createTime; //创建日期
 	private Boolean isEffect;//是否有效
 	
+	public Gift(){
+		
+	}
 	
 	public String getId() {
 		return id;
