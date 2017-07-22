@@ -21,7 +21,7 @@ public class Test {
 		bc.setAppid(Constant.APPID);
 		wcs.setBaseConfig(bc);
 		
-		String accessToken = wcs.getAccessToken();
+		//String accessToken = wcs.getAccessToken();
 		String apiTicket = wcs.getWxCardTicket();
 		String cardId = "pwN5lwDY10uFwYHt1YnDZQH5bVU0";
 		String nonceStr = RandomUtils.generateMixString(32);;

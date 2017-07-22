@@ -2,6 +2,8 @@ package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
+import com.whayer.wx.common.X;
+import com.whayer.wx.common.encrypt.SHA1;
 import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.common.mvc.Box;
+import com.whayer.wx.common.mvc.ResponseCondition;
+import com.whayer.wx.pay.util.RandomUtils;
 import com.whayer.wx.wechat.util.Constant;
 
 @Controller
@@ -93,6 +99,66 @@ public class Update2MiniCardController extends BaseController{
 		Map<String, Object> result2 = wcs.updateCard(data);
 		log.info(JSONObject.toJSONString("更新结果为："+result2));
 		response.getWriter().print("卡劵升级成功！");
+		
+	}
+	
+	/**
+	 * 用于添加卡劵测试
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	@RequestMapping("/addCardTest")
+	@ResponseBody
+	public ResponseCondition addCardTest(HttpServletRequest request, HttpServletResponse response) {
+		log.debug("Update2MiniCardController.addCardTest()");
+//		request.setCharacterEncoding("utf-8");
+//		response.setCharacterEncoding("utf-8");
+		
+		Box box = loadNewBox(request);
+		
+		String cardId = box.$p("cardId");
+				
+		if(isNullOrEmpty(cardId)){
+			return getResponse(X.FALSE);
+		}
+		
+		String apiTicket = wcs.getWxCardTicket();
+		String nonceStr = RandomUtils.generateMixString(32);;
+		String timestamp = String.valueOf(System.currentTimeMillis()/1000);
+		
+		String[] arr = {apiTicket, cardId, nonceStr, timestamp};
+		Arrays.sort(arr, String.CASE_INSENSITIVE_ORDER);
+		
+		StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < arr.length; i ++) {
+            sb.append(arr[i]);
+        }
+        String result = sb.toString();
+        
+        String signature = SHA1.getSha1(result);
+        log.info(
+        		"ticket:" +apiTicket 
+        		+ ";cardId:" +cardId 
+        		+ ";nonceStr:" + nonceStr
+        		+ ";timestamp:" + timestamp
+        		+ ";signature:" + signature);
+		
+		
+		JSONObject json = new JSONObject();
+		
+		json.put("ticket", apiTicket);
+		json.put("cardId", cardId);
+		json.put("nonceStr", nonceStr);
+		json.put("timestamp", timestamp);
+		json.put("signature", signature);
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		ArrayList<JSONObject> list = new ArrayList<JSONObject>();
+		list.add(json);
+		res.setList(list);
+        return res;
+
 		
 	}
 }
