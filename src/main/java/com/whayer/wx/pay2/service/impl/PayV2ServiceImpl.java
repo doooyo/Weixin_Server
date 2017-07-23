@@ -1,6 +1,8 @@
 package com.whayer.wx.pay2.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,45 @@ import com.whayer.wx.pay2.vo.SignInfo;
 @Service
 public class PayV2ServiceImpl implements PayV2Service{
 	private final static Logger log = LoggerFactory.getLogger(PayV2ServiceImpl.class);
+	
+	@Override
+	public Map<String, String> getOpenIdAndSessionKey(String code) {
+		String url = Constant.URL_OPENID 
+				+ "?appid="    + Constant.APP_ID 
+				+ "&secret="  + Constant.APP_SECRET 
+				+ "&js_code=" + code 
+				+ "&grant_type=authorization_code";
+
+        HttpUtil httpUtil = new HttpUtil();
+        Map<String, String> map = new HashMap<>();
+        try {
+
+            HttpResult httpResult = httpUtil.doGet(url, null, null);
+
+            if(httpResult.getStatusCode() == 200) {
+
+                JsonParser jsonParser = new JsonParser();
+                JsonObject obj = (JsonObject) jsonParser.parse(httpResult.getBody());
+
+                log.debug("getOpenId: " + obj.toString());
+
+                if(obj.get("errcode") != null) {
+                    log.error("getOpenId returns errcode: " + obj.get("errcode"));
+                    return map;
+                } else {
+                	String openid = obj.get("openid").toString();
+                	String session_key = obj.get("session_key").toString();
+                	map.put("openid", openid);
+                	map.put("session_key", session_key);
+                    return map;
+                }
+                //return httpResult.getBody();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+	}
 
 	@Override
 	public String getOpenId(String code) {

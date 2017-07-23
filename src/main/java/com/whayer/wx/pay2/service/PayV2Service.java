@@ -1,10 +1,19 @@
 package com.whayer.wx.pay2.service;
 
+import java.util.Map;
+
 import com.alibaba.fastjson.JSONObject;
 import com.whayer.wx.order.vo.Order;
 import com.whayer.wx.pay.vo.PayInfo;
 
 public interface PayV2Service {
+	/**
+	 * 获取openid
+	 * @param code
+	 * @return
+	 */
+	public Map<String, String> getOpenIdAndSessionKey(String code);
+	
 	/**
 	 * 获取openid
 	 * @param code

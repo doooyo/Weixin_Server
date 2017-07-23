@@ -189,6 +189,13 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15 -->
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcprov-jdk15</artifactId>
+		    <version>1.46</version>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
 		<!-- <dependency>
 		    <groupId>redis.clients</groupId>

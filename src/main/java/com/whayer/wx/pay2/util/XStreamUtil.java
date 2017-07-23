@@ -64,6 +64,7 @@ public class XStreamUtil {
         List<Element> elementList = root.elements();
         for (Element e : elementList)
             map.put(e.getName(), e.getText());
+        ins.close();
         return map;
     }
 	

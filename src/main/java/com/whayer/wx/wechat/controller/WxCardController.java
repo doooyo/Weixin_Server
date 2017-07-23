@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,13 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
-import com.sun.tools.javac.util.List;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.SHA1;
 import com.whayer.wx.common.mvc.BaseController;
@@ -29,6 +29,7 @@ import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.pay.util.RandomUtils;
 import com.whayer.wx.pay2.service.PayV2Service;
+import com.whayer.wx.wechat.util.AesCbcUtil;
 import com.whayer.wx.wechat.util.Constant;
 
 @Controller
@@ -288,24 +289,27 @@ public class WxCardController extends BaseController{
 	public ResponseCondition getCardList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.debug("Update2MiniCardController.getCardList()");
 		
-		Box box = loadNewBox(request);
-		String code = box.$p("code");
-		String cardId = box.$p("card_id");
+//		Box box = loadNewBox(request);
+//		String code = box.$p("code");
+//		String cardId = box.$p("card_id");
+//		
+//		if(isNullOrEmpty(code)){
+//			return getResponse(X.FALSE);
+//		}
+//		
+//		//获取小程序openid
+//		String openId = payV2Service.getOpenId(code);
+//		log.info("小程序openid：" + openId);
+//		
+//		if(isNullOrEmpty(openId)){
+//			log.error("openid 获取失败");
+//			ResponseCondition res = getResponse(X.FALSE);
+//			res.setErrorMsg("openid 获取失败");
+//			return res;
+//		}
 		
-		if(isNullOrEmpty(code)){
-			return getResponse(X.FALSE);
-		}
-		
-		//获取小程序openid
-		String openId = payV2Service.getOpenId(code);
-		log.info("小程序openid：" + openId);
-		
-		if(isNullOrEmpty(openId)){
-			log.error("openid 获取失败");
-			ResponseCondition res = getResponse(X.FALSE);
-			res.setErrorMsg("openid 获取失败");
-			return res;
-		}
+		String openId = "owN5lwOnxMBTLQeLOXuCjpaDewfM";
+		String cardId = "";
 		
 		ResponseCondition res = getResponse(X.TRUE);
 		Map<String, Object> result = wcs.getCardIdList(openId, cardId);
@@ -317,4 +321,91 @@ public class WxCardController extends BaseController{
 		res.setList(list);
 		return res;
 	}
+	
+	/**
+	 * 获取公众号用户openid列表
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/getUserList")
+	@ResponseBody
+	public ResponseCondition getUserList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.debug("Update2MiniCardController.getUserList()");
+		
+		Map<String, Object> result = wcs.getUserList();
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		list.add(result);
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		return res;
+	}
+	
+	/**
+	 * 小程序wx.getUserInfo()获取用户敏感信息并解密
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+    @RequestMapping(value = "/decodeUserInfo", method = RequestMethod.POST)
+    public ResponseCondition decodeUserInfo(HttpServletRequest request, HttpServletResponse response) {
+		log.debug("Update2MiniCardController.decodeUserInfo()");
+		
+		Box box = loadNewBox(request);
+		
+		String encryptedData = box.$p("encryptedData");
+		String iv =  box.$p("iv"); 
+		String code = box.$p("code"); 
+		
+		if(isNullOrEmpty(encryptedData) || isNullOrEmpty(iv) || isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		//获取小程序openid 与 session_key
+		Map<String, String> map = payV2Service.getOpenIdAndSessionKey(code);
+		if(isNullOrEmpty(map)){
+			log.error("小程序openid获取失败");
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("小程序openid获取失败");
+			return res;
+		}
+		
+		String openid = map.get("openid");
+		String session_key = map.get("session_key");
+
+        //////////////// 2、对encryptedData加密数据进行AES解密 ////////////////
+		JSONObject userInfoJSON = null;
+        try {
+            String result = AesCbcUtil.decrypt(encryptedData, session_key, iv, "UTF-8");
+            log.info("用户解密的数据：" + result);
+            if (!isNullOrEmpty(result)) {
+
+                userInfoJSON = JSONObject.parseObject(result);
+                Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("openId", userInfoJSON.get("openId"));
+                userInfo.put("nickName", userInfoJSON.get("nickName"));
+                userInfo.put("gender", userInfoJSON.get("gender"));
+                userInfo.put("city", userInfoJSON.get("city"));
+                userInfo.put("province", userInfoJSON.get("province"));
+                userInfo.put("country", userInfoJSON.get("country"));
+                userInfo.put("avatarUrl", userInfoJSON.get("avatarUrl"));
+                userInfo.put("unionId", userInfoJSON.get("unionId"));
+                
+                log.info("主动获取的openid：" + openid +"/ 用户解密数据的openid：" + userInfoJSON.get("openId")
+                + "/ unionId：" + userInfoJSON.get("unionId"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        ResponseCondition res = getResponse(X.TRUE);
+        List<JSONObject> list = new ArrayList<>();
+        list.add(userInfoJSON);
+        res.setList(list);
+        
+        return res;
+    }
 }
