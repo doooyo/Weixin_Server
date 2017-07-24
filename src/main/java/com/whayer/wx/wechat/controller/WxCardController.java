@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -251,12 +252,19 @@ public class WxCardController extends BaseController{
 			String nonceStr = RandomUtils.generateMixString(32);;
 			String timestamp = String.valueOf(System.currentTimeMillis()/1000);
 			
-			String[] arr = {apiTicket, cardIds[i], nonceStr, timestamp};
-			Arrays.sort(arr, String.CASE_INSENSITIVE_ORDER);
+			//String[] arr = {apiTicket, cardIds[i], nonceStr, timestamp};
+			//Arrays.sort(arr, String.CASE_INSENSITIVE_ORDER);
+			
+			ArrayList<String> arr = new ArrayList<String>();
+			arr.add(apiTicket);
+			arr.add(cardIds[i]);
+			arr.add(nonceStr);
+			arr.add(timestamp);
+			Collections.sort(arr);
 			
 			StringBuilder sb = new StringBuilder();
-	        for(int k = 0; k < arr.length; k ++) {
-	            sb.append(arr[k]);
+	        for(int k = 0; k < arr.size(); k ++) {
+	            sb.append(arr.get(k));
 	        }
 	        String result = sb.toString();
 	        
