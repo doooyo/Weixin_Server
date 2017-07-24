@@ -266,7 +266,8 @@ public class WxCardController extends BaseController{
 	        + "\n apiTicket:" +apiTicket
 	        + "\n nonceStr:" +nonceStr
 	        + "\n timestamp:" +timestamp
-	        + "\n signature:" +signature);
+	        + "\n signature:" +signature
+	        + "\n cardId:" + cardIds[i]);
 	        
 	        JSONObject json = new JSONObject();
 	        JSONObject child = new JSONObject();
