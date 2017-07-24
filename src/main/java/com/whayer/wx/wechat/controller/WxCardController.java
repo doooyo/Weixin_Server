@@ -67,7 +67,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping("/update2minicard")
 	@ResponseBody
 	public void update2minicard(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Update2MiniCardController.update2minicard()");
+		log.info("Update2MiniCardController.update2minicard()");
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
 		
@@ -135,7 +135,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping("/decryptCode")
 	@ResponseBody
 	public ResponseCondition decryptCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Update2MiniCardController.decryptCode()");
+		log.info("Update2MiniCardController.decryptCode()");
 		
 		Box box = loadNewBox(request);
 		
@@ -174,7 +174,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping("/addCardTest")
 	@ResponseBody
 	public ResponseCondition addCardTest(HttpServletRequest request, HttpServletResponse response) {
-		log.debug("Update2MiniCardController.addCardTest()");
+		log.info("Update2MiniCardController.addCardTest()");
 		
 		Box box = loadNewBox(request);
 		
@@ -232,7 +232,7 @@ public class WxCardController extends BaseController{
 	public ResponseCondition addCardTestV2(
 			//@RequestParam(value = "cardIds[]", required = false) String[] cardIds,
 			HttpServletRequest request, HttpServletResponse response) {
-		log.debug("Update2MiniCardController.addCardTestV2()");
+		log.info("Update2MiniCardController.addCardTestV2()");
 		
 		Box box = loadNewBox(request);
 		String ids = box.$p("cardIds");
@@ -261,6 +261,12 @@ public class WxCardController extends BaseController{
 	        String result = sb.toString();
 	        
 	        String signature = SHA1.getSha1(result);
+	        
+	        log.info("\n添加卡劵签名参数与结果:" 
+	        + "\n apiTicket:" +apiTicket
+	        + "\n nonceStr:" +nonceStr
+	        + "\n timestamp:" +timestamp
+	        + "\n signature:" +signature);
 	        
 	        JSONObject json = new JSONObject();
 	        JSONObject child = new JSONObject();
@@ -292,7 +298,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping(value = "/getCardList")
 	@ResponseBody
 	public ResponseCondition getCardList(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Update2MiniCardController.getCardList()");
+		log.info("Update2MiniCardController.getCardList()");
 		
 //		Box box = loadNewBox(request);
 //		String code = box.$p("code");
@@ -344,7 +350,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping(value = "/getUserList")
 	@ResponseBody
 	public ResponseCondition getUserList(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Update2MiniCardController.getUserList()");
+		log.info("Update2MiniCardController.getUserList()");
 		
 		Map<String, Object> result = wcs.getUserList();
 		
@@ -366,7 +372,7 @@ public class WxCardController extends BaseController{
 	@ResponseBody
     @RequestMapping(value = "/decodeUserInfo", method = RequestMethod.POST)
     public ResponseCondition decodeUserInfo(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		log.debug("Update2MiniCardController.decodeUserInfo()");
+		log.info("Update2MiniCardController.decodeUserInfo()");
 		
 		Box box = loadNewBox(request);
 		
@@ -430,7 +436,7 @@ public class WxCardController extends BaseController{
 	@ResponseBody
     @RequestMapping(value = "/getUserBaseInfo", method = RequestMethod.GET)
     public ResponseCondition getUserBaseInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Update2MiniCardController.getUserBaseInfo()");
+		log.info("Update2MiniCardController.getUserBaseInfo()");
 		
 		Box box = loadNewBox(request);
 		
@@ -459,7 +465,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping(value = "/getCardListV2")
 	@ResponseBody
 	public ResponseCondition getCardListV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Update2MiniCardController.getCardListV2()");
+		log.info("Update2MiniCardController.getCardListV2()");
 		
 		Box box = loadNewBox(request);
 		
