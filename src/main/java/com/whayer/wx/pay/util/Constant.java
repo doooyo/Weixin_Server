@@ -1,7 +1,7 @@
 package com.whayer.wx.pay.util;
 
 public class Constant {
-	public static final String DOMAIN = "m";
+	public static final String DOMAIN = "";
 
 	//唯一id
     public static final String APP_ID = ""; 
@@ -20,9 +20,9 @@ public class Constant {
     
     public static final String URL_ORDER_QUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
 
-    public static final String URL_NOTIFY = DOMAIN + ""; 
+    public static final String URL_NOTIFY = DOMAIN + "/payV2/callback"; 
     
-    public static final String URL_BARCODE = DOMAIN + ""; 
+    public static final String URL_BARCODE = DOMAIN + "/gift/gift.html"; 
 
     public static final String TIME_FORMAT = "yyyyMMddHHmmss";
 

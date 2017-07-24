@@ -12,4 +12,5 @@
 .classpath
 .project
 /catalina.home_IS_UNDEFINED/*
-
+/.settings*
+src/main/java/com/whayer/wx/pay/util/Constant.java

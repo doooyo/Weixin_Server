@@ -64,6 +64,7 @@
 	    			com.whayer.wx.vouchers.vo;
 	    			com.whayer.wx.order.vo;
 	    			com.whayer.wx.gift.vo;
+	    			com.whayer.wx.wechat.vo;
 	    		  " />
 		<property name="plugins">
 			<array>

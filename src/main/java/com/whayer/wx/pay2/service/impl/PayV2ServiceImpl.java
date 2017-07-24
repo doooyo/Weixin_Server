@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+//import com.google.gson.JsonObject;
+//import com.google.gson.JsonParser;
 import com.whayer.wx.order.vo.Order;
 import com.whayer.wx.pay.util.Constant;
 import com.whayer.wx.pay.util.HttpResult;
@@ -42,8 +42,10 @@ public class PayV2ServiceImpl implements PayV2Service{
 
             if(httpResult.getStatusCode() == 200) {
 
-                JsonParser jsonParser = new JsonParser();
-                JsonObject obj = (JsonObject) jsonParser.parse(httpResult.getBody());
+                //JsonParser jsonParser = new JsonParser();
+                //JsonObject obj1 = (JsonObject) jsonParser.parse(httpResult.getBody());
+                
+                JSONObject obj = JSONObject.parseObject(httpResult.getBody());
 
                 log.debug("getOpenId: " + obj.toString());
 
@@ -51,8 +53,8 @@ public class PayV2ServiceImpl implements PayV2Service{
                     log.error("getOpenId returns errcode: " + obj.get("errcode"));
                     return map;
                 } else {
-                	String openid = obj.get("openid").toString();
-                	String session_key = obj.get("session_key").toString();
+                	String openid = obj.getString("openid");
+                	String session_key = obj.getString("session_key");
                 	map.put("openid", openid);
                 	map.put("session_key", session_key);
                     return map;
@@ -80,8 +82,10 @@ public class PayV2ServiceImpl implements PayV2Service{
 
             if(httpResult.getStatusCode() == 200) {
 
-                JsonParser jsonParser = new JsonParser();
-                JsonObject obj = (JsonObject) jsonParser.parse(httpResult.getBody());
+                //JsonParser jsonParser = new JsonParser();
+                //JsonObject obj = (JsonObject) jsonParser.parse(httpResult.getBody());
+            	
+            	JSONObject obj = JSONObject.parseObject(httpResult.getBody());
 
                 log.debug("getOpenId: " + obj.toString());
 
@@ -89,7 +93,7 @@ public class PayV2ServiceImpl implements PayV2Service{
                     log.error("getOpenId returns errcode: " + obj.get("errcode"));
                     return "";
                 } else {
-                    return obj.get("openid").toString();
+                    return obj.getString("openid");
                 }
                 //return httpResult.getBody();
             }

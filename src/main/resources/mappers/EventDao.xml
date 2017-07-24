@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whayer.wx.wechat.dao.EventDao">
+	<!-- 一对一关系 -->
+	<sql id="wechatAccountFields">
+		id,
+		miniprogram_openid,
+		official_account_openid,
+		unionid,
+		msgid,
+		create_time
+	</sql>
+    
+    <insert id="saveUnionIdAndOpenId" parameterType="WechatAccount">
+    	
+   		INSERT INTO sk_wechat_account(
+			id,
+			<!-- miniprogram_openid, -->
+			official_account_openid,
+			unionid,
+			msgid,
+			create_time
+			)
+		VALUES(
+			#{id},
+			<!-- #{miniprogramOpenid}, -->
+			#{officialAccountOpenid},
+			#{unionid},
+			#{msgid},
+			now()
+		)
+    </insert>
+    
+    <select id="isMsgIdIsExist" resultType="Integer">
+    	SELECT COUNT(*) 
+    	FROM sk_wechat_account 
+    	WHERE msgid=#{msgid}
+    </select>
+    
+    <select id="isUnionIdIsExist" resultType="Integer">
+    	SELECT COUNT(*) 
+    	FROM sk_wechat_account 
+    	WHERE unionid=#{unionid}
+    </select>
+    
+    <select id="getWechatAccountByUnionId"  resultType="WechatAccount">
+    	SELECT * FROM sk_wechat_account
+    	WHERE unionid = #{unionid}
+    </select>
+    
+    <update id="updateMiniProgramAppId">
+    	UPDATE sk_wechat_account 
+		    <trim prefix="SET" suffixOverrides=",">
+			    <if test="miniprogramOpenid != null and miniprogramOpenid != ''">
+			      miniprogram_openid = #{miniprogramOpenid},
+			    </if>
+		    </trim>
+			<where>
+		      unionid=#{unionid}
+		    </where>
+    </update>
+</mapper>

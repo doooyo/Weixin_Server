@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,7 +17,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mohoo.wechat.card.config.BaseConfig;
+import com.mohoo.wechat.card.service.WxVipService;
+import com.whayer.wx.common.X;
+import com.whayer.wx.common.mvc.BaseController;
+import com.whayer.wx.wechat.service.EventService;
+import com.whayer.wx.wechat.util.Constant;
 import com.whayer.wx.wechat.util.NotifyUtil;
+import com.whayer.wx.wechat.vo.WechatAccount;
 
 /**
  * 验证微信token
@@ -25,9 +33,26 @@ import com.whayer.wx.wechat.util.NotifyUtil;
  */
 
 @Controller
-public class NotifyController {
+public class NotifyController extends BaseController{
 	
 	private final static Logger log = LoggerFactory.getLogger(NotifyController.class);
+	
+	@Resource
+	private EventService eventService;
+	
+	private static final Object object = new Object();
+	
+	private WxVipService wcs = null;
+	private BaseConfig bc = null;
+	
+	public NotifyController() {
+		wcs = new WxVipService();
+		bc = new BaseConfig();
+		bc.setGetToken(true);
+		bc.setSecret(Constant.APPSECRET);
+		bc.setAppid(Constant.APPID);
+		wcs.setBaseConfig(bc);
+	}
 	
 	@RequestMapping(value = "/notify", method = RequestMethod.GET)
 	@ResponseBody
@@ -91,7 +116,30 @@ public class NotifyController {
 				String code = map.get("UserCardCode");
 				String outer = map.get("OuterStr");
 				String[] arr = {fromUserName, cardId, code, outer, createTime};
-				log.info("推送消息为：" + StringUtils.join(arr, "\n"));
+				log.info("推送消息为：" + StringUtils.join(arr, "|"));
+				
+				String msgid = fromUserName + createTime;
+				synchronized (object) {
+					
+					boolean duplicate = eventService.isMsgIdIsExist(msgid);
+					if(!duplicate){
+						Map<String, Object> result = wcs.getUserBaseInfo(fromUserName);
+						String unionid = String.valueOf(result.get("unionid"));
+						if(isNullOrEmpty(unionid)){
+							log.info("unionid获取失败");
+						}else{
+							boolean unionidExist = eventService.isUnionIdIsExist(unionid);
+							if(!unionidExist){
+								WechatAccount wa = new WechatAccount();
+								wa.setId(X.uuidPure());
+								wa.setMsgid(msgid);
+								wa.setOfficialAccountOpenid(fromUserName);
+								wa.setUnionid(unionid);
+								eventService.saveUnionIdAndOpenId(wa);
+							}
+						}
+					}
+				}
 			}
 		}
 		//文本消息

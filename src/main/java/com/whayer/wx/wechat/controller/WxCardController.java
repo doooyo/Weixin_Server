@@ -1,6 +1,7 @@
 package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +30,10 @@ import com.whayer.wx.common.mvc.Box;
 import com.whayer.wx.common.mvc.ResponseCondition;
 import com.whayer.wx.pay.util.RandomUtils;
 import com.whayer.wx.pay2.service.PayV2Service;
+import com.whayer.wx.wechat.service.EventService;
 import com.whayer.wx.wechat.util.AesCbcUtil;
 import com.whayer.wx.wechat.util.Constant;
+import com.whayer.wx.wechat.vo.WechatAccount;
 
 @Controller
 public class WxCardController extends BaseController{
@@ -39,6 +42,8 @@ public class WxCardController extends BaseController{
 	
 	@Resource
 	private PayV2Service payV2Service;
+	@Resource
+	private EventService eventService;
 	
 	private WxVipService wcs = null;
 	private BaseConfig bc = null;
@@ -278,7 +283,7 @@ public class WxCardController extends BaseController{
 	}
 	
 	/**
-	 * 获取用户已领取卡券列表
+	 * 获取用户已领取卡券列表（测试用）
 	 * @param request
 	 * @param response
 	 * @return
@@ -308,7 +313,14 @@ public class WxCardController extends BaseController{
 //			return res;
 //		}
 		
-		String openId = "owN5lwOnxMBTLQeLOXuCjpaDewfM";
+		//小程序某粉丝openid：o1z7s0Fm7hxkKspl_i3sH3yqOp_Q
+		//公众号某粉丝openid：owN5lwOnxMBTLQeLOXuCjpaDewfM
+		//unionid某粉丝：oc_yAxJ9szy52x_5xUv5cVxwM__Q
+		
+		Box box = loadNewBox(request);
+		
+		
+		String openId = box.$p("openId");//"oc_yAxJ9szy52x_5xUv5cVxwM__Q";//"owN5lwOnxMBTLQeLOXuCjpaDewfM";
 		String cardId = "";
 		
 		ResponseCondition res = getResponse(X.TRUE);
@@ -344,14 +356,16 @@ public class WxCardController extends BaseController{
 	}
 	
 	/**
-	 * 小程序wx.getUserInfo()获取用户敏感信息并解密
+	 * 小程序wx.getUserInfo()获取用户敏感信息并解密（测试用）
 	 * @param request
 	 * @param response
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
+	@Deprecated
 	@ResponseBody
     @RequestMapping(value = "/decodeUserInfo", method = RequestMethod.POST)
-    public ResponseCondition decodeUserInfo(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseCondition decodeUserInfo(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 		log.debug("Update2MiniCardController.decodeUserInfo()");
 		
 		Box box = loadNewBox(request);
@@ -363,6 +377,9 @@ public class WxCardController extends BaseController{
 		if(isNullOrEmpty(encryptedData) || isNullOrEmpty(iv) || isNullOrEmpty(code)){
 			return getResponse(X.FALSE);
 		}
+		
+		encryptedData = URLDecoder.decode(encryptedData, "UTF-8");
+		iv = URLDecoder.decode(iv, "UTF-8");
 		
 		//获取小程序openid 与 session_key
 		Map<String, String> map = payV2Service.getOpenIdAndSessionKey(code);
@@ -408,4 +425,121 @@ public class WxCardController extends BaseController{
         
         return res;
     }
+	
+	@Deprecated
+	@ResponseBody
+    @RequestMapping(value = "/getUserBaseInfo", method = RequestMethod.GET)
+    public ResponseCondition getUserBaseInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.debug("Update2MiniCardController.getUserBaseInfo()");
+		
+		Box box = loadNewBox(request);
+		
+		String openid = box.$p("openid");
+		if(isNullOrEmpty(openid)){
+			return getResponse(X.FALSE);
+		}
+		
+		Map<String, Object> result = wcs.getUserBaseInfo(openid);
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		list.add(result);
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		return res;
+	}
+	
+	
+	/**
+	 * 获取用户已领取卡券列表（最新）
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "/getCardListV2")
+	@ResponseBody
+	public ResponseCondition getCardListV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.debug("Update2MiniCardController.getCardListV2()");
+		
+		Box box = loadNewBox(request);
+		
+		String encryptedData = box.$p("encryptedData");
+		String iv =  box.$p("iv"); 
+		String code = box.$p("code"); //用户登陆态code
+		
+		if(isNullOrEmpty(encryptedData) || isNullOrEmpty(iv) || isNullOrEmpty(code)){
+			return getResponse(X.FALSE);
+		}
+		
+		encryptedData = URLDecoder.decode(encryptedData, "UTF-8");
+		iv = URLDecoder.decode(iv, "UTF-8");
+		
+		/**
+		 * 经验证，只有公共号的openid才可以获取用户已领取的卡劵列表
+		 * 
+		 * 小程序某粉丝openid：o1z7s0Fm7hxkKspl_i3sH3yqOp_Q
+		 * 公众号某粉丝openid：owN5lwOnxMBTLQeLOXuCjpaDewfM
+		 * unionid某粉丝：oc_yAxJ9szy52x_5xUv5cVxwM__Q
+		 */
+		
+		//获取小程序openid 与 session_key
+		Map<String, String> map = payV2Service.getOpenIdAndSessionKey(code);
+		if(isNullOrEmpty(map)){
+			log.error("小程序openid获取失败");
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("小程序openid获取失败");
+			return res;
+		}
+		
+		String openid = map.get("openid");
+		String session_key = map.get("session_key");
+		
+		////////////////2、对encryptedData加密数据进行AES解密 ////////////////
+		JSONObject userInfoJSON = null;
+		String unionid = "";
+		try {
+		   String result = AesCbcUtil.decrypt(encryptedData, session_key, iv, "UTF-8");
+		   log.info("用户解密的数据：" + result);
+		   if (!isNullOrEmpty(result)) {
+		
+		       userInfoJSON = JSONObject.parseObject(result);
+		       Map<String, Object> userInfo = new HashMap<>();
+		       
+		       userInfo.put("openId", userInfoJSON.get("openId"));
+		       userInfo.put("nickName", userInfoJSON.get("nickName"));
+		       userInfo.put("gender", userInfoJSON.get("gender"));
+		       userInfo.put("city", userInfoJSON.get("city"));
+		       userInfo.put("province", userInfoJSON.get("province"));
+		       userInfo.put("country", userInfoJSON.get("country"));
+		       userInfo.put("avatarUrl", userInfoJSON.get("avatarUrl"));
+		       userInfo.put("unionId", userInfoJSON.get("unionId"));
+		       
+		       log.info("主动获取的openid：" + openid +"/ 用户解密数据的openid：" + userInfoJSON.get("openId")
+		       + "/ unionId：" + userInfoJSON.get("unionId"));
+		       
+		       unionid = userInfoJSON.getString("unionId");
+		       if(!isNullOrEmpty(unionid))
+		    	   eventService.updateMiniProgramAppId(unionid, openid);
+		   }
+		} catch (Exception e) {
+		   e.printStackTrace();
+		}
+		
+		WechatAccount wa = eventService.getWechatAccountByUnionId(unionid);
+		if(isNullOrEmpty(wa)){
+			ResponseCondition res = getResponse(X.FALSE);
+			res.setErrorMsg("关联关系不存在");
+			return res;
+		}
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		Map<String, Object> result = wcs.getCardIdList(wa.getOfficialAccountOpenid(), "");//cardId为空表示查询所有已领取的劵
+		
+		log.info("获取用户已领取卡劵结果列表：" + JSONObject.toJSONString(result));
+		
+		@SuppressWarnings("unchecked")
+		List<JSONObject> list = (List<JSONObject>)result.get("card_list");
+		res.setList(list);
+		return res;
+	}
 }
