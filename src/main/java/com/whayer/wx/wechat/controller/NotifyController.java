@@ -2,7 +2,10 @@ package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
@@ -24,6 +28,7 @@ import com.whayer.wx.common.mvc.BaseController;
 import com.whayer.wx.wechat.service.EventService;
 import com.whayer.wx.wechat.util.Constant;
 import com.whayer.wx.wechat.util.NotifyUtil;
+import com.whayer.wx.wechat.vo.CardInfo;
 import com.whayer.wx.wechat.vo.WechatAccount;
 
 /**
@@ -41,6 +46,10 @@ public class NotifyController extends BaseController{
 	private EventService eventService;
 	
 	private static final Object object = new Object();
+	
+	private static final Object object1 = new Object();
+	
+	private static final ConcurrentHashMap<String, String> currentMap = new ConcurrentHashMap<>(32);
 	
 	private WxVipService wcs = null;
 	private BaseConfig bc = null;
@@ -64,6 +73,13 @@ public class NotifyController extends BaseController{
 		if(NotifyUtil.verifySignature(signature, timestamp, nonce)){
 			
 			pw.print(echostr);
+		}
+	}
+	
+	
+	private void clearCurrentMap(){
+		if(currentMap.size() > 26){
+			currentMap.clear();
 		}
 	}
 	
@@ -108,7 +124,59 @@ public class NotifyController extends BaseController{
 			
 			String eventType = map.get("Event");
 			
-			//领取事件
+			//审核通过
+			if("card_pass_check".equals(eventType)){
+				String cardId = map.get("CardId");
+				String fromUserName = map.get("FromUserName");
+				String createTime = map.get("CreateTime");
+				String msgId = fromUserName + createTime;
+				
+				// 幂等性方式1
+				synchronized (object1) {
+					if(!currentMap.containsKey(msgId)){
+						currentMap.put(msgId, msgId);
+						
+						Map<String, Object> result = wcs.getCard(cardId);
+						CardInfo info = eventService.createCardInfo(result);
+						if(!isNullOrEmpty(info)){
+							//保存审核通过的卡劵到数据库
+							eventService.saveCardInfo(info);
+							
+							//触发批量同步已审核通过/已发放的卡劵
+							
+							HashMap<String, Object> params = new HashMap<>();
+							String[] status = {"CARD_STATUS_VERIFY_OK", "CARD_STATUS_DISPATCH"};
+							params.put("offset", 0);
+							params.put("count", 50);
+							params.put("status_list", status);
+							String json = JSON.toJSONString(params);
+							
+							Map<String, Object> cardBatch = wcs.batchGetCard(json);
+							if(!isNullOrEmpty(cardBatch)){
+								
+								@SuppressWarnings("unchecked")
+								List<String> originCardIds = (List<String>)cardBatch.get("card_id_list");
+								List<String> cardIds = eventService.getCardIds();
+								originCardIds.removeAll(cardIds);
+								
+								for (String _cardId : originCardIds) {
+									Map<String, Object> _cardInfo = wcs.getCard(_cardId);
+									CardInfo _info = eventService.createCardInfo(_cardInfo);
+									if(!isNullOrEmpty(_info)){
+										//同步卡劵到数据库
+										eventService.saveCardInfo(_info);
+									}
+								}
+							}
+						}
+					}else{
+						clearCurrentMap();
+					}
+				}
+			}
+				
+			
+			//领取
 			if("user_get_card".equals(eventType)){
 				String fromUserName = map.get("FromUserName");
 				String createTime = map.get("CreateTime");
@@ -119,9 +187,11 @@ public class NotifyController extends BaseController{
 				log.info("推送消息为：" + StringUtils.join(arr, "|"));
 				
 				String msgid = fromUserName + createTime;
+				
+				// 幂等性方式2
 				synchronized (object) {
 					
-					boolean duplicate = eventService.isMsgIdIsExist(msgid);
+				    boolean duplicate = eventService.isMsgIdIsExist(msgid);
 					if(!duplicate){
 						Map<String, Object> result = wcs.getUserBaseInfo(fromUserName);
 						String unionid = String.valueOf(result.get("unionid"));
@@ -142,7 +212,7 @@ public class NotifyController extends BaseController{
 				}
 			}
 		}
-		//文本消息
+		//文本
 		if(NotifyUtil.MESSAGE_TEXT.equals(msgType)){
 			
 		}

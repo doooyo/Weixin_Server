@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whayer.wx.wechat.dao.Card2RoleDao">
+	<!-- 一对一关系 -->
+	<sql id="card2RoleFields">
+		id,
+		card_id,
+		user_code
+	</sql>
+    
+    <select id="getCardList" resultType="CardInfo">
+    	SELECT *
+    	FROM sk_card_info
+    	<where>  
+			1=1  
+			<if test="title != null and title != ''">
+           	 	AND title LIKE CONCAT('%',#{title},'%') 
+           	</if>
+           	ORDER BY notify_date DESC
+        </where>
+    </select>
+    
+    
+    <select id="getCardList2Role" resultType="CardInfoIsSelected">
+    	select *
+		1 as is_selected 
+		from sk_card_info 
+		where card_id in 
+		(
+		  select u.card_id from sk_card_role u where u.user_code=#{role}
+		)  
+		union all
+		select *,
+		0 as is_selected
+		from sk_card_info 
+		where card_id not in 
+		(
+		  select u.card_id from sk_card_role u where u.user_code=#{role}
+		) 
+    </select>
+    
+    <!-- 先删除该usercode所有关联的卡劵 -->
+    <delete id="deleteAllByRole">
+    	delete FROM sk_card_role WHERE user_code=#{role}
+    </delete>
+    
+    <insert id="card2role">
+		insert into sk_card_role 
+		(
+			<include refid="card2RoleFields" /> 
+		)
+        values
+        <foreach collection="ids" item="cardId" index="index" separator=",">
+            (
+            	REPLACE(UUID(), '-', ''), 
+            	#{cardId},
+            	#{role} <!--可以使用param1 param2 -->
+            )
+        </foreach>
+	</insert>
+</mapper>

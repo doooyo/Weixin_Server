@@ -19,7 +19,8 @@
 		recipient_name,
 		recipient_phone,
 		recipient_address,
-		invoice_header
+		invoice_header,
+		card_code_list  <!-- 卡劵id,用逗号分割 -->
 	</sql>
 	
 	<resultMap type="Order" id="allOrderMapV2">
@@ -37,6 +38,8 @@
 	    <result property="recipientPhone" column="o_recipient_phone" />
 	    <result property="recipientAddress" column="o_recipient_address" />
 	    <result property="invoiceHeader" column="o_invoice_header" />
+	    <!-- 2017-07-30 du-->
+	    <result property="cardCodeList" column="o_card_code_list" />
 	    
 	    <result property="detectionboxId" column="d_detectionbox_id" />
 	    
@@ -72,6 +75,8 @@
 	    <result property="recipientPhone" column="o_recipient_phone" />
 	    <result property="recipientAddress" column="o_recipient_address" />
 	    <result property="invoiceHeader" column="o_invoice_header" />
+	    <!-- 2017-07-30 du-->
+	    <result property="cardCodeList" column="o_card_code_list" />
 	    
 	    <result property="detectionboxId" column="d_detectionbox_id" />
 	    
@@ -136,6 +141,7 @@
 		o.recipient_phone as o_recipient_phone,
 		o.recipient_address as o_recipient_address,
 		o.invoice_header as o_invoice_header,
+		o.card_code_list as o_card_code_list,
 		
 		d.detectionbox_id as d_detectionbox_id,
 		
@@ -255,6 +261,7 @@
 		o.recipient_phone as o_recipient_phone,
 		o.recipient_address as o_recipient_address,
 		o.invoice_header as o_invoice_header,
+		o.card_code_list as o_card_code_list,
 		
 		d.detectionbox_id as d_detectionbox_id,
 		
@@ -334,7 +341,8 @@
 			recipient_name,
 			recipient_phone,
 			recipient_address,
-			invoice_header
+			invoice_header,
+			card_code_list
   		) 
   		values(
   		#{id},
@@ -350,7 +358,8 @@
   		#{recipientName},
   		#{recipientPhone},
   		#{recipientAddress},
-  		#{invoiceHeader}
+  		#{invoiceHeader},
+  		#{cardCodeList}
   		)
 	</insert>
 	
@@ -420,6 +429,7 @@
 		o.recipient_phone as o_recipient_phone,
 		o.recipient_address as o_recipient_address,
 		o.invoice_header as o_invoice_header,
+		o.card_code_list as o_card_code_list,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,
@@ -580,6 +590,7 @@
 		o.recipient_phone as o_recipient_phone,
 		o.recipient_address as o_recipient_address,
 		o.invoice_header as o_invoice_header,
+		o.card_code_list as o_card_code_list,
 		
 		c.id as c_id,
 		c.user_id as c_user_id,

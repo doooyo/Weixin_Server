@@ -20,7 +20,7 @@ public class Constant {
     
     public static final String URL_ORDER_QUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
 
-    public static final String URL_NOTIFY = DOMAIN + "/payV2/callback"; 
+    public static final String URL_NOTIFY = DOMAIN + ""; 
     
     public static final String URL_BARCODE = DOMAIN + "/gift/gift.html"; 
 

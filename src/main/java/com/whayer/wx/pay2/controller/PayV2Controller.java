@@ -3,6 +3,7 @@ package com.whayer.wx.pay2.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mohoo.wechat.card.config.BaseConfig;
+import com.mohoo.wechat.card.service.WxConsumeService;
 import com.whayer.wx.common.X;
 import com.whayer.wx.common.bean.SpringFactory;
 import com.whayer.wx.common.mvc.BaseController;
@@ -49,6 +52,17 @@ public class PayV2Controller extends BaseController{
 	
 	@Resource
 	private SpringFactory springFactory;
+	
+	private WxConsumeService wcs = null;
+	
+	public PayV2Controller() {
+		wcs = new WxConsumeService();
+		BaseConfig bc = new BaseConfig();
+		bc.setGetToken(true);
+		bc.setSecret(com.whayer.wx.wechat.util.Constant.APPSECRET);
+		bc.setAppid(com.whayer.wx.wechat.util.Constant.APPID);
+		wcs.setBaseConfig(bc);
+	}
 	
 	/**
 	 *    生成订单 (业务系统) --> 客户端申请支付
@@ -114,6 +128,37 @@ public class PayV2Controller extends BaseController{
 			res.setErrorMsg("没有此订单");
 			return res;
         }
+        
+        /**
+         * 2017-07-30 du
+         * 验证卡劵code是否正常
+         */
+        String codeList = order.getCardCodeList();
+        boolean code_status = true;
+        if(!isNullOrEmpty(codeList)){
+        	String[] codeArr = codeList.split(",");
+        	for (String c : codeArr) {
+        		Map<String, Object> params = new HashMap<>();
+        		//params.put("card_id", "");//非定义code不用传递card_id
+        		params.put("code", c);
+        		params.put("check_consume", false);
+        		
+        		Map<String, Object> result = wcs.getCode(params);
+        		Boolean can_consume = (Boolean)result.get("can_consume");
+        		String user_card_status = (String)result.get("user_card_status");
+        		if(!can_consume || !"NORMAL".equals(user_card_status)){
+        			code_status = false;
+        			break;
+        		}
+			}
+        	if(!code_status){
+        		log.error("卡劵已不可用");
+            	ResponseCondition res = getResponse(X.FALSE);
+    			res.setErrorMsg("卡劵已不可用，请重下订单！");
+    			return res;
+        	}
+        }
+        
 		
 		//获取openid
 		String openId = payV2Service.getOpenId(code);
@@ -191,15 +236,15 @@ public class PayV2Controller extends BaseController{
 		if(isNullOrEmpty(map)){
 			log.error("获取回调参数错误");
 		}
-		log.debug("回调参数" + map.toString());
+		log.info("回调参数" + map.toString());
 		
 		String sign = map.get("sign");
 		//TODO Signature需要过滤掉【sign】,此参数不参与签名
 		//map.put("sign", "");
 		
 		String calcSign = Signature.getSign(map);
-		log.debug("sign:" + sign);
-		log.debug("calcSign:" + calcSign);
+		log.info("sign:" + sign);
+		log.info("calcSign:" + calcSign);
 		
 		if(!sign.equals(calcSign)){
 			log.error("回调签名验证失败");
@@ -212,7 +257,7 @@ public class PayV2Controller extends BaseController{
 				response.getWriter().append(getWxReturnMessage(X.FALSE, "支付结果中微信订单号不存在"));
 			}else{
 				Order order = orderService.getOrderById(out_trade_no);
-				log.debug("业务订单信息: " + order.toString());
+				log.info("业务订单信息: " + order.toString());
 				if(isNullOrEmpty(order)){
 					log.error("业务订单查询失败");
 					response.getWriter().append(getWxReturnMessage(X.FALSE, "业务订单查询失败"));
@@ -225,7 +270,7 @@ public class PayV2Controller extends BaseController{
 					orderQuery.setOut_trade_no(out_trade_no);
 					orderQuery.setSign_type("MD5");
 					String qSign = Signature.getSign(orderQuery);
-					log.debug("订单查询签名: " + qSign);
+					log.info("订单查询签名: " + qSign);
 					orderQuery.setSign(qSign);
 					
 					//TODO 验证签名
@@ -240,8 +285,28 @@ public class PayV2Controller extends BaseController{
 //					}else{
 						int count = orderService.updateOrderStatusByIdV2(out_trade_no, X.OrderState.PAID, order.getAmount().intValue(), order.getUserId());
 						if(count > 0){
-							log.debug("更新业务订单成功");
+							log.info("更新业务订单成功");
 							response.getWriter().append(getWxReturnMessage(X.TRUE, "OK"));
+							
+							//开始核销卡劵
+							log.info("开始核销卡劵");
+							String codeList = order.getCardCodeList();
+							if(!isNullOrEmpty(codeList)){
+								String[] codeArr = codeList.split(",");
+								for (String code : codeArr) {
+									Map<String, Object> paramMap = new HashMap<String, Object>();
+									paramMap.put("code", code);
+									Map<String, Object> result = wcs.consumeCode(paramMap);
+									String errorMsg = String.valueOf(result.get("errmsg"));
+									int errorCode = Integer.valueOf(result.get("errcode").toString());
+									if(errorCode == 0 && "ok".equalsIgnoreCase(errorMsg)){
+										log.info("卡劵 ["+ code + "] 已被核销。");
+									}else{
+										log.error("卡劵 ["+ code + "] 核销失败。");
+									}
+								}
+							}
+							
 						}else{
 							log.error("更新业务订单状态失败");
 							response.getWriter().append(getWxReturnMessage(X.FALSE, "更新业务订单状态失败"));

@@ -67,7 +67,12 @@ public class OrderServiceImpl implements OrderService{
 		 * 4.保存体检人到会员表,密码是手机号末6位,账号是体检人手机号
 		 * 5.若有代金劵,保存代金劵id到 sk_order_voucher(id/order_id/voucher_id)中间表
 		 * 6.设置代金劵与优惠卷的is_effect/use_date 
+		 * 
+		 * 2017-07-30 du
+		 * 卡劵使用微信卡劵,原有卡劵业务不进行变更,只是前端无须传递 优惠卷和代金劵
+		 * 付款完成卡劵需要核销
 		 */
+		
 		//保存体检人
 		String examineeId = X.uuidPure();
 		Examinee examinee = order.getExaminee();
@@ -125,6 +130,11 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public int cancelOrder(String id) {
 		//state 0:未付款, 1:已付款 2:已结算 3:已取消
+		
+		/**
+		 * 2017-07-30 du
+		 * 卡劵使用微信卡劵,原有卡劵业务不进行变更,只是前端无须传递 优惠卷和代金劵(数据库没有原有的卡劵则不会去回滚)
+		 */
 		
 		Order order = orderDao.getOrderById(id);
 		String cIds = order.getCouponId();

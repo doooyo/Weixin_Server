@@ -10,7 +10,7 @@ public class Constant {
 	
 	public static final String ORIGINALID = "";//minipro
 	
-	public static final String ACCESS_TOKEN_URL =  "";
+	public static final String ACCESS_TOKEN_URL =  "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
 	
 	
 	public static AccessToken ACCESS_TOKEN = null;

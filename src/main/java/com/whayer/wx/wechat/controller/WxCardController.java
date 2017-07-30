@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mohoo.wechat.card.config.BaseConfig;
 import com.mohoo.wechat.card.service.WxVipService;
@@ -34,8 +35,10 @@ import com.whayer.wx.pay2.service.PayV2Service;
 import com.whayer.wx.wechat.service.EventService;
 import com.whayer.wx.wechat.util.AesCbcUtil;
 import com.whayer.wx.wechat.util.Constant;
+import com.whayer.wx.wechat.vo.CardInfo;
 import com.whayer.wx.wechat.vo.WechatAccount;
 
+@Deprecated
 @Controller
 public class WxCardController extends BaseController{
 	
@@ -68,7 +71,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping("/update2minicard")
 	@ResponseBody
 	public void update2minicard(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("Update2MiniCardController.update2minicard()");
+		log.info("WxCardController.update2minicard()");
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
 		
@@ -136,7 +139,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping("/decryptCode")
 	@ResponseBody
 	public ResponseCondition decryptCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("Update2MiniCardController.decryptCode()");
+		log.info("WxCardController.decryptCode()");
 		
 		Box box = loadNewBox(request);
 		
@@ -175,7 +178,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping("/addCardTest")
 	@ResponseBody
 	public ResponseCondition addCardTest(HttpServletRequest request, HttpServletResponse response) {
-		log.info("Update2MiniCardController.addCardTest()");
+		log.info("WxCardController.addCardTest()");
 		
 		Box box = loadNewBox(request);
 		
@@ -233,7 +236,7 @@ public class WxCardController extends BaseController{
 	public ResponseCondition addCardTestV2(
 			//@RequestParam(value = "cardIds[]", required = false) String[] cardIds,
 			HttpServletRequest request, HttpServletResponse response) {
-		log.info("Update2MiniCardController.addCardTestV2()");
+		log.info("WxCardController.addCardTestV2()");
 		
 		Box box = loadNewBox(request);
 		String ids = box.$p("cardIds");
@@ -298,57 +301,6 @@ public class WxCardController extends BaseController{
         return res;
 	}
 	
-	/**
-	 * 获取用户已领取卡券列表（测试用）
-	 * @param request
-	 * @param response
-	 * @return
-	 * @throws IOException 
-	 */
-	@RequestMapping(value = "/getCardList")
-	@ResponseBody
-	public ResponseCondition getCardList(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("Update2MiniCardController.getCardList()");
-		
-//		Box box = loadNewBox(request);
-//		String code = box.$p("code");
-//		String cardId = box.$p("card_id");
-//		
-//		if(isNullOrEmpty(code)){
-//			return getResponse(X.FALSE);
-//		}
-//		
-//		//获取小程序openid
-//		String openId = payV2Service.getOpenId(code);
-//		log.info("小程序openid：" + openId);
-//		
-//		if(isNullOrEmpty(openId)){
-//			log.error("openid 获取失败");
-//			ResponseCondition res = getResponse(X.FALSE);
-//			res.setErrorMsg("openid 获取失败");
-//			return res;
-//		}
-		
-		//小程序某粉丝openid：o1z7s0Fm7hxkKspl_i3sH3yqOp_Q
-		//公众号某粉丝openid：owN5lwOnxMBTLQeLOXuCjpaDewfM
-		//unionid某粉丝：oc_yAxJ9szy52x_5xUv5cVxwM__Q
-		
-		Box box = loadNewBox(request);
-		
-		
-		String openId = box.$p("openId");//"oc_yAxJ9szy52x_5xUv5cVxwM__Q";//"owN5lwOnxMBTLQeLOXuCjpaDewfM";
-		String cardId = "";
-		
-		ResponseCondition res = getResponse(X.TRUE);
-		Map<String, Object> result = wcs.getCardIdList(openId, cardId);
-		
-		log.info("获取卡劵列表结果：" + JSONObject.toJSONString(result));
-		
-		@SuppressWarnings("unchecked")
-		List<JSONObject> list = (List<JSONObject>)result.get("card_list");
-		res.setList(list);
-		return res;
-	}
 	
 	/**
 	 * 获取公众号用户openid列表
@@ -360,7 +312,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping(value = "/getUserList")
 	@ResponseBody
 	public ResponseCondition getUserList(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("Update2MiniCardController.getUserList()");
+		log.info("WxCardController.getUserList()");
 		
 		Map<String, Object> result = wcs.getUserList();
 		
@@ -382,7 +334,7 @@ public class WxCardController extends BaseController{
 	@ResponseBody
     @RequestMapping(value = "/decodeUserInfo", method = RequestMethod.POST)
     public ResponseCondition decodeUserInfo(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		log.info("Update2MiniCardController.decodeUserInfo()");
+		log.info("WxCardController.decodeUserInfo()");
 		
 		Box box = loadNewBox(request);
 		
@@ -446,7 +398,7 @@ public class WxCardController extends BaseController{
 	@ResponseBody
     @RequestMapping(value = "/getUserBaseInfo", method = RequestMethod.GET)
     public ResponseCondition getUserBaseInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("Update2MiniCardController.getUserBaseInfo()");
+		log.info("WxCardController.getUserBaseInfo()");
 		
 		Box box = loadNewBox(request);
 		
@@ -475,7 +427,7 @@ public class WxCardController extends BaseController{
 	@RequestMapping(value = "/getCardListV2")
 	@ResponseBody
 	public ResponseCondition getCardListV2(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.info("Update2MiniCardController.getCardListV2()");
+		log.info("WxCardController.getCardListV2()");
 		
 		Box box = loadNewBox(request);
 		
@@ -535,7 +487,7 @@ public class WxCardController extends BaseController{
 		       
 		       unionid = userInfoJSON.getString("unionId");
 		       if(!isNullOrEmpty(unionid))
-		    	   eventService.updateMiniProgramAppId(unionid, openid);
+		    	   eventService.updateMiniProgramOpenId(unionid, openid);
 		   }
 		} catch (Exception e) {
 		   e.printStackTrace();
@@ -558,4 +510,181 @@ public class WxCardController extends BaseController{
 		res.setList(list);
 		return res;
 	}
+	
+	/**
+	 * 批量获取卡劵列表测试
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@Deprecated
+	@ResponseBody
+    @RequestMapping(value = "/getBatchCard", method = RequestMethod.GET)
+    public ResponseCondition getBatchCard(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("WxCardController.getBatchCard()");
+		
+		HashMap<String, Object> params = new HashMap<>();
+		String[] status = {"CARD_STATUS_VERIFY_OK", "CARD_STATUS_DISPATCH"};
+		params.put("offset", 0);
+		params.put("count", 50);
+		params.put("status_list", status);
+		String json = JSON.toJSONString(params);
+		
+		Map<String, Object> result = wcs.batchGetCard(json);
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		list.add(result);
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		return res;
+	}
+	
+	@Deprecated
+	@ResponseBody
+    @RequestMapping(value = "/getCardDetail", method = RequestMethod.GET)
+    public ResponseCondition getCardDetail(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("WxCardController.getCardDetail()");
+		
+		Box box = loadNewBox(request);
+		String cardId = box.$p("cardId");
+		if(isNullOrEmpty(cardId)){
+			return getResponse(X.FALSE);
+		}
+		
+		Map<String, Object> result = wcs.getCard(cardId);
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		list.add(result);
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		return res;
+	}
+	
+	/**
+	 * 同步卡劵测试
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@Deprecated
+	@ResponseBody
+    @RequestMapping(value = "/syncCard", method = RequestMethod.GET)
+    public ResponseCondition syncCard(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("WxCardController.syncCard()");
+		
+		HashMap<String, Object> params = new HashMap<>();
+		String[] status = {"CARD_STATUS_VERIFY_OK", "CARD_STATUS_DISPATCH"};
+		params.put("offset", 0);
+		params.put("count", 50);
+		params.put("status_list", status);
+		String json = JSON.toJSONString(params);
+		
+		Map<String, Object> cardBatch = wcs.batchGetCard(json);
+		if(isNullOrEmpty(cardBatch))
+			return getResponse(X.FALSE);
+		
+		
+		@SuppressWarnings("unchecked")
+		List<String> originCardIds = (List<String>)cardBatch.get("card_id_list");
+		List<String> cardIds = eventService.getCardIds();
+		originCardIds.removeAll(cardIds);//求差集
+		
+		for (String cardId : originCardIds) {
+			Map<String, Object> result = wcs.getCard(cardId);
+			CardInfo info = eventService.createCardInfo(result);
+			if(!isNullOrEmpty(info)){
+				//同步卡劵到数据库
+				eventService.saveCardInfo(info);
+			}
+		}
+		
+		
+		return getResponse(X.TRUE);
+	}
+	
+	/**
+	 * 获取所有可用卡劵列表详情
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
+	@ResponseBody
+    @RequestMapping(value = "/getCardListDetail", method = RequestMethod.GET)
+    public ResponseCondition getCardListDetail(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("WxCardController.getCardListDetail()");
+		
+		Box box = loadNewBox(request);
+		
+		String roleId = box.$p("roleId");
+		
+		List<CardInfo> list = eventService.getCardListDetail(roleId);
+		
+		ResponseCondition res = getResponse(X.TRUE);
+		res.setList(list);
+		
+		return res;
+	}
+	
+	/**
+	 * 获取用户已领取卡券列表测试
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException 
+	 */
+//	@RequestMapping(value = "/getOwnCardListTest")
+//	@ResponseBody
+//	public ResponseCondition getCardList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		log.info("WxCardController.getOwnCardListTest()");
+//		
+//		Box box = loadNewBox(request);
+//		
+//		String openid = box.$p("openid"); // "o1z7s0Fm7hxkKspl_i3sH3yqOp_Q";
+//		//默认从数据库取
+//		WechatAccount wa = eventService.getWechatAccountByMiniProgramOpenId(openid);
+//		
+//		if(!isNullOrEmpty(wa) && !isNullOrEmpty(wa.getOfficialAccountOpenid())){
+//			Map<String, Object> result = wcs.getCardIdList(wa.getOfficialAccountOpenid(), "");//cardId为空表示查询所有已领取的劵
+//			
+//			log.info("获取用户已领取卡劵结果列表：" + JSONObject.toJSONString(result));
+//			
+//			JSONArray array = (JSONArray)result.get("card_list");
+//			if(!isNullOrEmpty(array)){
+//				List<CardInfoVo> voList = new ArrayList<>();
+//				List<String> codeList = new ArrayList<>();
+//				List<String> cardIdList = new ArrayList<>();
+//				for (Object object : array) {
+//					String _code = ((JSONObject)object).getString("code");
+//					String _cardId = ((JSONObject)object).getString("card_id");
+//					codeList.add(_code);
+//					cardIdList.add(_cardId);
+//				}
+//				
+//				List<CardInfo> _result = eventService.getCardListDetailByCardIds(cardIdList);
+//				for (CardInfo cardInfo : _result) {
+//					String cardId = cardInfo.getCardId();
+//					for (String c : codeList) {
+//						if(c.equals(cardId)){
+//							CardInfoVo vo = (CardInfoVo)cardInfo;
+//							vo.setCode(c);
+//							voList.add(vo);
+//							break;
+//						}
+//					}
+//				}
+//				
+//				ResponseCondition res = getResponse(X.TRUE);
+//				res.setList(voList);
+//				return res;
+//			}else{
+//				return getResponse(X.TRUE);
+//			}
+//			
+//		}else {
+//			return getResponse(X.TRUE);
+//		}
+//	}
 }

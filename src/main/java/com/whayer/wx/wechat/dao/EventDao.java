@@ -1,9 +1,12 @@
 package com.whayer.wx.wechat.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.whayer.wx.common.mvc.DAO;
+import com.whayer.wx.wechat.vo.CardInfo;
 import com.whayer.wx.wechat.vo.WechatAccount;
 
 @Repository
@@ -15,9 +18,19 @@ public interface EventDao extends DAO{
 	
 	public Integer isUnionIdIsExist(@Param("unionid") String unionid);
 	
-	public Integer updateMiniProgramAppId(
+	public Integer updateMiniProgramOpenId(
 			@Param("unionid") String unionid, 
 			@Param("miniprogramOpenid") String miniprogramOpenid);
 	
 	public WechatAccount getWechatAccountByUnionId(@Param("unionid") String unionid);
+	
+	public WechatAccount getWechatAccountByMiniProgramOpenId(@Param("miniProgramOpenId") String miniProgramOpenId);
+	
+	public Integer saveCardInfo(CardInfo cardInfo);
+	
+	public List<CardInfo> getCardListDetail(@Param("roleId") String roleId);
+	
+	public List<CardInfo> getCardListDetailByCardIds(@Param("cardIds")  List<String> cardIds);
+	
+	public List<String> getCardIds();
 }

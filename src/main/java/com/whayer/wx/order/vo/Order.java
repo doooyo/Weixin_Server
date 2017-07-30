@@ -32,6 +32,14 @@ public class Order implements Serializable{
 	private Date createTime;      //创建时间
 	
 	private List<Product> products = new ArrayList<>();  //订单的产品列表
+	
+	/**
+	 * 2017-07-30 du
+	 * 卡劵已对接微信卡劵,自己的劵已不使用,暂时保留不会影响业务
+	 * 增加卡劵code字段
+	 */
+	private String cardCodeList;         //多张卡劵以逗号分割
+	
 	private List<Voucher> vouchers = new ArrayList<>();  //订单的代金劵列表
 	private Coupon coupon;           //订单的优惠卷(限一个)
 	private Examinee examinee;       //订单的体检人
@@ -47,7 +55,15 @@ public class Order implements Serializable{
 	public Order(){
 		
 	}
-	
+
+	public String getCardCodeList() {
+		return cardCodeList;
+	}
+
+	public void setCardCodeList(String cardCodeList) {
+		this.cardCodeList = cardCodeList;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -171,13 +187,15 @@ public class Order implements Serializable{
 	public void setInvoiceHeader(String invoiceHeader) {
 		this.invoiceHeader = invoiceHeader;
 	}
+
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", userId=" + userId + ", productIdList=" + productIdList + ", couponId=" + couponId
 				+ ", vouchersId=" + vouchersId + ", examineeId=" + examineeId + ", amount=" + amount + ", state="
 				+ state + ", isInvoice=" + isInvoice + ", createTime=" + createTime + ", products=" + products
-				+ ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee=" + examinee + ", user=" + user
-				+ ", detectionboxId=" + detectionboxId + ", recipientName=" + recipientName + ", recipientPhone="
-				+ recipientPhone + ", recipientAddress=" + recipientAddress + ", invoiceHeader=" + invoiceHeader + "]";
+				+ ", cardCodeList=" + cardCodeList + ", vouchers=" + vouchers + ", coupon=" + coupon + ", examinee="
+				+ examinee + ", user=" + user + ", detectionboxId=" + detectionboxId + ", recipientName="
+				+ recipientName + ", recipientPhone=" + recipientPhone + ", recipientAddress=" + recipientAddress
+				+ ", invoiceHeader=" + invoiceHeader + "]";
 	}
 }

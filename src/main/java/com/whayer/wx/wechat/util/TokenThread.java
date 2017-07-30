@@ -3,7 +3,7 @@ package com.whayer.wx.wechat.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Deprecated
 public class TokenThread implements Runnable {
 	private static Logger log = LoggerFactory.getLogger(TokenThread.class);
 

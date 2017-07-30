@@ -50,7 +50,12 @@
     	WHERE unionid = #{unionid}
     </select>
     
-    <update id="updateMiniProgramAppId">
+    <select id="getWechatAccountByMiniProgramOpenId" resultType="WechatAccount">
+    	SELECT * FROM sk_wechat_account
+    	WHERE miniprogram_openid = #{miniProgramOpenId}
+    </select>
+    
+    <update id="updateMiniProgramOpenId">
     	UPDATE sk_wechat_account 
 		    <trim prefix="SET" suffixOverrides=",">
 			    <if test="miniprogramOpenid != null and miniprogramOpenid != ''">
@@ -61,4 +66,75 @@
 		      unionid=#{unionid}
 		    </where>
     </update>
+    
+    <insert id="saveCardInfo" parameterType="CardInfo">
+    	INSERT INTO sk_card_info(
+			id,
+			card_type,
+			card_id,
+			title,
+			description,
+			date_type,
+			begin_timestamp,
+			end_timestamp,
+			fixed_term,
+			fixed_begin_term,
+			status,
+			least_cost,
+			reduce_cost,
+			discount,
+			supply_balance,
+			supply_bonus,
+			bonus_cleared,
+			bonus_rules,
+			prerogative,
+			bind_old_card_url,
+			activate_url,
+			need_push_on_view,
+			notify_date
+			)
+		VALUES(
+			#{id},
+			#{cardType},
+			#{cardId},
+			#{title},
+			#{description},
+			#{dateType},
+			#{beginTimestamp},
+			#{endTimestamp},
+			#{fixedTerm},
+			#{fixedBeginTerm},
+			#{status},
+			#{leastCost},
+			#{reduceCost},
+			#{discount},
+			#{supplyBalance},
+			#{supplyBonus},
+			#{bonusCleared},
+			#{bonusRules},
+			#{prerogative},
+			#{bindOldCardUrl},
+			#{activateUrl},
+			#{needPushOnView},
+			now()
+		)
+    </insert>
+    
+    <select id="getCardListDetail" resultType="CardInfo">
+    	SELECT * FROM sk_card_info
+    </select>
+    
+    <select id="getCardListDetailByCardIds" resultType="CardInfo">
+    	SELECT * FROM sk_card_info
+    	WHERE card_id IN (
+    	<foreach collection="cardIds" item="item" index="index" separator=",">
+           #{item}
+        </foreach>
+        )
+    </select>
+    
+    <!-- 返回List<String> 不要将返回类型定义为List -->
+    <select id="getCardIds" resultType="java.lang.String">
+    	SELECT card_id FROM sk_card_info
+    </select>
 </mapper>
