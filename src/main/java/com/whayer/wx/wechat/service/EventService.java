@@ -64,6 +64,13 @@ public interface EventService {
 	public boolean saveCardInfo(CardInfo cardInfo);
 	
 	/**
+	 * 删除卡劵(用于同步更新卡劵时)
+	 * @param cardId
+	 * @return
+	 */
+	public boolean deleteCardById(String cardId);
+	
+	/**
 	 * 获取所有可用卡劵列表
 	 * @param roleId
 	 * @return
@@ -83,4 +90,11 @@ public interface EventService {
 	 * @return
 	 */
 	public List<String> getCardIds();
+	
+	/**
+	 * 批量删除卡劵
+	 * @param cardIds
+	 * @return
+	 */
+	public boolean deleteCardByIds(List<String> cardIds);
 }

@@ -32,4 +32,10 @@ public class TestController {
 		log.info("TestController.register()");
 		return "register";
 	}
+	
+	@RequestMapping("/upload")
+	public String upload() {
+		log.info("TestController.upload()");
+		return "upload";
+	}
 }

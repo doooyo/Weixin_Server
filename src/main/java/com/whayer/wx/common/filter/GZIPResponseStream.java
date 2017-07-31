@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 public class GZIPResponseStream extends ServletOutputStream {
@@ -84,5 +85,17 @@ public class GZIPResponseStream extends ServletOutputStream {
 			throw new IOException("Cannot flush a closed output stream");
 		}
 		gzipstream.flush();
+	}
+
+	@Override
+	public boolean isReady() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setWriteListener(WriteListener arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

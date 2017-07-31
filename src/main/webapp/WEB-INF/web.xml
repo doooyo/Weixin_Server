@@ -104,6 +104,40 @@
     <dispatcher>ERROR</dispatcher> 
 </filter-mapping> -->
 
+<!-- **********************UPLOAD SERVLET BEGIN*************************** -->
+<!-- <filter>
+	<filter-name>jlfuFilter</filter-name>
+	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	<async-supported>true</async-supported>
+</filter>
+
+<filter-mapping>
+	<filter-name>jlfuFilter</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping> -->
+
+<!-- <servlet>
+    <servlet-name>UploadServlet</servlet-name>
+    <servlet-class>com.whayer.wx.upload.fileuploader.web.UploadServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UploadServlet</servlet-name>
+    <url-pattern>/javaLargeFileUploaderServlet</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>UploadServletAsync</servlet-name>
+    <servlet-class>com.whayer.wx.upload.fileuploader.web.UploadServletAsync</servlet-class>
+    <load-on-startup>3</load-on-startup>
+	开启支持异步
+	<async-supported>true</async-supported>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UploadServletAsync</servlet-name>
+    <url-pattern>/javaLargeFileUploaderAsyncServlet</url-pattern>
+</servlet-mapping> -->
+<!-- **********************UPLOAD SERVLET END*************************** -->
 
 <session-config>
    <session-timeout>720</session-timeout>

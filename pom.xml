@@ -8,6 +8,22 @@
 	<name>weixin Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
+		<!-- 解决maven编译找不到javax.servlet.http -->
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>3.1.0</version>
+		    <!-- 注意只在编译和测试时运行，如果在运行环境时运行会冲突的错误 -->
+		    <scope>provided</scope>
+		</dependency>
+        <!-- <dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>servlet-api</artifactId>
+		    <version>2.5</version>
+		    注意只在编译和测试时运行，如果在运行环境时运行会冲突的错误
+		    <scope>provided</scope>
+		</dependency> -->
 		<dependency>
 		    <groupId>ch.ethz.ganymed</groupId>
 		    <artifactId>ganymed-ssh2</artifactId>
@@ -175,14 +191,6 @@
             <artifactId>httpclient</artifactId>
             <version>4.5</version>
         </dependency>
-        <!-- 解决maven编译找不到javax.servlet.http -->
-        <dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>servlet-api</artifactId>
-		    <version>2.5</version>
-		    <!-- 注意只在编译和测试时运行，如果在运行环境时运行会冲突的错误 -->
-		    <scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>mohoo-wechat-card</groupId>
 			<artifactId>mohoo-wechat-card</artifactId>
@@ -195,6 +203,18 @@
 		    <artifactId>bcprov-jdk15</artifactId>
 		    <version>1.46</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>22.0</version>
+		</dependency>
+		<dependency>
+	        <groupId>joda-time</groupId>
+	        <artifactId>joda-time</artifactId>
+	        <version>2.6</version>
+	 	</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
 		<!-- <dependency>

@@ -25,6 +25,7 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	
+	
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
 		<property name="url" value="${db.url}" />
@@ -119,5 +120,35 @@
 	
 	
 	<bean id="springFactory" class="com.whayer.wx.common.bean.SpringFactory"></bean>
+	
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="placeholderPrefix" value="jlfu{" />
+		<property name="locations">
+			<list>
+				<value>classpath:x.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+	
+	<bean class="org.springframework.jmx.export.MBeanExporter">
+		<property name="assembler" ref="annotationsAssembler" />
+		<property name="namingStrategy" ref="namingStrategy" />
+		<property name="autodetect" value="true" />
+	</bean>
+
+	<bean id="jmxAttributeSource"
+		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+
+	<bean id="namingStrategy"
+		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+
+	<bean id="annotationsAssembler"
+		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
 </beans>
 

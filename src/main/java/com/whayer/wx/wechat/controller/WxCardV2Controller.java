@@ -262,10 +262,13 @@ public class WxCardV2Controller extends BaseController{
 		
 		Box box = loadNewBox(request);
 		
-		//TODO 用于劵打标
-		String roleId = box.$p("roleId");
+		String role = box.$p("code");
 		
-		List<CardInfo> list = eventService.getCardListDetail(roleId);
+		if(isNullOrEmpty(role)){
+			return getResponse(X.FALSE);
+		}
+		
+		List<CardInfo> list = eventService.getCardListDetail(role);
 		
 		ResponseCondition res = getResponse(X.TRUE);
 		res.setList(list);

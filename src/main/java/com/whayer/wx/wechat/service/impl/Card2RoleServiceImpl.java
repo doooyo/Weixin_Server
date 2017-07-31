@@ -33,8 +33,11 @@ public class Card2RoleServiceImpl implements Card2RoleService{
 	public boolean card2role(String role, String[] ids) {
 		int i = 0, j = 0;
 		i = card2RoleDao.deleteAllByRole(role);
-		if(i > 0){
-			j = card2RoleDao.card2role(role, ids);
+		if(i >= 0){
+			if(null != ids && ids.length > 0)
+				j = card2RoleDao.card2role(role, ids);
+			else 
+				return true;
 		}
 		
 		return j > 0;

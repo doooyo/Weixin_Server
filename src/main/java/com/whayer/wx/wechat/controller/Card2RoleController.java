@@ -56,9 +56,9 @@ public class Card2RoleController extends BaseController{
 		log.info("Card2RoleController.getCardList2Role()");
 		
 		Box box = loadNewBox(request);
-		String role = box.$p("role");
+		String code = box.$p("code");
 		
-		List<CardInfoIsSelected> list = card2RoleService.getCardList2Role(role);
+		List<CardInfoIsSelected> list = card2RoleService.getCardList2Role(code);
 		
 		ResponseCondition res = getResponse(X.TRUE);
 		res.setList(list);
@@ -74,7 +74,7 @@ public class Card2RoleController extends BaseController{
 			HttpServletRequest request, HttpServletResponse response) {
 		log.info("Card2RoleController.card2role()");
 		
-		if(isNullOrEmpty(role) || isNullOrEmpty(ids)){
+		if(isNullOrEmpty(role)){
 			return getResponse(X.FALSE);
 		}
 		

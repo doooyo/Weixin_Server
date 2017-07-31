@@ -24,7 +24,7 @@
     
     
     <select id="getCardList2Role" resultType="CardInfoIsSelected">
-    	select *
+    	select *,
 		1 as is_selected 
 		from sk_card_info 
 		where card_id in 

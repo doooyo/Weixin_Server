@@ -122,6 +122,10 @@
     
     <select id="getCardListDetail" resultType="CardInfo">
     	SELECT * FROM sk_card_info
+    	where card_id in 
+    	(
+		  select u.card_id from sk_card_role u where u.user_code=#{role}
+		)  
     </select>
     
     <select id="getCardListDetailByCardIds" resultType="CardInfo">
@@ -137,4 +141,17 @@
     <select id="getCardIds" resultType="java.lang.String">
     	SELECT card_id FROM sk_card_info
     </select>
+    
+    <delete id="deleteCardById" parameterType="String">
+    	<![CDATA[
+   			DELETE FROM sk_card_info WHERE card_id=#{cardId}
+   		]]>
+    </delete>
+    
+    <delete id="deleteCardByIds">
+    	DELETE from sk_card_info where card_id in
+        <foreach collection="cardIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

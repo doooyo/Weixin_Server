@@ -143,13 +143,18 @@ public class EventServiceImpl implements EventService{
 
 	@Override
 	public boolean saveCardInfo(CardInfo cardInfo) {
-		int result = eventDao.saveCardInfo(cardInfo);
-		return result > 0;
+		String cardId = cardInfo.getCardId();
+		boolean isDeleted = deleteCardById(cardId);
+		if(isDeleted){
+			int result = eventDao.saveCardInfo(cardInfo);
+			return result > 0;
+		}
+		return false;
 	}
 
 	@Override
-	public List<CardInfo> getCardListDetail(String roleId) {
-		return eventDao.getCardListDetail(roleId);
+	public List<CardInfo> getCardListDetail(String role) {
+		return eventDao.getCardListDetail(role);
 	}
 
 	@Override
@@ -167,6 +172,18 @@ public class EventServiceImpl implements EventService{
 	public List<String> getCardIds() {
 		
 		return eventDao.getCardIds();
+	}
+
+	@Override
+	public boolean deleteCardById(String cardId) {
+		int result = eventDao.deleteCardById(cardId);
+		return result >= 0;
+	}
+
+	@Override
+	public boolean deleteCardByIds(List<String> cardIds) {
+		int result = eventDao.deleteCardByIds(cardIds);
+		return result >= 0;
 	}
 
 }

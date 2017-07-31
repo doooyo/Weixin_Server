@@ -28,9 +28,13 @@ public interface EventDao extends DAO{
 	
 	public Integer saveCardInfo(CardInfo cardInfo);
 	
-	public List<CardInfo> getCardListDetail(@Param("roleId") String roleId);
+	public List<CardInfo> getCardListDetail(@Param("role") String role);
 	
 	public List<CardInfo> getCardListDetailByCardIds(@Param("cardIds")  List<String> cardIds);
 	
 	public List<String> getCardIds();
+	
+	public Integer deleteCardById(@Param("cardId") String cardId);
+	
+	public Integer deleteCardByIds(@Param("cardIds") List<String> cardIds);
 }

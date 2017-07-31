@@ -2,6 +2,7 @@ package com.whayer.wx.wechat.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,18 @@ public class NotifyController extends BaseController{
 								@SuppressWarnings("unchecked")
 								List<String> originCardIds = (List<String>)cardBatch.get("card_id_list");
 								List<String> cardIds = eventService.getCardIds();
+								
+								//List<String> cloneOriginCardIds = new ArrayList<>();
+								//Collections.copy(cloneOriginCardIds,originCardIds);
+								List<String> cloneOriginCardIds = new ArrayList<>(originCardIds);
+								List<String> cloneCardIds = new ArrayList<>(cardIds);
+								
 								originCardIds.removeAll(cardIds);
+								cloneCardIds.removeAll(cloneOriginCardIds);
+								if(cloneCardIds.size() > 0){
+									eventService.deleteCardByIds(cloneCardIds);
+								}
+								
 								
 								for (String _cardId : originCardIds) {
 									Map<String, Object> _cardInfo = wcs.getCard(_cardId);
