@@ -44,7 +44,7 @@ public class ProductCategoryController extends BaseController{
 		return res;
 	}
 	
-	@RequestMapping(value = "/save", method = RequestMethod.GET)
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition saveCategory(HttpServletRequest request, HttpServletResponse response){
 		log.info("ProductCategoryController.saveCategory()");
@@ -70,7 +70,7 @@ public class ProductCategoryController extends BaseController{
 		}
 	}
 	
-	@RequestMapping(value = "/update", method = RequestMethod.GET)
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition updateCategory(HttpServletRequest request, HttpServletResponse response){
 		log.info("ProductCategoryController.updateCategory()");
@@ -99,7 +99,7 @@ public class ProductCategoryController extends BaseController{
 		}
 	}
 	
-	@RequestMapping(value = "/delete", method = RequestMethod.GET)
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseCondition deleteCategory(HttpServletRequest request, HttpServletResponse response){
 		log.info("ProductCategoryController.deleteCategory()");

@@ -126,29 +126,42 @@
 		<property name="placeholderPrefix" value="jlfu{" />
 		<property name="locations">
 			<list>
-				<value>classpath:x.properties</value>
+				<value>classpath:java-large-file-uploader.properties</value>
 			</list>
 		</property>
 		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+	
+	<!-- <bean id="jmxAttributeSource"
+		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+	
+	<bean id="namingStrategy"
+		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+	
+	<bean id="annotationsAssembler"
+		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="jmxAttributeSource" />
 	</bean>
 	
 	<bean class="org.springframework.jmx.export.MBeanExporter">
 		<property name="assembler" ref="annotationsAssembler" />
 		<property name="namingStrategy" ref="namingStrategy" />
 		<property name="autodetect" value="true" />
-	</bean>
+	</bean> -->
 
-	<bean id="jmxAttributeSource"
-		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+	<!-- spring task jms -->
+	<!-- <task:scheduled-tasks scheduler="jlfuScheduler">
+		<task:scheduled ref="importedFilesCleaner" method="clean"
+			cron="0/30 * * * * ?" />
+	</task:scheduled-tasks>
 
-	<bean id="namingStrategy"
-		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
-		<property name="attributeSource" ref="jmxAttributeSource" />
-	</bean>
+	<task:scheduler id="jlfuScheduler" />
 
-	<bean id="annotationsAssembler"
-		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
-		<property name="attributeSource" ref="jmxAttributeSource" />
-	</bean>
+	<task:annotation-driven /> -->
+	
+	<!-- <bean id="UploadServlet" class="com.whayer.wx.upload.fileuploader.web.UploadServlet"/>
+    <bean id="UploadServletAsync" class="com.whayer.wx.upload.fileuploader.web.UploadServletAsync"/> -->
 </beans>
 

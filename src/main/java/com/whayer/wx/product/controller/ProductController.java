@@ -286,7 +286,7 @@ public class ProductController extends BaseController{
 		product.setDescription(description);
 		product.setPrice(price);
 		
-		if(!isNullOrEmpty(file)){
+		if(!isNullOrEmpty(file) && file.getSize() > 0){
 			String originFileName = file.getOriginalFilename();
 			String extension = FileUtil.getExtension(originFileName);
 			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
