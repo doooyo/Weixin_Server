@@ -749,20 +749,25 @@ public class LoginController extends BaseVerificationController {
 	 */
 	@RequestMapping(value = "/updateAgent", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseCondition updateAgent(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IllegalStateException, IOException {
+	public ResponseCondition updateAgent(
+			//@RequestParam(value = "file", required = false) MultipartFile file, 
+			HttpServletRequest request, HttpServletResponse response) throws IllegalStateException, IOException {
 		log.info("LoginController.updateAgent()");
 		
 		Box box = loadNewBox(request);
 		
+		String id = box.$p("id");
 		String mobile = box.$p("mobile");
 		String nickName = box.$p("nickName");
-		String id = box.$p("id");
-		
-		String bankCardName = box.$p("bankCardName"); 
-	    String address = box.$p("address"); 
+	    String address = box.$p("address");
 	    
-		if(isNullOrEmpty(id) || isNullOrEmpty(mobile) || isNullOrEmpty(address)
-				|| isNullOrEmpty(nickName) || isNullOrEmpty(bankCardName)){
+	    String email = box.$p("email");
+	    String bank = box.$p("bank");
+	    String bankCardNo = box.$p("bankCardNo");
+	    String bankCardName = box.$p("bankCardName"); 
+	    
+	    
+		if(isNullOrEmpty(id)){
 			return getResponse(X.FALSE);
 		}
 		
@@ -777,48 +782,51 @@ public class LoginController extends BaseVerificationController {
 			return res;
 		}
 		
-		if(!isNullOrEmpty(file) && !file.isEmpty() && file.getSize()  > 0){
-			String originFileName = file.getOriginalFilename();
-			String extension = FileUtil.getExtension(originFileName);
-			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
-			Pattern pattern = Pattern.compile(X.REGEX);
-			Matcher matcher = pattern.matcher(originFileName);
-			if (matcher.find()) {
-				originFileName = matcher.replaceAll("_").trim();
-			}
-			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
-			
-			if (file.getSize() == 0 || file.isEmpty()) {
-				log.error("文件不能为空");
-				res.setErrorMsg("文件不能为空");
-				return res;
-			}
-			// check if too large
-			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
-			if (file.getSize() > maxSize) {
-				log.error("文件太大");
-				res.setErrorMsg("文件太大");
-				return res;
-			}
-			
-			String uploadPath = X.getConfig("file.upload.dir");
-			uploadPath += "/header";
-			X.makeDir(uploadPath);
-			File targetFile = new File(uploadPath, originFileName);
-		    file.transferTo(targetFile);
-		    
-		    //删除旧头像
-		    File oldFile = new File(uploadPath, user.getHeadImg());
-		    oldFile.delete();
-		    
-		    //设置头像信息
-		    user.setHeadImg(originFileName);
-		}
+//		if(!isNullOrEmpty(file) && !file.isEmpty() && file.getSize()  > 0){
+//			String originFileName = file.getOriginalFilename();
+//			String extension = FileUtil.getExtension(originFileName);
+//			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
+//			Pattern pattern = Pattern.compile(X.REGEX);
+//			Matcher matcher = pattern.matcher(originFileName);
+//			if (matcher.find()) {
+//				originFileName = matcher.replaceAll("_").trim();
+//			}
+//			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
+//			
+//			if (file.getSize() == 0 || file.isEmpty()) {
+//				log.error("文件不能为空");
+//				res.setErrorMsg("文件不能为空");
+//				return res;
+//			}
+//			// check if too large
+//			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
+//			if (file.getSize() > maxSize) {
+//				log.error("文件太大");
+//				res.setErrorMsg("文件太大");
+//				return res;
+//			}
+//			
+//			String uploadPath = X.getConfig("file.upload.dir");
+//			uploadPath += "/header";
+//			X.makeDir(uploadPath);
+//			File targetFile = new File(uploadPath, originFileName);
+//		    file.transferTo(targetFile);
+//		    
+//		    //删除旧头像
+//		    File oldFile = new File(uploadPath, user.getHeadImg());
+//		    oldFile.delete();
+//		    
+//		    //设置头像信息
+//		    user.setHeadImg(originFileName);
+//		}
 		
+		user.setEmail(email);
 	    user.setMobile(mobile);
 	    user.setNickName(nickName);
-	    user.setBankCardName(bankCardName);
 	    user.setAddress(address);
+	    user.setBank(bank);
+	    user.setBankCardName(bankCardName);
+	    user.setBankCardNo(bankCardNo);
 		
 		int result = userService.updateUserById(user);
 		if(result > 0){

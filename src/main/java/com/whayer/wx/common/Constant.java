@@ -15,6 +15,7 @@ public interface Constant {
 	public static final String TIMEE = "HH:mm:ss";
 	public static final String TIMEF = "yyyyMMddHHmmssSSS";
 	public static final String TIMEG = "yyyyMMdd";
+	//无效的日期格式
 	public static final String TIMEH = "yyyy-MM-dd";
 
 	public static final String FILE_SEPARATOR = File.separator;

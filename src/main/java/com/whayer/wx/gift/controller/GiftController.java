@@ -123,7 +123,7 @@ public class GiftController extends BaseController{
 			return getResponse(X.FALSE);
 		}
 		
-		Date deadlineDate = X.string2date(deadline, X.TIMEA);
+		Date deadlineDate = X.string2date(deadline, X.TIMED);
 		
 		if(!isNullOrEmpty(deadlineDate) && deadlineDate.compareTo(new Date()) < 0){
 			ResponseCondition res = getResponse(X.FALSE);
@@ -141,7 +141,7 @@ public class GiftController extends BaseController{
 		gift.setDeadline(deadlineDate);
 		//gift.setImgSrc(imgSrc);
 		
-		if(!isNullOrEmpty(file)){
+		if(!isNullOrEmpty(file) && file.getSize() > 0){
 			
 			String originFileName = file.getOriginalFilename();
 			String extension = FileUtil.getExtension(originFileName);
@@ -154,11 +154,7 @@ public class GiftController extends BaseController{
 			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
 			
 			ResponseCondition res = getResponse(X.FALSE);
-			if (file.getSize() == 0 || file.isEmpty()) {
-				log.error("文件不能为空");
-				res.setErrorMsg("文件不能为空");
-				return res;
-			}
+			
 			// check if too large
 			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
 			if (file.getSize() > maxSize) {
@@ -212,7 +208,7 @@ public class GiftController extends BaseController{
 		}
 		
 		String id = X.uuidPure();
-		Date deadlineDate = X.string2date(deadline, X.TIMEA);
+		Date deadlineDate = X.string2date(deadline, X.TIMED);
 		
 		if(isNullOrEmpty(deadlineDate)){
 			return getResponse(X.FALSE);
@@ -231,7 +227,7 @@ public class GiftController extends BaseController{
 		//gift.setImgSrc(imgSrc);
 		gift.setCreateTime(new Date());
 		
-		if(!isNullOrEmpty(file)){
+		if(!isNullOrEmpty(file) && file.getSize() > 0){
 			String originFileName = file.getOriginalFilename();
 			String extension = FileUtil.getExtension(originFileName);
 			originFileName = FileUtil.getFileNameWithOutExtension(originFileName);
@@ -243,11 +239,7 @@ public class GiftController extends BaseController{
 			originFileName = X.uuidPure8Bit()/*originFileName*/ + X.DOT + extension;
 			
 			ResponseCondition res = getResponse(X.FALSE);
-			if (file.getSize() == 0 || file.isEmpty()) {
-				log.error("文件不能为空");
-				res.setErrorMsg("文件不能为空");
-				return res;
-			}
+			
 			// check if too large
 			int maxSize = X.string2int(X.getConfig("file.upload.max.size"));
 			if (file.getSize() > maxSize) {
