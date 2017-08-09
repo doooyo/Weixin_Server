@@ -144,15 +144,22 @@
 			<property name="aes" ref="aes"/>
 			<property name="excludeUrlPatterns">
 				<array>
-					<value>/index</value>
+					<value>/</value>
 					<value>/user/login/**</value>
+					<value>/user/weixin/login</value>
+					<value>/user/logout</value>
 					<value>/login</value>
+					<value>/index</value>
 					<value>/register</value>
 					<value>/upload</value>
 					<value>/user/logout</value>
-					<value>/upload </value>
-					<value>/facade/** </value>
-					<value>/static/**</value>
+					<value>/css/** </value>
+					<value>/img/**</value>
+					<value>/WEB-INF/jsp/**</value>
+					<value>/js/**</value>
+					<value>/easyui/**</value>
+					<value>/easyui-extensions/**</value>
+					<value>/view/**</value>
 				</array>
 			</property>
 		</bean>
