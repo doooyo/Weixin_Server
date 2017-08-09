@@ -1,0 +1,343 @@
+<div class="easyui-layout" data-options="fit:true" id='product'>
+    <!-- Begin of toolbar -->
+    <div id="toolbarproduct">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>产品名称：</label><input class="easyui-textbox productName" style="width:150px">
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search productQuery">查询</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton primary icon-search pd5 add">新增</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagridproduct" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-product" class="easyui-dialog" data-options="closed:true" style="width:500px; padding:10px;min-height: 210px;">
+	<form id="productForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+        	<input type="hidden" name="id">
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">产品名称:</td>
+                <td><input type="text" name="name" class="easyui-textbox name" style="width: 100%;"  required="required"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">分类:</td>
+                <td>
+                	<input class="easyui-combobox" id='productCategory' name='categoryId' panelHeight="auto" style="width:100%;" data-options="valueField:'id',textField:'name'"  required="required">		            	
+		            </input>
+                </td>
+            </tr>
+            
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">价格:</td>
+                <td><input type="text" name="price" class="code easyui-numberbox" min="1" style="width: 100%;"  required="required" missingMessage="必须填写大于1的数字"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">描述:</td>
+                <td>
+                	<input type="text" name="description" class="easyui-textbox code" 
+                	style="width:100%;height:60px" data-options="multiline:true"  required="required"/>
+                </td>
+            </tr>
+            <tr class="logoPriview">
+                <td align="center" valign="top" style="width: 120px;margin-bottom: 15px;">产品图片:</td>
+                <td class="logoImage"></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">上传:</td>
+                <td>
+                	<input name="file" class="easyui-filebox" data-options="buttonText:'浏览',buttonIcon:'fa fa-upload',accept: 'image/*'" 
+                	style="width: 100%;">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var product = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagridproduct').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getproductList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		*/
+		attachEvent:function(){
+			var _this = this;
+			/*
+			* 表格操作
+			* @ 编辑：edit，删除：delete；
+			 */
+			$('#product').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':'down';
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 产品查询
+			*/
+			$("#product .productQuery").on("click",function(){
+				_this.getproductList();
+			});
+			/*
+			* 新增产品
+			 */
+			$("#product .add").on("click",function(){
+				_this.openDialog();
+			});
+		},
+		/*
+		* 获取产品列表
+		*/
+		getproductList:function(){
+			var _this = this;
+			var URL = API.getProductList;
+			$('#datagridproduct').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbarproduct",
+				queryParams: {
+					name: $("#product .productName").textbox('getValue')
+				},
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'imgUrl',title:'产品图片',width:100,align:'center',formatter:function(value,row,index){
+						var src = row['imgUrl'];
+						var dom = '';
+						if(src){
+							src=(API.proxy?'/proxy':'')+'/image/product/'+src;
+							dom = '<image src="'+src+'" class="logo-table"/>';
+						}else{
+							//无集团编码
+							dom = '<image src="./img/logo.png"  class="logo-table"/>';
+						}
+						return dom;
+					}},
+					{ field:'name',title:'产品名称',width:180},
+					{ field:'price',title:'价格(￥)',width:100},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var isOff = row['isOff'];
+						var tips = isOff?'上架':'下架';
+						var domHtml = '<a class="easyui-linkbutton primary op edit"  data-rowindex="'+rowindex+'">编辑</a><a class="easyui-linkbutton error op down"  data-rowindex="'+rowindex+'">'+tips+'</a>';				
+						return 	domHtml;				
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;				    
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#product a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* easyui 自定义返回数据格式
+		* 格式必须为{total:10,rows:[]}
+		*/
+		pagerFilter:function(data){ 
+			console.log(data);    
+			if (!data.rows){
+				data.rows = data.list;     
+			}       
+			return data;
+		},
+		/*
+		*表格操作：编辑、删除
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(rowindex);
+					break;
+				case 'down':
+					var product = _this.list[rowindex];
+					var isOff = product['isOff'];
+					var tips = isOff?"是否上架改产品？":"是否下架该产品？";
+					$.messager.confirm('提示', tips, function (r) {
+			            if (r) {
+			                _this.downProduct(product);
+			            }
+			        });
+					break;
+			}
+		},
+		openDialog:function(rowindex){
+			var _this = this;
+			//清除数据
+			$('#productForm').form('clear');
+			if(rowindex==""||rowindex==undefined){				
+				//新增
+				$('.logoPriview').hide();
+				_this.addproduct();
+			}else{
+				//编辑
+				_this.getCategoryList(function(){
+					$('.logoPriview').show();
+					var product = _this.list[rowindex];
+					//load数据
+					$('#productForm').form('load',product);
+					//logo
+					var imageSrc = product['imgUrl'];
+					var baseUrl = (API.proxy?'/proxy':'')+'/image/product/';
+					var imageUrl = baseUrl+imageSrc;
+					var html = '<image src="'+imageUrl+'" class="logo-image"/>';
+					$('.logoImage').html(html);
+
+					//设置选中分类
+					$("#productCategory").combobox("setValue",product["categoryId"]);
+		            //打开对话框
+					$('#whayer-dialog-product').dialog({
+						closed: false,
+						modal:true,
+			            title: "编辑",
+			            buttons: [{
+			                text: '确定',
+			                iconCls: 'icon-ok',
+			                handler: function(){
+			                	var valid = _this.validateForm('productForm');
+								if(!valid){
+									$.messager.alert('提示','必填项不能为空');
+									return false;
+								}else{
+			                		$('#whayer-dialog-product').dialog('close'); 
+			                		_this.updateproduct();
+			                	}			                	
+			                }
+			            }, {
+			                text: '取消',
+			                iconCls: 'icon-cancel',
+			                handler: function () {
+			                    $('#whayer-dialog-product').dialog('close');                    
+			                }
+			            }]
+			        });
+			        $('#whayer-dialog-product').window('center');
+				});
+				
+				
+			}			
+		},
+		getCategoryList:function(callback){
+			var url = API.getCategoryList;
+			whayer.get(url,{name:''},function(res){
+				var data = res.list;
+				$('#productCategory').combobox({
+					data:data,
+					valueField:'id',
+					textField:'name'
+				});
+				callback&&callback();
+			});	
+		},		
+		validateForm:function(formId){
+			var valid = $("#"+formId).form('validate');
+			return valid;
+		},
+		addproduct:function(){
+			//需要登录
+			var _this = this;
+			_this.getCategoryList(function(){
+				//打开对话框
+				$('#whayer-dialog-product').dialog({
+					closed: false,
+					modal:true,
+		            title: "新增产品",
+		            buttons: [{
+		                text: '确定',
+		                iconCls: 'icon-ok',
+		                handler: function(){
+		                	var valid = _this.validateForm('productForm');
+							if(!valid){
+								$.messager.alert('提示','必填项不能为空');
+								return false;
+							}else{
+								$('#whayer-dialog-product').dialog('close');	
+								var form = new FormData(document.getElementById("productForm"));
+								var url = API.addProduct;
+								whayer.submitForm(url,form,function(res){
+									_this.getproductList();
+								});
+							}		                	
+		                }
+		            }, {
+		                text: '取消',
+		                iconCls: 'icon-cancel',
+		                handler: function () {
+		                    $('#whayer-dialog-product').dialog('close');                    
+		                }
+		            }]
+		        });	
+		        $('#whayer-dialog-product').window('center');
+			});	        
+		},
+		/*
+		* 下架产品
+		* @ id,产品id
+		 */
+		downProduct:function(product){
+			/*var _this = this;
+			var url = '/product/deleteById';
+			var data = {id:id};
+			whayer.post(url,data,function(res){
+				 _this.getproductList();
+			});	*/	
+
+			var id = product['id'];
+			var _this = this;
+			var isOff = product.isOff?0:1;
+			var url = API.downProduct;
+			var data = {id:id,isOff:isOff};
+			whayer.post(url,data,function(res){
+				 _this.getproductList();
+			});	
+		},
+		/*
+		* 提交表单，更新集团信息
+		 */
+		updateproduct:function(){
+			var _this = this;	
+			var form = new FormData(document.getElementById("productForm"));
+			var url = API.updateProduct;
+			whayer.submitForm(url,form,function(res){
+				_this.getproductList();
+			});
+		}
+
+	};
+	//
+	product.init();	
+
+})(jQuery);
+	
+</script>

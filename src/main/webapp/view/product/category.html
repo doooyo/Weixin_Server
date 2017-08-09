@@ -1,0 +1,268 @@
+<div class="easyui-layout" data-options="fit:true" id='category'>
+    <!-- Begin of toolbar -->
+    <div id="toolbarcategory">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>分类名称：</label><input class="easyui-textbox categoryName" style="width:150px">
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search categoryQuery">查询</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton primary icon-search pd5 add">新增</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagridcategory" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-category" class="easyui-dialog" data-options="closed:true" style="width:400px; padding:10px;min-height: 210px;">
+	<form id="categoryForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+        	<input type="hidden" name="id">
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">分类名称:</td>
+                <td><input type="text" name="name" id='categoryIpt' class="easyui-textbox name" style="width: 100%;"  required="required"/></td>
+            </tr>
+            <!-- <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">价格:</td>
+                <td><input type="text" name="price" class="easyui-textbox code" style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">描述:</td>
+                <td><input type="text" name="description" class="easyui-textbox code" 
+                style="width:100%;height:60px" data-options="multiline:true"/></td>
+            </tr> -->
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var category = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagridcategory').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getcategoryList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		*/
+		attachEvent:function(){
+			var _this = this;
+			/*
+			* 表格操作
+			* @ 编辑：edit，删除：delete；
+			 */
+			$('#category').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':'delete';
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 产品分类查询
+			*/
+			$("#category .categoryQuery").on("click",function(){
+				_this.getcategoryList();
+			});
+			/*
+			* 新增产品
+			 */
+			$("#category .add").on("click",function(){
+				_this.openDialog();
+			});
+		},
+		/*
+		* 获取产品分类列表
+		*/
+		getcategoryList:function(){
+			var _this = this;
+			var URL = API.getCategoryList;
+			$('#datagridcategory').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbarcategory",
+				queryParams: {
+					name: $("#category .categoryName").textbox('getValue')
+				},
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'name',title:'产品分类名称',align:'center',width:180},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton primary op edit"  data-rowindex="'+rowindex+'">编辑</a><a class="easyui-linkbutton error op delete"  data-rowindex="'+rowindex+'">删除</a>';						
+						return 	domHtml;			
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;				    
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#category a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* easyui 自定义返回数据格式
+		* 格式必须为{total:10,rows:[]}
+		*/
+		pagerFilter:function(data){ 
+			//console.log(data);    
+			if (!data.rows){
+				data.rows = data.list;     
+			}       
+			return data;
+		},
+		/*
+		*表格操作：编辑、删除
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(rowindex);
+					break;
+				case 'delete':
+					$.messager.confirm('提示', '是否删除该记录?', function (r) {
+			            if (r) {
+			                _this.deletecategory(_this.list[rowindex]['id']);
+			            }
+			        });
+					break;
+			}
+		},
+		openDialog:function(rowindex){
+			var _this = this;
+			//清除数据
+			$('#categoryForm').form('clear');
+			if(rowindex==""||rowindex==undefined){				
+				//新增
+				_this.addcategory();
+			}else{
+				//编辑
+				var category = _this.list[rowindex];
+				//load数据
+				$('#categoryForm').form('load',category);			
+
+	            //打开对话框
+				$('#whayer-dialog-category').dialog({
+					closed: false,
+					modal:true,
+		            title: "编辑",
+		            buttons: [{
+		                text: '确定',
+		                iconCls: 'icon-ok',
+		                handler: function(){
+		                	var valid = _this.validateForm('categoryForm');
+							if(!valid){
+								$.messager.alert('提示','必填项不能为空');
+								return false;
+							}else{
+								$('#whayer-dialog-category').dialog('close'); 
+		                		_this.updatecategory(category);
+							}		                	
+		                }
+		            }, {
+		                text: '取消',
+		                iconCls: 'icon-cancel',
+		                handler: function () {
+		                    $('#whayer-dialog-category').dialog('close');                    
+		                }
+		            }]
+		        });
+		        $('#whayer-dialog-category').window('center');
+			}			
+		},
+		validateForm:function(formId){
+			var valid = $("#"+formId).form('validate');
+			return valid;
+		},
+		addcategory:function(){
+			//需要登录
+			var _this = this;
+	        //打开对话框
+			$('#whayer-dialog-category').dialog({
+				closed: false,
+				modal:true,
+	            title: "新增产品分类",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	var valid = _this.validateForm('categoryForm');
+						if(!valid){
+							$.messager.alert('提示','必填项不能为空');
+							return false;
+						}else{
+							$('#whayer-dialog-category').dialog('close');	
+							var form = new FormData(document.getElementById("categoryForm"));
+							var url = API.addCategory;
+							whayer.submitForm(url,form,function(res){
+								_this.getcategoryList();
+							});
+						}	                	
+	                }
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#whayer-dialog-category').dialog('close');                    
+	                }
+	            }]
+	        });	
+	        $('#whayer-dialog-category').window('center');
+		},
+		/*
+		* 下架产品
+		* @ id,产品id
+		 */
+		deletecategory:function(id){
+			var _this = this;
+			var data = {id:id};
+			var url = API.deleteCategory;
+			whayer.post(url,data,function(res){
+				 _this.getcategoryList();
+			});	
+		},
+		/*
+		* 提交表单，更新集团信息
+		 */
+		updatecategory:function(category){
+			var _this = this;
+			var  id = category['id'],name=$("#categoryIpt").val();
+			var url = API.updateCategory;
+			var data = {id:id,name:name};
+			whayer.post(url,data,function(res){
+				_this.getcategoryList();
+			});
+		}
+
+	};
+	//
+	category.init();	
+
+})(jQuery);
+	
+</script>

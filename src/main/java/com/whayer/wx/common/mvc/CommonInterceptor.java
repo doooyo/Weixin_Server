@@ -14,6 +14,8 @@ import com.whayer.wx.common.X;
 import com.whayer.wx.common.encrypt.AES;
 import com.whayer.wx.login.vo.User;
 
+import eu.bitwalker.useragentutils.UserAgent;
+
 /**
  * 拦截器
  * @author duyu
@@ -36,6 +38,16 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		log.debug("CommonInterceptor.preHandle()");
+		
+		String ua = request.getHeader("User-Agent");
+		UserAgent userAgent = UserAgent.parseUserAgentString(ua);
+		log.info("UA:" + ua);
+		log.info("客户端:" +userAgent.getOperatingSystem() + ",浏览器:" + userAgent.getBrowser());
+		
+		if(ua.contains("MicroMessenger")){
+			return true;
+		}
+		
 		if (isExclude(request)) {
 			return true;
 		}
@@ -60,6 +72,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		if (null != user && sessioncookieid.equals(sessionid) && userid.equals(user.getId())) {
 			return true;
 		} else {
+			response.sendRedirect("/login");
 			//request.getRequestDispatcher("/login").forward(request, response); //只提供RESTful接口,不提供后台跳转
 			return false;
 		}

@@ -1,0 +1,303 @@
+<div class="easyui-layout" data-options="fit:true" id='ticket'>
+    <!-- Begin of toolbar -->
+    <div id="toolbarticket">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>卡券名称：</label><input class="easyui-textbox ticketName" style="width:150px">
+            <label>卡券类型：</label> 
+            <select class="easyui-combobox" id='orderState' panelHeight="auto" style="width:120px">
+            	<option value="">全部</option>
+                <option value="CASH">代金券</option>
+                <option value="DISCOUNT">折扣券</option>
+                <option value="GENERAL_COUPON">通用券</option>                
+            </select>
+            <label>卡券状态：</label> 
+            <select class="easyui-combobox" id='orderState' panelHeight="auto" style="width:120px">
+            	<option value="">全部</option>
+                <option value="CARD_STATUS_VERIFY_OK">待投放</option>
+                <option value="CARD_STATUS_DISPATCH">已投放</option>
+            </select>
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search ticketQuery">查询</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagridticket" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-ticket" class="easyui-dialog" data-options="closed:true" style="width:400px; padding:10px;height: 360px;">
+	<form id="ticketForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+        	<input type="hidden" name="id">
+            <tr>
+                <!-- <td align="center" style="width: 120px;margin-bottom: 15px;">产品树:</td> -->
+                <td><ul id="productTree" class="easyui-tree"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var ticket = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagridticket').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getticketList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		*/
+		attachEvent:function(){
+			var _this = this;
+			/*
+			* 表格操作
+			* @ 编辑：edit，删除：delete；
+			 */
+			$('#ticket').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':'delete';
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 产品查询
+			*/
+			$("#ticket .ticketQuery").on("click",function(){
+				_this.getticketList();
+			});
+			/*
+			* 新增产品
+			 */
+			$("#ticket .add").on("click",function(){
+				_this.openDialog();
+			});
+		},
+		/*
+		* 获取微信卡券列表
+		*/
+		getticketList:function(){
+			var _this = this;
+			var URL = '/proxy/card2role/getCardList2Role';
+			$('#datagridticket').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,				
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbarticket",
+				// queryParams: {
+				// 	name: $("#ticket .ticketName").textbox('getValue')
+				// },
+				columns:[[
+					{ field:'name',title:'卡券名称',width:180},
+					{ field:'cardType',title:'卡券类型',width:100,formatter:function(value,row,index){
+						var cardType = row['cardType'];
+						/*团购券：GROUPON; 折扣券：DISCOUNT; 礼品券：GIFT; 
+						代金券：CASH; 通用券：GENERAL_COUPON; 
+						会员卡：MEMBER_CARD;*/
+						switch(cardType){
+							case 'DISCOUNT':
+								cardType = '折扣券';break;
+							case 'CASH':
+								cardType = '代金券';break;
+							case 'MEMBER_CARD':
+								cardType = '会员卡';break;
+							default :
+								cardType = '通用券';break;
+						}
+						return cardType;
+					}},
+					{ field:'cardTime',title:'卡券有效期',width:100,formatter:function(value,row,index){
+						
+					}},					
+					{ field:'cardStatus',title:'卡券状态',align:'center',width:100,formatter:function(value,row,index){
+						// “CARD_STATUS_NOT_VERIFY”,待审核；
+						// “CARD_STATUS_VERIFY_FAIL”,审核失败；
+						// “CARD_STATUS_VERIFY_OK”，通过审核；
+						// “CARD_STATUS_DELETE”，卡券被商户删除；
+						// “CARD_STATUS_DISPATCH”，在公众平台投放过的卡券；
+						var status = row['cardStatus'];
+						switch(status){
+							case 'CARD_STATUS_NOT_VERIFY':
+								status = '待审核';break;
+							case '“CARD_STATUS_VERIFY_FAIL”':
+								status = '审核失败';break;
+							case 'CARD_STATUS_VERIFY_OK':
+								status = '通过审核';break;
+							case 'CARD_STATUS_DISPATCH':
+								status = '已投放';break;
+							default :
+								status = '已删除';break;
+						}
+						return status;
+					}},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton success op edit"  data-rowindex="'+rowindex+'">卡券打标</a>';
+						return 	domHtml;				
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;				    
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#ticket a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* easyui 自定义返回数据格式
+		* 格式必须为{total:10,rows:[]}
+		*/
+		pagerFilter:function(data){ 
+			if (!data.rows){
+				data.rows = data.list;     
+			}       
+			return data;
+		},
+		/*
+		*表格操作：编辑
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(_this.list[rowindex]['code']);
+					break;
+			}
+		},
+		/*
+		* 配置角色产品权限
+		 */
+		openDialog:function(code){
+			var _this = this;
+			//$('#ticketForm').form('clear');
+			var url = '/product/getList2Role';
+			whayer.get(url,{
+				code:code,
+				pageIndex:1,
+				pageSize:5000
+			},function(res){
+				var data = _this.dataFormater(res.list);
+				$('#productTree').tree({
+					checkbox:true,
+					data: data
+				});
+				$('#whayer-dialog-ticket').dialog({
+				closed: false,
+				modal:true,
+	            title: "产品配置",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	$('#whayer-dialog-ticket').dialog('close');	
+	                	_this.updateticket(code);					
+	                }
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#whayer-dialog-ticket').dialog('close');                    
+	                }
+	            }]
+	        });
+			});
+		},
+		/*
+		* 默认选中的产品
+		 */
+		oldCheckedNodes:[],
+		dataFormater:function(list){
+			var _this = this;
+			//清空之前选中
+			_this.oldCheckedNodes = [];
+			var data =  [{
+					text: '产品树',
+					id:null,
+					state: 'open',
+					children: []
+				}];
+			for(var i=0;i<list.length;i++){
+				var obj = list[i];
+				var id = obj['id'];
+				var name=obj['name'];
+				var checked = obj['isSelected'];
+				var item = {
+					id:id,
+					text:name,
+					checked:checked
+				}
+				if(checked){
+					//更新前角色选中的产品id集合
+					_this.oldCheckedNodes.push(id);
+				}
+				data[0].children.push(item);
+			}
+			return data;
+		},
+		/*
+		* 提交表单，更新产品权限
+		 */
+		updateticket:function(code){
+			var _this = this;	
+			var url = '/product2role/associate';
+			var newIds = _this.getCheckedNodes();			
+
+			var old = _this.oldCheckedNodes;
+			var unionIds = Array.union(old,newIds);
+			//新增的产品ids
+			var addIds = Array.minus(unionIds,old);
+			//要删除的产品ids
+			var delIds = Array.minus(unionIds,newIds);
+
+			var param = {
+				role:code,
+				addIds:addIds,
+				delIds:delIds
+			};
+			if(addIds.length==0&&delIds.length==0){
+				whayer.messager('提示','未选择产品！');
+				return;
+			}
+			whayer.post(url,param,function(res){
+				whayer.messager('提示','打标成功!');
+			});
+		},
+		getCheckedNodes:function(){
+			var nodes = $('#productTree').tree('getChecked');
+			var ids = [];
+            for(var i=0; i<nodes.length; i++){
+                ids.push(nodes[i]['id']);
+            }
+            return ids;
+		}
+	};
+	//
+	ticket.init();	
+
+})(jQuery);
+	
+</script>

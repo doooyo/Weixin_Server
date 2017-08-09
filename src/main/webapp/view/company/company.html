@@ -1,0 +1,334 @@
+<div class="easyui-layout" data-options="fit:true" id='company'>
+    <!-- Begin of toolbar -->
+    <div id="toolbarCompany">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>集团名称：</label><input class="easyui-textbox iptUserName" style="width:150px">
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search companyQuery">查询</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton primary icon-search pd5 add">新增</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagridCompany" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-company" class="easyui-dialog" data-options="closed:true" style="width:500px; padding:10px;min-height: 210px;">
+	<form id="companyForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+        	<input type="hidden" name="id">
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">集团名称:</td>
+                <td><input type="text" name="name" class="easyui-textbox name" style="width: 100%;"  required="required"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">集团编码:</td>
+                <td><input type="text" name="code" class="easyui-textbox code" style="width: 100%;" required="required"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">活动开始时间:</td>
+                <td><input id="activeBeginTime" name='beginTime' type="text" class="easyui-datebox" style="width: 100%;" required="required"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">活动结束时间:</td>
+                <td><input id="activeEndTime" name='endTime' type="text" class="easyui-datebox" style="width: 100%;" required="required"/></td>
+            </tr>
+            <tr style="display: none;">
+                <td align="center" style="width: 120px;margin-bottom: 15px;">折扣:</td>
+                <td><input type="text" name="discount" class="easyui-textbox" id="companyDiscount" style="width: 100%;"/></td>
+            </tr>
+            <tr class="logoPriview">
+                <td align="center" valign="top" style="width: 120px;margin-bottom: 15px;">集团LOGO:</td>
+                <td class="logoImage"></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">上传:</td>
+                <td><input name="file" class="easyui-filebox" data-options="buttonText:'浏览',buttonIcon:'fa fa-upload',accept: 'image/*'" style="width: 100%;"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var company = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagridCompany').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getCompanyList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		*/
+		attachEvent:function(){
+			var _this = this;
+			/*
+			* 表格操作
+			* @ 编辑：edit，删除：delete；
+			 */
+			$('#company').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':'delete';
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 集团用户查询
+			*/
+			$("#company .companyQuery").on("click",function(){
+				_this.getCompanyList();
+			});
+			/*
+			* 新增集团用户
+			 */
+			$("#company .add").on("click",function(){
+				_this.openDialog();
+			});
+		},
+		/*
+		* 获取代理商列表
+		*/
+		getCompanyList:function(){
+			var _this = this;
+			var URL = API.getCompanyList;
+			$('#datagridCompany').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbarCompany",
+				queryParams: {
+					name: $("#company .iptUserName").textbox('getValue')
+				},
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'logo',title:'集团LOGO',width:100,align:'center',formatter:function(value,row,index){
+						var src = row['logo'];
+						var dom = '';
+						if(src){
+							src=(API.proxy?'/proxy':'')+'/image/company/'+src;
+							dom = '<image src="'+src+'" class="logo-table"/>';
+						}else{
+							//无集团编码
+							dom = '<image src="./img/logo.png"  class="logo-table"/>';
+						}
+						return dom;
+					}},
+					{ field:'name',title:'集团名称',width:180},
+					{ field:'code',title:'集团编码',width:100},
+					{ field:'activeBeginTime',title:'活动开始时间',width:100,formatter:function(value,row,index){
+						var activeBeginTime = new Date(row['activeBeginTime']).Format("yyyy-MM-dd");
+						return activeBeginTime;
+					}},
+					{ field:'activeEndTime',title:'活动结束时间',width:100,formatter:function(value,row,index){
+						var activeEndTime = new Date(row['activeEndTime']).Format("yyyy-MM-dd");
+						return activeEndTime;
+					}},
+					// { field:'discount',title:'折扣',align:'center',width:100,formatter:function(value,row,index){
+					// 	var discount = row['discount'];
+					// 	if(discount==1){
+					// 		return '无';
+					// 	}else{
+					// 		return (discount-0)*10+'折';
+					// 	}
+					// }},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton primary op edit"  data-rowindex="'+rowindex+'">编辑</a><a class="easyui-linkbutton error op delete"  data-rowindex="'+rowindex+'">删除</a>';						
+						return 	domHtml;					
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;				    
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#company a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* easyui 自定义返回数据格式
+		* 格式必须为{total:10,rows:[]}
+		*/
+		pagerFilter:function(data){
+			if (!data.rows){
+				data.rows = data.list;     
+			}       
+			return data;
+		},
+		/*
+		*表格操作：编辑、删除
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(rowindex);
+					break;
+				case 'delete':
+					$.messager.confirm('提示', '是否删除该记录?', function (r) {
+			            if (r) {
+			                _this.deleteCompany(_this.list[rowindex]['id']);
+			            }
+			        });
+					break;
+			}
+		},
+		openDialog:function(rowindex){
+			var _this = this;
+			//清除数据
+			$('#companyForm').form('clear');
+
+			//默认折扣为1
+			$('#companyDiscount').textbox('setValue','1');
+			$('#companyDiscount').textbox('readonly',true);
+
+			if(rowindex==""||rowindex==undefined){				
+				//新增
+				$('.logoPriview').hide();
+				$("#companyForm .code").textbox('readonly',false);
+				_this.addCompany();
+			}else{
+				//集团编码不能修改
+				$("#companyForm .code").textbox('readonly',true);
+				//$("#companyForm .code").textbox('disable');
+				//编辑
+				$('.logoPriview').show();
+				var company = _this.list[rowindex];
+				//load数据
+				$('#companyForm').form('load',company);
+				//logo
+				var imageSrc = company['logo'];
+				var baseUrl = (API.proxy?'/proxy':'')+'/image/company/';
+				var imageUrl = baseUrl+imageSrc;
+				var html = '<image src="'+imageUrl+'" class="logo-image"/>';
+				$('.logoImage').html(html);
+				//开始时间
+				var activeBeginTime = new Date(company['activeBeginTime']).Format("yyyy-MM-dd");
+				$('#activeBeginTime').datebox('setValue',activeBeginTime);//开始时间
+				//结束时间
+				var activeEndTime = new Date(company['activeEndTime']).Format("yyyy-MM-dd");
+				$('#activeEndTime').datebox('setValue', activeEndTime);
+
+	            //打开对话框
+				$('#whayer-dialog-company').dialog({
+					closed: false,
+					modal:true,
+		            title: "编辑",
+		            buttons: [{
+		                text: '确定',
+		                iconCls: 'icon-ok',
+		                handler: function(){
+		                	var valid = _this.validateForm('companyForm');
+							if(!valid){
+								$.messager.alert('提示','必填项不能为空');
+								return false;
+							}else{
+		                		$('#whayer-dialog-company').dialog('close'); 
+		                		_this.updateCompany();
+		                	}
+		                }
+		            }, {
+		                text: '取消',
+		                iconCls: 'icon-cancel',
+		                handler: function () {
+		                    $('#whayer-dialog-company').dialog('close');                    
+		                }
+		            }]
+		        });
+		        $('#whayer-dialog-company').window('center');//使Dialog居中显示
+			}			
+		},
+		validateForm:function(formId){
+			var valid = $("#"+formId).form('validate');
+			return valid;
+		},
+		addCompany:function(){
+			//需要登录
+			var _this = this;
+	        //打开对话框
+			$('#whayer-dialog-company').dialog({
+				closed: false,
+				modal:true,
+	            title: "新增集团用户",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+						//var valid = $("#companyForm").form('validate');
+						var valid = _this.validateForm('companyForm');
+						if(!valid){
+							$.messager.alert('提示','必填项不能为空');
+							return false;
+						}else{
+							$('#whayer-dialog-company').dialog('close');	
+		                	var url = API.addCompany;
+							var form = new FormData(document.getElementById("companyForm"));
+							whayer.submitForm(url,form,function(res){
+								_this.getCompanyList();
+							});
+						}
+	                }
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#whayer-dialog-company').dialog('close');                    
+	                }
+	            }]
+	        });	
+	        $('#whayer-dialog-company').window('center');//使Dialog居中显示
+		},
+		/*
+		* 删除集团号
+		* @ id,集团id
+		 */
+		deleteCompany:function(id){
+			var _this = this;
+			var url = API.deleteCompany;
+			var data = {id:id};
+			whayer.post(url,data,function(res){
+				 _this.getCompanyList();
+			});			
+		},
+		/*
+		* 提交表单，更新集团信息
+		 */
+		updateCompany:function(){
+			var _this = this;	
+			var form = new FormData(document.getElementById("companyForm"));			
+			var url = API.updateCompany
+			whayer.submitForm(url,form,function(res){
+				_this.getCompanyList();
+			}); 
+		}
+
+	};
+	//
+	company.init();	
+
+})(jQuery);
+	
+</script>

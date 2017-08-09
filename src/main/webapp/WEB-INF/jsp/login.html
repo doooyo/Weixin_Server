@@ -1,12 +1,142 @@
-<!-- <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%> -->
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-<script type="text/javascript" src="static/js/jquery-3.2.0.js"></script>
-</head>
-<body>
-	请登陆😄
-</body>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>尚康阳光客户服务中心</title> 
+    <link rel="icon" href="./img/logo.ico">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet">
+
+	<!--URL配置-->
+    <script src="js/api.js" type="text/javascript" charset="utf-8"></script>
+
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icons/css/font-awesome.min.css" />
+	<script src="easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="easyui/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="easyui/locale/easyui-lang-zh_CN.js" type="text/javascript" charset="utf-8"></script>
+	<!--皮肤-->
+	<link rel="stylesheet" type="text/css" href="easyui/themes/gray/easyui.css" />
+	<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css" />
+	<link rel="stylesheet" type="text/css" href="css/superGreen.css" />
+	<script src="js/util.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/js.cookie.js" type="text/javascript" charset="utf-8"></script>
+</head> 
+<body class="default">
+	<div class="login-hd">
+		<div class="left-bg"></div>
+		<div class="right-bg"></div>
+		<div class="hd-inner">
+			<span class="logo"></span>
+			<span class="split"></span>
+			<span class="sys-name">服务平台</span>
+		</div>
+	</div>
+	<div class="login-bd">
+		<div class="bd-inner">
+			<div class="inner-wrap">
+				<div class="lg-zone">
+					<div class="lg-box">
+						<div class="lg-label"><h4>用户登录</h4></div>
+						<div class="alert alert-error logininfo">
+			              <i class="fa fa-info-circle"></i>
+			              <span>请输入用户名</span>
+			            </div>
+						<form>
+							<div class="lg-username input-item clearfix">
+								<i class="fa fa-user-o"></i>
+								<input type="text" placeholder="账号/邮箱" id="loginUser">
+							</div>
+							<div class="lg-password input-item clearfix">
+								<i class="fa fa-lock"></i>
+								<input type="password" placeholder="请输入密码"  id="loginPwd">
+							</div>
+							<div class="lg-check clearfix">
+								<div class="input-item">
+									<i class="fa fa-newspaper-o"></i>
+									<input type="text" placeholder="验证码" id="iptCode">
+								</div>
+								<!-- <span class="check-code">XD34F</span> -->
+								<image id='imgCode' class="check-code" style='cursor: pointer;'/>
+							</div>
+							<div class="tips clearfix">
+								<label><input type="checkbox" checked="checked">记住用户名</label>
+								<a href="register.html" target='_blank' class="register">立即注册</a>
+								<!-- <a href="javascript:;" class="forget-pwd">忘记密码？</a> -->
+							</div>
+							<div class="enter" style="margin: 0 10px;">
+								<!-- <a href="javascript:;" class="purchaser">管理员登录</a> -->
+								<a href="javascript:;" class="supplier">登&nbsp;&nbsp;录</a>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="lg-poster"></div>
+			</div>
+		</div>
+	</div>
+	<div class="login-ft">
+		<div class="ft-inner">
+			<div class="about-us">
+				<a href="javascript:;">关于我们</a>
+				<a href="javascript:;">法律声明</a>
+				<a href="javascript:;">服务条款</a>
+				<a href="javascript:;">联系方式</a>
+			</div>
+			<div class="address">地址：四川省成都市天府新区软件园C区 Copyright ©2016-2017 版权所有</div>
+			<div class="other-info">建议使用IE9及以上版本浏览器;E-mail：admin@scskss.com</div>
+		</div>
+	</div>
+</body> 
 </html>
+    
+<script type="text/javascript">
+	$(function(){		
+		var login = {
+			init:function(){
+				var _this = this;
+				_this.getVerifyCode();
+				_this.attachEvent();
+				_this.getVerifyCode();
+			},
+			attachEvent:function(){
+				var _this = this;
+				$(".supplier").on("click",function(){
+					_this.login();
+				});
+				$("#imgCode").on("click",function(){
+					_this.getVerifyCode();
+				});
+			},
+			getVerifyCode:function(){
+				var src = API.validateUrl+'?t=' + (new Date()).valueOf();
+				$('#imgCode').attr('src',src);
+			},
+			login:function(){
+				var _this = this;
+				var user = $('#loginUser').val();
+				var pwd  = $("#loginPwd").val();
+				var verifyCode = $("#iptCode").val();
+				//loginType:1 pc登录
+				var param = {
+						username:user,
+						password:pwd,
+						verifyCode:verifyCode,
+						loginType:1
+				};
+				var url = API.loginUlr;
+				whayer.post(url,param,function(res){
+					var user = res.list[0];
+					Cookies.set('userName', user['nickName'], { expires: 1});
+					window.location.href = 'index.html';
+				},function(res){
+					_this.getVerifyCode();
+					//error
+					$(".logininfo").show();
+					$(".logininfo span").html(res.errorMsg);
+				});
+			},
+		};	
+		login.init();
+	});
+</script>

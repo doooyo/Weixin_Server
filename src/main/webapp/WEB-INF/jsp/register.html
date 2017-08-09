@@ -1,11 +1,264 @@
-<!-- <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%> -->
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>尚康阳光用户注册</title>
+	<link rel="icon" href="./img/logo.ico">
+	<link rel="stylesheet" type="text/css" href="css/register.css">
+	<!--URL配置-->
+    <script src="js/api.js" type="text/javascript" charset="utf-8"></script>
+	<script src="easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<!-- <script type="text/javascript"  src='js/ssi-uploader/js/ssi-uploader.js'></script>
+	<link rel="stylesheet" type="text/css" href="js/ssi-uploader/styles/ssi-uploader.css"> -->
+	<script src="js/util.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-	欢迎来到注册页面😄
+	<div class='site-nav'>
+		
+	</div>
+	<div class="page">
+		<div class="header">
+			<div class="logo">
+				<h1></h1>
+				<h2 class="ts1">用户注册</h2>
+			</div>
+		</div>
+		<div class="steps steps-4">
+			<ol>
+				<li class="active">
+					<i>1</i>
+					<span class="ts1">设置用户名</span>
+				</li>
+				<li class="">
+					<i>2</i>
+					<span class="ts1">银行卡信息</span>
+				</li>
+				<li class="">
+					<i>3</i>
+					<span class="ts1">身份证信息</span>
+				</li>
+				<li class="">
+					<i>4</i>
+					<span class="ts1">注册成功</span>
+				</li>
+			</ol>
+		</div>
+		<div class="content">
+			<div class="form-list form-main-list">
+				<form id="regForm">
+					<div class="form-group step1 selected">
+						<div class="form-item">
+	                        <span class="form-label tsl" >账户<i class="required">*</i></span>
+	                        <!-- <input class="form-text err-input"  name="username"  placeholder="设置你的登录账户"  value="">  -->  
+	                        <input class="form-text"  name="username"  placeholder="设置你的登录账户"  value=""> 
+	                    </div>
+						<div class="form-item">
+							<span class="form-label tsl">姓名<i class="required">*</i></span>
+	                        <input class="form-text"  name="nickName"  placeholder="设置你的姓名"  value="">  
+						</div>
+						<div class="form-item">
+							<span class="form-label tsl" >密码<i class="required">*</i></span>
+	                        <input class="form-text" name="password" type="password"  placeholder="设置你的登录密码"  value="">  
+						</div>
+						<div class="form-item">
+	                        <span class="form-label tsl">密码确认<i class="required">*</i></span>
+	                        <input class="form-text" name="confirmPwd" type="password" placeholder="请再次输入你的密码" value="">	
+	                    </div>
+						<div class="form-item">
+							<span class="form-label tsl" >手机号<i class="required">*</i></span>
+	                        <input class="form-text"  name="mobile"  placeholder="手机号"  value="">  
+						</div>
+						<div class="form-item">
+							<span class="form-label tsl" >电子邮箱</span>
+	                        <input class="form-text"  name="email"  placeholder="电子邮箱"  value="">
+						</div>
+						<div class="form-item">
+							<span class="form-label tsl" >收件地址</span>
+	                        <input class="form-text"  name="address"  placeholder="收件地址"  value="">  
+						</div>
+	                    <div class="form-item">
+							<span class="form-label tsl" >推荐人(选填)</span>
+	                        <input class="form-text"  name="pid"  placeholder="推荐人手机号(选填)"  value="">  
+	                        <button class="btn btn-white btn-small tsl" id="verifyParentAgent" type="button">验证</button>
+						</div>
+	                    <div class="form-item">
+		                    <!-- <button class="btn btn-large tsl btn-disabled" >下一步</button> -->
+		                    <button class="btn btn-large tsl btnNext"  type="button">下一步</button>                 
+		                </div>
+					</div>
+					<div class="form-group step2">
+						<!-- <div class="form-item">
+	                        <span class="form-label tsl" >邮件<i class="required">*</i></span>
+	                        <input class="form-text"  name="email"  placeholder="邮件"  value="">   
+	                    </div> -->
+	                    <div class="form-item">
+							<span class="form-label tsl" >银行卡户名<i class="required">*</i></span>
+	                        <input class="form-text"  name="bankCardName"  placeholder="银行卡户名"  value="">  
+						</div>
+						<div class="form-item">
+							<span class="form-label tsl" >银行卡号<i class="required">*</i></span>
+	                        <input class="form-text"  name="bankCardNo"  placeholder="银行卡号"  value="">  
+						</div>
+						<div class="form-item">
+							<span class="form-label tsl" >开户行<i class="required">*</i></span>
+	                        <input class="form-text"  name="bank"  placeholder="开户行"  value="">  
+						</div>
+						<div class="form-item">							
+		                    <button class="btn btn-normal tsl btnPre primary"  type="button">上一步</button>	 
+		                    <button class="btn btn-normal tsl btnNext"   type="button">下一步</button>	                    
+		                </div>
+					</div>
+					<div class="form-group step3">
+						<div class="form-item">
+							<span class="form-label tsl" >身份证号<i class="required">*</i></span>
+	                        <input class="form-text"  name="idCardNo"  placeholder="身份证号"  value="">  
+						</div>
+						<div class="form-item">
+	                        <span class="form-label tsl">身份证照片<i class="required">*</i></span>
+	                        <!-- <input class="form-text err-input" type="file" multiple="multiple" name="file"  value="">   --> 
+	                        <a href="javascript:;" class="file">选择文件
+							    <input type="file" name="files" id="fileUpload" multiple="multiple">
+							</a>
+							<div class="imageTips">
+								* 手持身份证照片（正反面），不超过2张。
+							</div>
+							<div id="image-holder" class="image-priview">
+								
+							</div>
+							<!-- <input type="file" multiple id="ssi-upload"/> -->
+	                    </div>
+	                    <div class="form-item">
+		                    <!-- <button type="submit" id="J_BtnInfoForm" class="btn btn-large tsl" >下一步</button> -->		                    
+		                    <button class="btn btn-normal tsl btnPre primary"  type="button">上一步</button>	 	
+		                    <button class="btn btn-normal tsl submit"  type="button">注册</button>                    
+		                </div>
+					</div>
+					<div class="form-group step4">
+						<span class="registerTips">注册成功，请等待管理员审核(5个工作日内)！</i></span>
+					</div>
+				</form>
+				<div class="msg-cnt">注意：标<i class="required">*</i>为必填项目</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(function(){			
+			var register = {
+				init:function(){
+					this.attatchEvent();
+					/*图片上传*/
+	    			this.initFileUploader();
+				},
+				attatchEvent:function(){
+					var _this = this;
+					$("#regForm .btnNext").on("click",function(e){
+						var index = $(this).index('#regForm .btnNext');
+						_this.next(index);
+					});
+					$('#regForm .submit').on("click",function(){
+						_this.submit();
+					});
+					$("#verifyParentAgent").on("click",function(){
+						_this.parentAgentVerify();
+					});
+					$('.btnPre').on("click",function(){
+						var index = $(".steps li.active").index('.steps li');
+						_this.pre(index);
+					});
+				},
+				initFileUploader:function(){
+					var _this = this;
+					$("#fileUpload").on('change', function() {
+			          //Get count of selected files
+			          var countFiles = $(this)[0].files.length;
+			          if(countFiles>2){
+			          	_this.showErrorMsg('最多只能选择两张图片!');
+			          	return;
+			          }
+			          var imgPath = $(this)[0].value;
+			          var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+			          var image_holder = $("#image-holder");
+			          image_holder.empty();
+			          if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
+			            if (typeof(FileReader) != "undefined") {
+			              //loop for each file selected for uploaded.
+			              for (var i = 0; i < countFiles; i++) 
+			              {
+			                var reader = new FileReader();
+			                reader.onload = function(e) {
+			                  $("<img />", {
+			                    "src": e.target.result,
+			                    "class": "thumb-image"
+			                  }).appendTo(image_holder);
+			                }
+			                image_holder.show();
+			                reader.readAsDataURL($(this)[0].files[i]);
+			              }
+			            } else {
+			              //alert("This browser does not support FileReader.");
+			              _this.showErrorMsg('请使用chrome等现代浏览器!');	
+			            }
+			          } else {
+			            //alert("Pls select only images");
+			            _this.showErrorMsg('请选择png、jpg、jpeg图片');
+			          }
+			        });
+				},
+				validForm:function(){
+
+				},
+				next:function(index){
+					var $step = $(".steps li");					
+					$step.removeClass('active');
+					$step.eq(index+1).addClass('active');
+					var $group = $("#regForm .form-group");
+					$group.removeClass("selected");	
+					$group.eq(index+1).addClass('selected');								
+				},
+				pre:function(index){
+					var $step = $(".steps li");					
+					$step.removeClass('active');
+					$step.eq(index-1).addClass('active');
+					var $group = $("#regForm .form-group");
+					$group.removeClass("selected");	
+					$group.eq(index-1).addClass('selected');
+				},
+				submit:function(){
+					var _this = this;	
+					var form = new FormData(document.getElementById("regForm"));  
+					var url = API.userRegister;
+					whayer.submitForm(url,form,function(res){
+						_this.next(2);
+					},function(res){
+						_this.showErrorMsg(res.errorMsg||'注册失败!');
+					});
+				},
+				parentAgentVerify:function(){
+					var _this = this;
+					var pid = $(":input[name='pid']")
+					var mobile = pid.val();
+					if(!$.trim(mobile)){
+						_this.showErrorMsg('请输入推荐人手机号');
+						return;
+					}
+					var url = API.validatePid;
+					var param = {pid:mobile};
+					whayer.post(url,param,function(res){
+						_this.showErrorMsg('推荐人验证通过');
+					},function(res){
+						_this.showErrorMsg(res.errorMsg||'请求失败!');		
+						//pid.val('');
+					});
+				},
+				showErrorMsg:function(msg){
+					$(".msg-cnt").html(msg);
+					// setTimeout(function(){
+					// 	$(".msg-cnt").hide();
+					// },3000);
+				}
+			};	
+			register.init();
+		});
+	</script>
 </body>
 </html>

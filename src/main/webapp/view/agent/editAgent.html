@@ -1,0 +1,34 @@
+<div class="easyui-panel" title="New Topic" style="width:100%;max-width:400px;padding:30px 60px;">
+        <form id="agentForm" method="post">
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="name" style="width:100%" data-options="label:'Name:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="email" style="width:100%" data-options="label:'Email:',required:true,validType:'email'">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="subject" style="width:100%" data-options="label:'Subject:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="message" style="width:100%;height:60px" data-options="label:'Message:',multiline:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <select class="easyui-combobox" name="language" label="Language" style="width:100%"></select>
+            </div>
+        </form>
+        <div style="text-align:center;padding:5px 0">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">Submit</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+        </div>
+    </div>
+    <script>
+        function loadLocal(){
+            $('#ff').form('load',{
+                name:'myname',
+                email:'mymail@gmail.com',
+                subject:'subject',
+                message:'message',
+                language:'en'
+            });
+        }        
+    </script>

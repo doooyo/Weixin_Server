@@ -1,0 +1,159 @@
+<div class="easyui-layout" data-options="fit:true" id='record'>
+    <!-- Begin of toolbar -->
+    <div id="toolbar4">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>体检人：</label><input class="easyui-textbox username" style="width:150px" >
+            <select class="easyui-combobox" id='recordState' panelHeight="auto" style="width:120px">
+            	<option value="">全部</option>
+                <option value="0">未邮寄</option>
+                <option value="1">已邮寄</option>
+            </select>
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search recordQuery">查询</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagrid4" class="easyui-datagrid"></table>
+</div>
+<script type="text/javascript">
+;(function($){
+	var record = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagrid4').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getRecordtList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		 */
+		attachEvent:function(){
+			var _this = this;
+			/*
+			*  表格操作 detail：详情
+			 */
+			$('#record').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('mailed')?'mailed':'';
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 发放记录查询
+			 */
+			$("#record .recordQuery").on("click",function(){
+				_this.getRecordtList();
+			});
+		},
+		/*
+		* 获取订单列表
+		 */
+		getRecordtList:function(){
+			var _this = this;
+			var param ={
+		      'name': $("#record .username").textbox('getValue'),
+		      'isMailed':$('#recordState').combobox('getValue')
+		    };
+			var URL = API.getGiftReleaseList;
+			$('#datagrid4').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbar4",
+				queryParams: param,
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'name',title:'体检人',width:100},
+					{ field:'mobile',title:'电话',width:100},
+					{ field:'address',title:'邮寄地址',width:100},
+					{ field:'mailed',title:'是否邮寄',align:'center',width:100,formatter:function(value,row,index){
+						return row['mailed']?"已邮寄":'未邮寄'
+					},styler:function(value,row,index){
+						if (!row['mailed']){//未邮寄
+							return 'color:#e8390d;font-weight:bold;';
+						}else{
+							return 'color:#1da02b;font-weight:bold;';
+						}
+					}},
+					{ field:'op',title:'操作',align:'center',width:100,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml='';
+						if(!row['mailed']){
+							domHtml = '<a class="easyui-linkbutton warning op mailed"  data-rowindex="'+rowindex+'">邮寄</a>';
+						}
+						return 	domHtml;					
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;
+				},
+				onLoadSuccess:function(data){
+					if(data.rows.length==0){
+						$(this).datagrid('appendRow', 
+							{ name: '<div style="text-align:center;color:red">没有相关记录！</div>' }).datagrid('mergeCells', { index: 0, field: 'name', colspan: 5 });
+						$(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+					}else{						
+						_this.list = data.rows;
+						$("#record a.op").linkbutton();
+					}
+				}
+			});
+		},
+		/*
+		* 自定义返回数据
+		 */
+		pagerFilter:function(data){
+			return {
+				total:data.total,
+				rows:data.list			
+			}
+		},
+		/*
+		* 表格操作
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'mailed':
+					_this.setMailed(_this.list[rowindex]['id']);
+					break;					
+			}
+		},
+		setMailed:function(id){
+			var _this = this;
+			$.messager.confirm('提示', '是否设为已邮寄?', function (r) {
+	            if (r) {
+	            	var url = API.updateGiftRelease;
+	            	whayer.post(url,{id:id},function(){
+	            		_this.getRecordtList();
+	            	});	                
+	            }
+	        });
+		}
+	};
+	//
+	record.init();	
+
+})(jQuery);
+	
+</script>

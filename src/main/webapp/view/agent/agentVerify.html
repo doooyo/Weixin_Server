@@ -1,0 +1,200 @@
+<div class="easyui-layout" data-options="fit:true" id='agentVerify'>
+    <!-- Begin of toolbar -->
+    <div id="toolbar2">
+        <div class="whayer-toolbar-search">            
+            <label>用户名：</label><input class="easyui-textbox iptUserName" style="width:150px">
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search agentQuery">查询</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagrid2" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-agentVefify" class="easyui-dialog" data-options="closed:true" style="width:600px; padding:10px;">
+    <form id="vefifyForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">账户:</td>
+                <td><input type="text" name="username" class="easyui-textbox username" disabled style="width: 100%;" /></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">名称:</td>
+                <td><input type="text" name="nickName" class="easyui-textbox nickname" disabled style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">手机号:</td>
+                <td><input type="text" name="mobile" class="easyui-textbox mobile" disabled style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">身份证号:</td>
+                <td><input type="text" name="idCardNo" class="easyui-textbox" disabled style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td valign="top" align="center" style="width: 120px;margin-bottom: 15px;">证件预览:</td>
+                <td class="idCardImage">
+                	<!-- <image style='width: 100%;height: 260px;' 
+                	src='http://www.wentao.cc/Upload/editor/image/20140104/20140104232815_5769.jpg'/> -->
+                </td>
+            </tr>
+            <!-- <tr class="uploadImage">
+                <td align="center" style="width: 120px;margin-bottom: 15px;">上传:</td>
+                <td><input name="file" class="easyui-filebox" data-options="buttonText:'浏览',buttonIcon:'fa fa-upload',accept: 'image/*'" style="width: 100%;"></td>
+            </tr> -->
+        </table>
+    </form>
+
+</div>
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var agentVerify = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagrid2').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getAgentList();
+			},100);			
+		},
+		/*
+		*事件初始化
+		 */
+		attachEvent:function(){
+			var _this = this;
+			/*
+			*表格操作，detail：详情，pass：通过审核
+			 */
+			$('#agentVerify').on("click","a.op",function(e){
+				var $op = $(this);
+				var index = $op.attr('data-rowindex');
+				var type = $op.hasClass('detail')?'detail':'pass';
+				_this.opertion(type,index);
+									
+			});
+			$("#agentVerify .agentQuery").on("click",function(){
+				_this.getAgentList();
+			});
+		},
+		/*
+		* 获取未通过审核的代理商列表
+		 */
+		getAgentList:function(){
+			var _this = this;
+			var URL = API.getAgentListByType;
+			$('#datagrid2').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbar2",
+				queryParams: {
+					name: $("#agentVerify .iptUserName").textbox('getValue'),
+					isAudit:0
+				},
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'username',title:'账户',width:100},
+					{ field:'nickName',title:'姓名',width:100},
+					{ field:'mobile',title:'手机号',width:100},
+					{ field:'idCardNo',title:'身份证号',width:100},	
+					{ field:'op',title:'操作',align:'center',width:180,formatter:function(value,row,index){
+						var index = index;					
+						var domHtml='<a class="easyui-linkbutton success op detail"  data-rowindex="'+index+'">查看详情</a><a class="easyui-linkbutton warning op pass"  data-rowindex="'+index+'">通过审核</a>';
+						return 	domHtml;
+					
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#agentVerify a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* 自定义返回数据
+		 */
+		pagerFilter:function(data){        
+			if (!data.originalRows){                
+				data.rows = data.list;     
+			}         
+			return data;
+		},
+		/*
+		* 表操作：详情，通过审核
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			if(type=='detail'){
+				_this.detail(rowindex);
+			}else{
+				$.messager.confirm('提示', '是否通过审核?', function (r) {
+		            if (r) {
+		               _this.passAgent(_this.list[rowindex]['id']);
+		            }
+		        });
+			}
+			
+		},
+		detail:function(rowindex){
+			var _this = this;
+			//清除表单数据
+			$('#vefifyForm').form('clear');
+			var user = _this.list[rowindex];
+			//load数据
+			$('#vefifyForm').form('load',user);
+			//身份证照片
+			var image = user['idCardImg'].split("|");
+			var baseUrl = (API.proxy?'/proxy':'')+'/image/idcard/';
+			var html = '';
+			for(var i=0;i<image.length;i++){
+				imageUrl = baseUrl+image[i];
+				html+='<image src="'+imageUrl+'" class="thumb-image"/>';
+			}
+			$(".idCardImage").html(html);
+            //打开对话框
+			$('#whayer-dialog-agentVefify').dialog({
+				closed: false,
+				modal:true,
+	            title: "详情",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	$('#whayer-dialog-agentVefify').dialog('close'); 
+	                }
+	            }]
+	        });
+	        $('#whayer-dialog-agentVefify').window('center');
+		},
+		passAgent:function(userId){
+			var _this = this;
+			var url = API.approvalAudit;
+			var data = {ids:[userId]};
+			whayer.post(url,data,function(){
+				_this.getAgentList();
+			});			
+		}
+	};
+	//
+	agentVerify.init();	
+
+})(jQuery);
+	
+</script>

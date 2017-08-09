@@ -1,45 +1,205 @@
-<!-- <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%> -->
+<!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>尚康阳光</title>
-<script type="text/javascript" src="static/jquery-3.2.0.js"></script>
-<script>
-	$(function(){
-		/* $.ajax({
-			type: "POST",
-	        url: "/user/register/agent",
-	        data: {username:'jerry', password: 'duyu2008', mobile: '15828645446', pid: '002'},
-	        dataType: "json",
-	        //contentType : 'application/json;charset=utf-8',
-	        success: function(data){
-	          console.log(data);          
-	        }
-		})  */
+
+	<head>
+		<meta charset="UTF-8">
+		<title>尚康阳光客户服务中心</title>
+		<link rel="icon" href="./img/logo.ico">
 		
-	})
-</script>
-</head>
-<body>
-	<h2>欢迎来到尚康阳光！</h2>
-	<!-- <form action="/user/register/agent" method="post" enctype="multipart/form-data">
-		<div>
-			用户名:<input type="text" name="username" value="徐耀会"/>
+		<!--URL配置-->
+    	<script src="js/api.js" type="text/javascript" charset="utf-8"></script>
+
+		<!--easyui-->
+		<script src="easyui/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="easyui/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="easyui/locale/easyui-lang-zh_CN.js" type="text/javascript" charset="utf-8"></script>
+		<!--字体图标-->
+		<link rel="stylesheet" type="text/css" href="easyui/themes/icons/css/font-awesome.min.css" />
+		<!--皮肤-->
+		<link rel="stylesheet" type="text/css" href="easyui/themes/gray/easyui.css" />
+
+		<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css" />
+
+		<link rel="stylesheet" type="text/css" href="css/superGreen.css" />
+		<script src="js/super.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/util.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/js.cookie.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body id="main" class="easyui-layout">
+		<div data-options="region:'north',border:false" class="super-north" style="height: 50px;">
+			<!--顶部-->
+			<div class="super-navigation">
+				<div class="super-navigation-title"></div>
+				<div class="super-navigation-main">
+					<div class="super-setting-left">
+						<ul>						
+							<li class='expandSidebar'><i class="fa fa-align-justify"></i></li>
+							<!-- <li><i class="fa fa-commenting-o"></i></li>
+							<li><i class="fa fa-envelope-o"></i></li>
+							<li><i class="fa fa-bell-o"></i></li> -->
+							<!--<div id="mm2" class="easyui-menu">
+								<div>有情况</div>
+								<div>你瞅啥</div>
+								<div class="menu-sep"></div>
+								<div>瞅你咋滴</div>
+							</div>-->
+						</ul>
+					</div>
+					<div class="super-setting-right">
+						<ul>
+							<li class="user">
+								<span class="user-icon"><img src="img/loginUser.png"/></span>
+								<span class="loginUser">admin</span>
+							</li>
+							<li>
+								<div class="super-setting-icon">
+									<!-- <i class="fa fa-gears"></i> -->
+									<i class="fa fa-sign-out"></i>									
+								</div>
+								<div id="mm" class="easyui-menu">
+									<!-- <div>个人中心</div> -->
+									<!-- <div id="themeSetting">主题</div> -->
+									<!-- <div id="modifyPwd">修改密码</div> -->
+									<div class="menu-sep"></div>
+									<div id="logout">退出</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div>
-			密码:<input type="text" name="password" value="123456"/>
+		<div id="easyui-layout-west" data-options="region:'west',title:'菜单导航',border:false,collapsible:false,expandMode:'float',collapsedSize:'1'">
+			<!--左侧导航-->
+			<div class="easyui-accordion" data-options="border:false,fit:true,selected:true">
+				<!-- <div title="基础" data-options="iconCls:'fa fa-navicon'">
+					<ul>
+						<li data-url='example/pagination.html'>Pagination（分页）</li>
+						<li data-url='example/searchBox.html'>SearchBox（搜索框）</li>
+						<li data-url="example/progressBar.html">ProgressBar（进度条)</li>
+						<li data-url='example/toolTip.html'>Tooltip（提示框）</li>
+					</ul>
+				</div> -->
+				<div title="代理商管理" data-options="iconCls:'fa fa-rub'">
+					<ul>	
+						<li data-url='view/agent/agent.html' data-iframe="0">代理商管理</li>
+						<li data-url='view/agent/agentVerify.html' data-iframe="0">审核管理</li>
+					</ul>
+				</div>
+				<div title="集团管理" data-options="iconCls:'fa fa-money'">
+					<ul>						
+						<li data-url='view/company/company.html'>集团用户管理</li>
+					</ul>
+				</div>
+				<div title="产品管理" data-options="iconCls:'fa fa-product-hunt'">
+					<ul>	
+						<li data-url='view/product/category.html'>产品分类</li>					
+						<li data-url='view/product/product.html'>产品管理</li>
+						<li data-url='view/product/permission.html'>产品打标</li>
+					</ul>
+				</div>
+				<div title="订单管理" data-options="iconCls:'fa fa-sticky-note-o'">
+					<ul>						
+						<li data-url='view/order/order.html'>订单管理</li>
+					</ul>
+				</div>
+				<div title="赠品管理" data-options="iconCls:'fa fa-sitemap'">
+					<ul>						
+						<li data-url='view/gift/gift.html'>赠品管理</li>
+						<li data-url='view/gift/record.html'>发放记录</li>
+					</ul>
+				</div>
+				<div title="微信卡券" data-options="iconCls:'fa fa-qrcode'">
+					<ul>	
+						<li data-url='view/ticket/ticket.html'>卡券打标</li>					
+						<!-- <li data-url='view/ticket/coupon.html'>优惠券</li>
+						<li data-url='view/ticket/voucher.html'>代金券</li> -->
+					</ul>
+				</div>
+				<!-- <div title="系统管理" data-options="iconCls:'fa fa-gears'">
+					<ul>						
+						<li data-url='company.html'>角色管理</li>
+						<li data-url='company.html'>权限配置</li>
+					</ul>
+				</div> -->
+				<!-- <div title="布局" data-options="iconCls:'fa fa-desktop'">
+					
+				</div> -->				
+			</div>
 		</div>
-		<div>
-			电话:<input type="text" name="mobile" value="13857894781"/>
+		<div data-options="region:'center'">
+			<!--主要内容-->
+			<div id="whayerTabs" class="easyui-tabs" data-options="border:false,fit:true">				
+				<div title="首页" data-options="href:'view/index.html',closable:false,iconCls:'fa fa-home',cls:'pd5'"></div>
+				<!-- <div title="首页" data-options="iconCls:'fa fa-home',cls:'pd5'">
+					<iframe src="https://www.scskss.com/system/pages/workbench.html" width="100%" height="99%" frameborder="no"></iframe>
+				</div> -->
+			</div>
 		</div>
-		<div>
-			父级电话/编码:<input type="text" name="pid" value="002"/>
+		<div data-options="region:'south'" class="super-south">
+			<!--页脚-->
+			<div class="super-footer-info">
+				<!-- <span><i class="fa fa-info-circle"></i> 作者：tianyu&nbsp;&nbsp;QQ：779205344</span> -->
+				<span><i class="fa fa-copyright"></i> CopyRight 2017 尚康阳光版权所有 <i class="fa fa-caret-right"></i></span>
+			</div>
 		</div>
-		<div>
-			头像：<input type="file" name="file" />  
+
+		<div id="tabContextMenu" class="easyui-menu tabs-menu" style="width:120px;display:none;">
+	         <div id="mm-tabclose" data-options="name:1">关闭</div>
+	         <div id="mm-tabcloseall" data-options="name:2">关闭所有</div>
+	         <div id="mm-tabcloseother" data-options="name:3">关闭其他</div> 
+	         <div id="mm-tabrefresh" data-options="name:4">刷新</div> 
+	    </div>
+		<!--主题设置弹窗-->
+		<!-- <div id="win">
+			<div class="themeItem">
+				<ul>
+					<li>
+						<div class="TURQUOISE">TURQUOISE</div>
+					</li>
+					<li>
+						<div class="EMERALD">EMERALD</div>
+					</li>
+					<li>
+						<div class="PETER-RIVER">PETER RIVER</div>
+					</li>
+					<li>
+						<div class="AMETHYST">AMETHYST</div>
+					</li>
+					<li>
+						<div class="WET-ASPHALT">WET ASPHALT</div>
+					</li>
+					<li>
+						<div class="SUN-FLOWER">SUN FLOWER</div>
+					</li>
+					<li>
+						<div class="CARROT">CARROT</div>
+					</li>
+					<li class="themeActive">
+						<div class="ALIZARIN">ALIZARIN</div>
+					</li>
+				</ul>
+			</div>
+		</div> -->
+		<div id="changePwd"  class="easyui-dialog" data-options="closed:true" style="width:450px; padding:10px;min-height: 210px;">
+			<form id="pwdForm" method="post" enctype="multipart/form-data">
+		        <table style="width: 100%;">
+		            <tr>
+		                <td align="center" style="width: 120px;margin-bottom: 15px;">原密码:</td>
+		                <td><input type="password" name="oldPwd" class="easyui-textbox" style="width: 100%;" /></td>
+		            </tr>
+		            <tr>
+		                <td align="center" style="width: 120px;margin-bottom: 15px;">新密码:</td>
+		                <td><input type="password" name="newPwd" class="easyui-textbox" style="width: 100%;"/></td>
+		            </tr>
+		            <tr>
+		                <td align="center" style="width: 120px;margin-bottom: 15px;">密码确认:</td>
+		                <td><input type="password" name="confirmPwd" class="easyui-textbox" style="width: 100%;"/></td>
+		            </tr>
+		        </table>
+		    </form>
 		</div>
-		<input type="submit" value="注册个人代理商" /> 
-	</form> -->
-</body>
+	</body>
+
 </html>

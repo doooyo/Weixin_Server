@@ -1,0 +1,276 @@
+<div class="easyui-layout" data-options="fit:true" id='agent'>
+    <!-- Begin of toolbar -->
+    <div id="toolbar1">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>用户名：</label><input class="easyui-textbox iptUserName" style="width:150px">
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search agentQuery">查询</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagrid1" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-agent" class="easyui-dialog" data-options="closed:true" style="width:600px; padding:10px;min-height: 210px;">
+	<form id="agentForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+        	<input type="hidden" name="id">
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">账户:</td>
+                <td><input type="text" name="username" class="easyui-textbox username" disabled style="width: 100%;" /></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">名称:</td>
+                <td><input type="text" name="nickName" class="easyui-textbox nickname" style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">手机号:</td>
+                <td><input type="text" name="mobile" class="easyui-textbox mobile" style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">身份证号:</td>
+                <td><input type="text" name="idCardNo" class="easyui-textbox" style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td valign="top" align="center" style="width: 120px;margin-bottom: 15px;">证件预览:</td>
+                <td class="idCardImage">
+                	<!-- <image style='width: 100%;height: 260px;' 
+                	src='http://www.wentao.cc/Upload/editor/image/20140104/20140104232815_5769.jpg'/> -->
+                </td>
+            </tr>
+            <!-- <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">上传:</td>
+                <td><input name="file" class="easyui-filebox" data-options="buttonText:'浏览',buttonIcon:'fa fa-upload',accept: 'image/*'" style="width: 100%;"></td>
+            </tr> -->
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var agent = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagrid1').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getAgentList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		*/
+		attachEvent:function(){
+			var _this = this;
+			/*
+			* 表格操作
+			* @ 编辑：edit，删除：delete；setAgent：置为去代
+			 */
+			$('#agent').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':($op.hasClass('delete')?"delete":'setAgent');
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 代理商查询
+			*/
+			$("#agent .agentQuery").on("click",function(){
+				_this.getAgentList();
+			});
+		},
+		/*
+		* 获取代理商列表
+		*/
+		getAgentList:function(){
+			var _this = this;
+			var URL = API.getAgentListByType;
+			$('#datagrid1').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbar1",
+				queryParams: {
+					name: $("#agent .iptUserName").textbox('getValue'),
+					isAudit:1/*审核通过的代理商*/
+				},
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'username',title:'账户',width:100},
+					{ field:'nickName',title:'姓名',width:100},
+					{ field:'idCardNo',title:'身份证号',width:100},					
+					{ field:'mobile',title:'手机号',width:100},
+					{ field:'isAgent',title:'类型',width:100,formatter: function(value,row,index){
+						if (row.isAgent){
+							return '区域代理商';
+						} else {
+							return '个人代理商';
+						}
+					}},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton primary op edit"  data-rowindex="'+rowindex+'">详情</a><a class="easyui-linkbutton error op delete"  data-rowindex="'+rowindex+'">删除</a>';
+						if(!row.isAgent){
+							domHtml+='<a class="easyui-linkbutton warning op setAgent"  data-rowindex="'+rowindex+'">置为区代</a>';
+						}
+						return 	domHtml;
+					
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;				    
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#agent a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* easyui 自定义返回数据格式
+		* 格式必须为{total:10,rows:[]}
+		*/
+		pagerFilter:function(data){
+			if (typeof data.length == 'number' && typeof data.splice == 'function'){// is array                
+				data = {                   
+					total: data.length,                   
+					rows: data               
+				}            
+			}        
+			var dg = $(this);         
+			var opts = dg.datagrid('options');       
+			if (!data.originalRows){               
+				//data.originalRows = (data.rows);  
+				data.rows = data.list;     
+			}       
+			return data;
+		},
+		/*
+		*表格操作：编辑、删除、置为区代
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(rowindex);
+					break;
+				case 'delete':
+					$.messager.confirm('提示', '是否删除该记录?', function (r) {
+			            if (r) {
+			                _this.deleteAgent(_this.list[rowindex]['id']);
+			            }
+			        });
+					break;
+				case 'setAgent':
+					$.messager.confirm('提示', '是否设为区域代理商?', function (r) {
+			            if (r) {
+			                _this.setAgent(_this.list[rowindex]['id']);
+			            }
+			        });
+					break;	
+			}
+		},
+		openDialog:function(rowindex){
+			var _this = this;
+			//清除数据
+			$('#agentForm').form('clear');
+
+			var user = _this.list[rowindex];
+			//身份证照片
+			var image = user['idCardImg'].split("|");
+			var baseUrl = (API.proxy?'/proxy':'')+'/image/idcard/';
+			var html = '';
+			for(var i=0;i<image.length;i++){
+				imageUrl = baseUrl+image[i];
+				html+='<image src="'+imageUrl+'" class="thumb-image"/>';
+			}
+			$(".idCardImage").html(html);
+
+			//load数据
+			$('#agentForm').form('load',user);
+            //打开对话框
+			$('#whayer-dialog-agent').dialog({
+				closed: false,
+				modal:true,
+	            title: "查看",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	$('#whayer-dialog-agent').dialog('close'); 
+	                	//_this.updateAgent();
+	                }
+	            }
+	            // ,{
+	            //     text: '取消',
+	            //     iconCls: 'icon-cancel',
+	            //     handler: function () {
+	            //         $('#whayer-dialog-agent').dialog('close');                    
+	            //     }
+	            // }
+	            ]
+	        });
+	        $('#whayer-dialog-agent').window('center');
+		},
+		/*
+		* 删除代理商
+		* @ userId,用户id
+		 */
+		deleteAgent:function(userId){
+			var _this = this;
+			var url = API.deleteAgent;
+			var data = {id:userId};
+			whayer.post(url,data,function(res){
+				 _this.getAgentList();
+			});			
+		},
+		/*
+		* 置为区域代理商
+		* @ userId,用户id
+		 */
+		setAgent:function(userId){
+			var _this = this;
+			var url = API.approvalAgent;
+			var data = {ids:[userId]};
+			whayer.post(url,data,function(res){
+				 _this.getAgentList();
+			});
+		},
+		/*
+		* 提交表单，更新代理人信息
+		 */
+		updateAgent:function(){
+			var _this = this;	
+			var url = '/user/updateAgent';
+			var form = new FormData(document.getElementById("agentForm"));  
+			whayer.submitForm(url,form,function(res){
+				_this.getAgentList();
+			});
+		}
+	};
+	//
+	agent.init();	
+
+})(jQuery);
+	
+</script>

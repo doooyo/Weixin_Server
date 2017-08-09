@@ -1,0 +1,279 @@
+<div class="easyui-layout" data-options="fit:true" id='ticket'>
+    <!-- Begin of toolbar -->
+    <div id="toolbarticket">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <!-- <label>集团名称：</label><input class="easyui-textbox ticketName" style="width:150px"> -->
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <!-- <a href="javascript:void(0)" class="easyui-linkbutton success icon-search ticketQuery">查询</a> -->
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagridticket" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-ticket" class="easyui-dialog" data-options="closed:true" style="width:400px; padding:10px;height: 360px;">
+	<form id="ticketForm" method="post" enctype="multipart/form-data">
+        <table style="width: 100%;">
+        	<input type="hidden" name="id">
+            <tr>
+                <!-- <td align="center" style="width: 120px;margin-bottom: 15px;">产品树:</td> -->
+                <td><ul id="ticketTree" class="easyui-tree"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){	
+	var ticket = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagridticket').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getticketList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		*/
+		attachEvent:function(){
+			var _this = this;
+			/*
+			* 表格操作
+			* @ 编辑：edit，卡券打标
+			 */
+			$('#ticket').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':'delete';
+				_this.opertion(type,rowindex);		
+			});
+		},
+		/*
+		* 获取角色列表
+		*/
+		getticketList:function(){
+			var _this = this;
+			var URL = API.getRoleList;
+			$('#datagridticket').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbarticket",
+				// queryParams: {
+				// 	name: $("#ticket .ticketName").textbox('getValue')
+				// },
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'name',title:'角色名称',align:'center',width:100},
+					{ field:'type',title:'角色类型',width:180,align:'center',formatter:function(value,row,index){
+						//1:个人代理商；2：区域代理商；其他
+						var type = row['code'];
+						switch(type){
+							case '1':
+								type = '个人代理商';break;
+							case '2':
+								type = '区域代理商';break;
+							default :
+								type = '集团用户';break;
+						}
+						return type;
+					},styler:function(value,row,index){
+						var type = row['code'];
+						if(type=='1'){
+							return 'color:#e8390d;';
+						}else if(type=='2'){
+							return 'color:#1da02b;';
+						}else{
+							return 'color:#000;';
+						}
+					}},
+					{ field:'op',title:'操作',align:'center',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton success op edit"  data-rowindex="'+rowindex+'">卡券打标</a>';
+						return 	domHtml;				
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;				    
+				},
+				onLoadSuccess:function(data){
+					_this.list = data.list;
+					$("#ticket a.op").linkbutton();
+				}
+			});
+		},
+		/*
+		* easyui 自定义返回数据格式
+		* 格式必须为{total:10,rows:[]}
+		*/
+		pagerFilter:function(data){ 
+			if (!data.rows){
+				data.rows = data.list;     
+			}       
+			return data;
+		},
+		/*
+		*表格操作：编辑
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(_this.list[rowindex]['code']);
+					break;
+			}
+		},
+		/*
+		* 配置角色卡券权限
+		 */
+		openDialog:function(code){
+			var _this = this;
+			//$('#ticketForm').form('clear');	
+			//var url = '/card2role/getCardList2Role';
+			var url = API.getCardList2Role;
+			whayer.get(url,{
+				code:code,
+				pageIndex:1,
+				pageSize:500
+			},function(res){
+				var children = _this.dataFormater(res.list);
+				if(children.length>0){					
+					var data =  [{
+						text: '卡券列表',
+						id:null,
+						state: 'open',
+						children: children
+					}];
+					$('#ticketTree').tree({
+						checkbox:true,
+						data: data
+					});
+					$('#whayer-dialog-ticket').dialog({
+						closed: false,
+						modal:true,
+			            title: "微信卡券列表",
+			            buttons: [{
+			                text: '确定',
+			                iconCls: 'icon-ok',
+			                handler: function(){
+			                	$('#whayer-dialog-ticket').dialog('close');	
+			                	_this.updateticket(code);					
+			                }
+			            }, {
+			                text: '取消',
+			                iconCls: 'icon-cancel',
+			                handler: function () {
+			                    $('#whayer-dialog-ticket').dialog('close');                    
+			                }
+			            }]
+		        	});
+				}else{
+					whayer.messager('提示','暂无可用卡券!');
+				}				
+			});
+		},		
+		dataFormater:function(list){
+			var _this = this;
+			// var data =  [{
+			// 	text: '卡券列表',
+			// 	id:null,
+			// 	state: 'open',
+			// 	children: []
+			// }];
+			var children = [];
+			for(var i=0;i<list.length;i++){
+				var obj = list[i];
+				var id = obj['cardId'];
+				var name=obj['title'];
+				var checked = obj['isSelected'];
+				var item = {
+					id:id,
+					text:name,
+					checked:checked
+				}
+				var expired = _this.getCardExpiredStatus(obj);
+				if(!expired){
+					//data[0].children.push(item);
+					children.push(item);
+				}				
+			}
+			return children;
+		},		
+		/**
+	   * 卡券是否过期
+	   */
+	  getCardExpiredStatus:function(item){
+	    /*
+	    DATE_TYPE_FIX_TIME_RANGE 表示固定日期区间，
+	    DATE_TYPE_FIX_TERM表示固定时长（自领取后按天算），
+	    DATE_TYPE_PERMANENT 表示永久有效（会员卡类型专用）。
+	    */
+	    let expired = false;
+	    let expireTime = '';
+	    let now = Date.now();
+	    let dateType = item['dateType'];
+	    if (dateType == "DATE_TYPE_FIX_TIME_RANGE") {
+	      //微信返回的时间戳到秒
+	      let endTime = new Date(item['endTimestamp'] * 1000);
+	      if(endTime<now){
+	        expired = true;
+	      }      
+	    } else if (dateType == "DATE_TYPE_FIX_TERM") {
+	      
+	    } else {
+	      
+	    }
+	    return expired;
+	  },
+		/*
+		* 卡券打标
+		 */
+		updateticket:function(code){
+			var _this = this;	
+			var url = API.cardAssociate;
+			var checkedIds = _this.getCheckedNodes();
+			var param = {
+				role:code,
+				ids:checkedIds
+			};
+			whayer.post(url,param,function(res){
+				whayer.messager('提示','打标成功!');
+			});
+		},
+		getCheckedNodes:function(){
+			var nodes = $('#ticketTree').tree('getChecked');
+			var ids = [];
+            for(var i=0; i<nodes.length; i++){
+                ids.push(nodes[i]['id']);
+            }
+            return ids;
+		}
+	};
+	//
+	ticket.init();	
+
+})(jQuery);
+	
+</script>

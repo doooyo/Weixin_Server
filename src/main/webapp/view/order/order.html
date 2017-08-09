@@ -1,0 +1,370 @@
+<div class="easyui-layout" data-options="fit:true" id='order'>
+    <!-- Begin of toolbar -->
+    <div id="toolbar3">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <label>代理商：</label><input class="easyui-textbox username" style="width:150px" placeholder="请输入代理商姓名">
+            <label>起始时间：</label><input class="easyui-datebox beginTime" style="width:120px">
+            <label>结束时间：</label><input class="easyui-datebox endTime" style="width:120px">
+            <label>订单类型：</label> 
+            <select class="easyui-combobox" id='orderState' panelHeight="auto" style="width:120px">
+            	<option value="-1">全部</option>
+                <option value="0">未支付</option>
+                <option value="1">未绑定检测盒</option>
+                <option value="2">未结算</option>
+                <option value="3">已结算</option>
+            </select>
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search orderQuery">查询</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagrid3" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-order" class="easyui-dialog" data-options="closed:true,draggable:true" 
+	style="width:450px; padding:10px;min-height: 210px;">
+	<form id="orderForm" method="post">
+        <table style="width: 100%;">
+        	<tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">订单号:</td>
+                <td><input type="text" name="id" class="easyui-textbox" style="width: 100%;" /></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">订单金额(￥):</td>
+                <td><input type="text" name="amount" class="easyui-textbox" style="width: 100%;" /></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">订单状态:</td>
+                <td><input type="text" name="stateTips" class="easyui-textbox"  style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">体检人:</td>
+                <td><input type="text" name="examineeName" class="easyui-textbox" style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">体检人电话:</td>
+                <td><input type="text" name="examineeMobile" class="easyui-textbox"  style="width: 100%;"/></td>
+            </tr>
+            <tr>
+                <td align="center" valign="top" style="width: 120px;margin-bottom: 15px;">购买产品:</td>
+                <td><input type="text" name="productName" class="easyui-textbox" data-options='multiline:true'  
+                style="width: 100%;height: 60px;"/></td>
+            </tr>
+            <!-- <tr>
+                <td valign="top" align="center" style="width: 120px;margin-bottom: 15px;">证件预览:</td>
+                <td><image style='width: 100%;height: 260px;' src='http://www.wentao.cc/Upload/editor/image/20140104/20140104232815_5769.jpg'/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">上传:</td>
+                <td><input class="easyui-filebox" data-options="buttonText:'浏览',buttonIcon:'fa fa-upload',accept: 'image/*'" style="width: 100%;"></td>
+            </tr> -->
+        </table>
+    </form>
+</div>
+<div id="whayer-dialog-box" class="easyui-dialog" data-options="closed:true,draggable:true" 
+	style="width:400px; padding:10px;min-height: 210px;">
+	<form id="boxForm" method="post">
+        <table style="width: 100%;">
+        	<tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">检测盒编码:</td>
+                <td><input type="text" name="boxId" class="easyui-textbox" style="width: 100%;" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){
+	var order = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagrid3').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getOrdertList();
+			},100);			
+		},
+		/*
+		* 事件初始化
+		 */
+		attachEvent:function(){
+			var _this = this;
+			/*
+			*  表格操作 detail：详情
+			 */
+			$('#order').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('detail')?'detail':'detectionbox';
+				_this.opertion(type,rowindex);		
+			});
+			/*
+			* 订单查询
+			 */
+			$("#order .orderQuery").on("click",function(){
+				_this.getOrdertList();
+			});
+		},
+		/*
+		* 获取订单列表
+		 */
+		getOrdertList:function(){
+			var _this = this;
+			var param ={
+		      'userId': '',
+		      'type':$('#orderState').combobox('getValue'),
+		      'beginTime':$('#order .beginTime').datebox('getValue'),
+		      'endTime':$('#order .endTime').datebox('getValue'),
+		      'nickname':$("#order .username").val()//代理人名称
+		      //'examineeName':$("#order .username").val()//体检人名称
+		    };
+			var URL = API.getOrderListByTypeV2;
+			$('#datagrid3').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,       
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbar3",
+				queryParams: param,
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'id',title:'订单号',width:100},
+					{ field:'nickname',title:'代理人',width:100},
+					{ field:'examineeName',title:'体检人',width:100},
+					{ field:'examineeMobile',title:'体检人电话',width:100},
+					{ field:'amount',title:'订单金额(￥)',width:100},
+					// { field:'productName',title:'产品列表'},
+					{ field:'createTime',title:'订单生成时间',width:100},
+					{ field:'detectionboxId',align:'center',title:'检测盒状态',width:100,formatter:function(value,row,index){
+						if(row['detectionboxId']){
+							return '已绑定'
+						}else{
+							return '未绑定'
+						}
+					},styler:function(value,row,index){
+						if(row['detectionboxId']){
+							return 'color:#1da02b;font-weight:bold;';
+						}else{//未绑定
+							return 'color:#e8390d;font-weight:bold;';
+						}
+					}},
+					{ field:'stateTips',title:'订单状态',align:'center',width:100,styler:function(value,row,index){
+						//0:未支付；1：已支付；2：已结算；3已取消
+						var state = row['state'];
+						if(state==0){
+							return 'color:#e8390d;font-weight:bold;';
+						}else if(state==1){
+							return 'color:#1da02b;font-weight:bold;';
+						}else if(state==2){
+							return 'color:#0f981d;font-weight:bold;';
+						}else{
+							return 'color:#cfd419;font-weight:bold;';
+						}
+					}},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton success op detail"  data-rowindex="'+rowindex+'">订单详情</a>';
+						if(!row['detectionboxId']){
+							domHtml+='<a class="easyui-linkbutton success op detectionbox"  data-rowindex="'+rowindex+'">绑定检测盒</a>';
+						}
+						return 	domHtml;
+					
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;
+				},
+				onLoadSuccess:function(data){
+					if(data.list.length==0){
+						$(this).datagrid('appendRow',{ id: '<div style="text-align:center;color:red">没有相关记录！</div>' }).
+						datagrid('mergeCells', { index: 0, field: 'id', colspan: 9 });
+						$(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+					}else{						
+						_this.list = data.list;
+						$("#order a.op").linkbutton();
+					}
+				}
+			});
+		},
+		/*
+		* 自定义返回数据
+		 */
+		pagerFilter:function(data){
+			var _this  = order;
+			var _data = {
+				total:data.total,
+				list:data.list,
+				rows:[]
+			}
+			var arr = _this.formateData(data.list);			
+			_data.rows = arr;       
+			return _data;
+		},
+		formateData:function(list){
+			var _this = this;
+			var arr = [];
+			for(var i=0;i<list.length;i++){
+				var item = list[i];
+				var _createTime = new Date(item['createTime']).Format("yyyy-MM-dd hh:mm:ss");
+				var nickName = item['user'] ? item['user']['nickName'] : '';
+				nickName = nickName||'散客';
+				var obj = {
+					id:item['id'],
+					examineeName:item.examinee['name'],
+					examineeMobile:item.examinee['mobile'],
+					amount:item['amount'],
+					nickname:nickName,
+					// productName:_this.getProductNameTips(item.products),
+					createTime:_createTime,
+					state:item['state'],
+					detectionboxId:item['detectionboxId'],
+					stateTips: _this.getStateTips(item['state']),
+				};
+				arr.push(obj);
+			}
+			return arr;
+		},
+		/*
+		* 订单状态
+		 */
+		getStateTips:function(state){
+			var tips = '';
+		    switch (state) {
+		      case 0:
+		        tips = '未付款'; break;
+		      case 1:
+		        tips = '已付款'; break;
+		      case 2:
+		        tips = '已结算'; break;
+		      case 3:
+		        tips = '已取消'; break;
+		    }
+		    return tips;
+		},
+		getProductNameTips:function(productList){
+			var tips = '';
+		    for (var i = 0; i < productList.length; i++) {
+		      tips += productList[i]['name'] + "、";
+		    }
+		    return tips;
+		},
+		/*
+		* 表格操作
+		 */
+		opertion:function(type,rowindex){
+			var _this = this;
+			var _row = _this.list[rowindex];
+			switch(type){
+				case 'detail':
+					_this.getOrderDetail(_row['id']);
+					break;	
+				case 'detectionbox':
+					_this.boxDialog(_row['id']);
+					break;				
+			}
+		},
+		/*
+		* 订单详情
+		 */
+		openDialog:function(order){
+			var _this = this;
+			//清除数据
+			$('#orderForm').form('clear');
+			//load数据
+			$('#orderForm').form('load',order);
+            //打开对话框
+			$('#whayer-dialog-order').dialog({
+				closed: false,
+				modal:true,
+	            title: "订单详情",
+	            buttons: [{
+	                text: '关闭',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	$('#whayer-dialog-order ').dialog('close');   
+	                }
+	            }]
+	        });
+	        $('#whayer-dialog-order').window('center');
+		},
+		boxDialog:function(orderId){
+			var _this = this;
+			$('#whayer-dialog-box').dialog({
+				closed: false,
+				modal:true,
+	            title: "绑定检测盒",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	var url = API.saveOrder2Box;
+						var boxId = $("input[name='boxId']").val();
+						var param = {
+							orderId:orderId,
+							detectionboxId:boxId
+						};
+						whayer.post(url,param,function(res){
+	                		$('#whayer-dialog-box').dialog('close');
+							_this.getOrdertList();
+						});   
+	                }
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#whayer-dialog-box').dialog('close');                    
+	                }
+	            }]
+	        });			
+		},
+		/*
+		* 获取单个订单详情
+		* orderId 订单id
+		 */
+		getOrderDetail:function(orderId){
+			var _this = this;
+			var url = API.getOrderDetail;
+			var param = {
+				id:orderId
+			};
+			whayer.get(url,param,function(res){
+				var order = _this.dataFormater(res.list[0]);
+				_this.openDialog(order);
+			});
+		},
+		dataFormater:function(order){
+			var _this = this;
+			var order = {
+				id:order['id'],
+				amount:order['amount'],
+				stateTips:_this.getStateTips(order['state']),
+				examineeName:order.examinee['name'],
+				examineeMobile:order.examinee['mobile'],
+				productName:_this.getProductNameTips(order.products)
+			}
+			return order;
+		}
+	};
+	//
+	order.init();	
+
+})(jQuery);
+	
+</script>

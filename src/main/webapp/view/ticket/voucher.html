@@ -1,0 +1,314 @@
+<div class="easyui-layout" data-options="fit:true" id='voucher'>
+    <!-- Begin of toolbar -->
+    <div id="toolbar-voucher">
+        <!-- <div class="whayer-toolbar-button">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add"  plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit"  plain="true">修改</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div> -->
+        <div class="whayer-toolbar-search">            
+            <!-- <label>代金券编码：</label><input class="easyui-textbox" style="width:150px" placeholder="请输入代理商姓名" class="voucherCode"> -->
+            <!-- <a href="#" class="easyui-linkbutton" iconCls="icon-search">查询</a> -->
+            <a href="javascript:void(0)" class="easyui-linkbutton success icon-search query">查询</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton primary icon-search pd5 add">新增</a>
+        </div>
+    </div>
+    <!-- End of toolbar -->
+    <table id="datagrid-voucher" class="easyui-datagrid"></table>
+</div>
+<!-- Begin of easyui-dialog -->
+<div id="whayer-dialog-voucher" class="easyui-dialog" data-options="closed:true" style="width:400px; padding:10px;min-height: 210px;">
+	<form id="voucherForm" method="post">
+        <table style="width: 100%;">
+            <tr class="voucherEdit">
+                <td align="center" style="width: 120px;margin-bottom: 15px;">代金券编码:</td>
+                <td><input type="text" name="id" class="easyui-textbox" disabled style="width: 100%;" /></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">面值:</td>
+                <td><input type="text" name="amount" class="easyui-textbox voucherAmount" style="width: 100%;"/></td>
+            </tr>
+            <!-- <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">所属代理商:</td>
+                <td><input type="text" name="userId" class="easyui-textbox" style="width: 100%;"/></td>
+            </tr> -->
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">所属代理商:</td>
+                <td><input type="text" name="voucherAgent" id='voucherAgent' class="easyui-combobox" 
+                data-options='valueField:"id",textField:"text"' style="width: 100%;"/></td>
+            </tr>
+            <tr class="voucherEdit">
+                <td align="center" style="width: 120px;margin-bottom: 15px;">是否有效:</td>
+                <td>
+                	<select id="voucherCombo" class="easyui-combobox" style="width: 100%;" data-options="editable:false,panelHeight:null,disabled:true">
+	                    <option value="1">有效</option>
+	                    <option value="0">无效</option>
+	                </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">截止日期:</td>
+                <td><input id="voucherDeadline" type="text" class="easyui-datebox" style="width: 100%;" required="required"/></td>
+            </tr>
+            <!-- <tr>
+                <td valign="top" align="center" style="width: 120px;margin-bottom: 15px;">证件预览:</td>
+                <td><image style='width: 100%;height: 260px;' src='http://www.wentao.cc/Upload/editor/image/20140104/20140104232815_5769.jpg'/></td>
+            </tr>
+            <tr>
+                <td align="center" style="width: 120px;margin-bottom: 15px;">上传:</td>
+                <td><input class="easyui-filebox" data-options="buttonText:'浏览',buttonIcon:'fa fa-upload',accept: 'image/*'" style="width: 100%;"></td>
+            </tr> -->
+        </table>
+    </form>
+</div>
+
+<!-- End of easyui-dialog -->
+<script type="text/javascript">
+;(function($){
+	var voucher = {
+		list:[],
+		init:function(){
+			var _this = this;
+			$('#datagrid-voucher').datagrid({});
+			_this.attachEvent();
+			setTimeout(function(){
+				_this.getVoucherList();
+			},100);			
+		},
+		attachEvent:function(){
+			var _this = this;
+			//操作列
+			$('#voucher').on("click","a.op",function(e){
+				var $op = $(this);
+				var rowindex = $op.attr('data-rowindex');
+				var type = $op.hasClass('edit')?'edit':'delete';
+				_this.opertion(type,rowindex);		
+			});
+			$("#voucher .query").on("click",function(){
+				_this.getVoucherList();
+			});
+			$("#voucher .add").on("click",function(){
+				_this.openDialog();
+			});
+		},
+		getVoucherList:function(){
+			var _this = this;
+			var URL = '/proxy/voucher/getList';
+			$('#datagrid-voucher').datagrid({
+				url:URL,
+				method:'get',
+				loadFilter:_this.pagerFilter,	
+				height: 'auto',	
+				rownumbers:true,
+				singleSelect:false,
+				pageSize:10,     
+				pagination:true,
+				multiSort:true,
+				fitColumns:true,
+				fit:true,
+				singleSelect:true,
+				checkOnSelect:false,
+				toolbar:"#toolbar-voucher",
+				queryParams: {
+					userId: ''
+				},
+				columns:[[
+					// { field:'ck',title:'全选',width:100,sortable:true,checkbox:true},
+					{ field:'id',title:'代金券编码',width:100},
+					{ field:'userId',title:'所属代理商',width:180,formatter:function(value,row,index){
+						return row['user']['nickName'];
+					}},
+					{ field:'amount',title:'面值',width:100},
+					{ field:'effect',title:'是否有效',width:100,formatter: function(value,row,index){
+						if (row.effect){
+							return '有效';
+						} else {
+							return '无效';
+						}
+					}},				
+					{ field:'deadline',title:'截止日期',width:100,formatter: function(value,row,index){
+						var deadline = new Date(row['deadline']).Format("yyyy-MM-dd");
+						return deadline;
+					}},
+					{ field:'op',title:'操作',align:'left',width:180,formatter:function(value,row,index){
+						//var userId = row['id'];
+						var rowindex = index;
+						var domHtml = '<a class="easyui-linkbutton primary op edit"  data-rowindex="'+rowindex+'">编辑</a><a class="easyui-linkbutton error op delete"  data-rowindex="'+rowindex+'">删除</a>';						
+						return 	domHtml;					
+					}}
+				]],
+				onBeforeLoad:function(params){
+					params.pageSize = params.rows;
+				    params.pageIndex = params.page;
+				    delete params.rows;
+				    delete params.page;
+				    console.log(params);
+				},
+				onLoadSuccess:function(data){
+					console.log(data);
+					_this.list = data.list;
+					$("#voucher a.op").linkbutton();
+				}
+			});
+		},
+		pagerFilter:function(data){			   
+			if (!data.originalRows){                
+				data.rows = data.list;     
+			}        
+			return data;
+		},
+		opertion:function(type,rowindex){
+			var _this = this;
+			switch(type){
+				case 'edit':
+					_this.openDialog(rowindex);
+					break;
+				case 'delete':
+					$.messager.confirm('提示', '是否删除该记录?', function (r) {
+			            if (r) {
+			                _this.deleteVoucher(_this.list[rowindex]['id']);
+			            }
+			        });
+					break;
+			}
+		},
+		openDialog:function(rowindex){
+			var _this = this;
+			_this.getAgentList();
+			//清除数据
+			$('#voucherForm').form('clear');
+			if(rowindex==""||rowindex==undefined){
+				//新增
+				$(".voucherEdit").hide();
+				_this.addVoucher();
+			}else{
+				//编辑
+				$(".voucherEdit").show();
+				_this.editVoucher(rowindex);
+			}			
+		},
+		editVoucher:function(rowindex){
+			var _this = this;
+			var voucher = _this.list[rowindex];
+			var isEffect = voucher['effect']?'1':'0';
+			var voucherDeadline = new Date(voucher['deadline']).Format("yyyy-MM-dd");
+
+			$('#voucherCombo').combobox('setValue',isEffect);
+			$('#voucherDeadline').datebox('setValue', voucherDeadline);
+			$('#voucherAgent').combobox('setValue',voucher.user['id']);
+			//load数据
+			$('#voucherForm').form('load',voucher);
+            //打开对话框
+			$('#whayer-dialog-voucher').dialog({
+				closed: false,
+				modal:true,
+	            title: "编辑",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	$('#whayer-dialog-voucher').dialog('close');
+	                	_this.updateVoucher(voucher);
+	                }
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#whayer-dialog-voucher').dialog('close');                    
+	                }
+	            }]
+	        });
+		},
+		addVoucher:function(){
+			//需要登录
+			//新增优惠券
+			var _this = this;
+	        //打开对话框
+			$('#whayer-dialog-voucher').dialog({
+				closed: false,
+				modal:true,
+	            title: "新增代金券",
+	            buttons: [{
+	                text: '确定',
+	                iconCls: 'icon-ok',
+	                handler: function(){
+	                	$('#whayer-dialog-voucher').dialog('close');	                	
+						var url = '/voucher/save';
+						var amount = $('.voucherAmount').textbox('getValue');
+						var deadline = $('#voucherDeadline').datebox('getValue');
+						var uid = $('#voucherAgent').combobox('getValue');
+						var param = {
+							userId:uid,
+							deadline:deadline,				
+							amount:amount
+						};
+						whayer.post(url,param,function(res){
+							_this.getVoucherList();
+						});
+	                }
+	            }, {
+	                text: '取消',
+	                iconCls: 'icon-cancel',
+	                handler: function () {
+	                    $('#whayer-dialog-voucher').dialog('close');                    
+	                }
+	            }]
+	        });	
+		},
+		updateVoucher:function(voucher){
+			var _this = this;
+			var deadline = $('#voucherDeadline').datebox('getValue');
+			var userId = $('#voucherAgent').combobox('getValue');
+			var amount = $('.voucherAmount').textbox('getValue');
+			var param = {
+				id:voucher['id'],
+				userId:userId,
+				amount:amount,
+				deadline:deadline
+			};
+			//更新
+			var url = '/voucher/update';
+			whayer.post(url,param,function(){
+				_this.getVoucherList();
+			});
+		},
+		deleteVoucher:function(id){
+			var _this = this;
+			var url = '/voucher/deleteById';
+			whayer.post(url,{id:id},function(){
+				_this.getVoucherList();
+			});
+		},
+		getAgentList:function(){
+			//获取已通过验证的代理商列表
+			var _this = this;
+			var url = '/user/getUserListByType';
+			var param = {
+				name: '',
+				isAudit:1,
+				pageIndex:0,
+				pageSize:1000
+			};
+			whayer.get(url,param,function(res){
+				_this.agentFormater(res.list);
+			});
+		},
+		agentFormater:function(list){
+			var data = [];
+			for(var i=0;i<list.length;i++){
+				var obj = list[i];
+				var item = {
+					id:obj['id'],
+					text:obj['nickName']
+				}
+				data.push(item);
+			}
+			$('#voucherAgent').combobox('loadData',data);
+		}
+	};
+	/**/
+	voucher.init();	
+
+})(jQuery);
+	
+</script>
