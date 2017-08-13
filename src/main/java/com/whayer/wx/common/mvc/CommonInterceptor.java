@@ -44,7 +44,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		log.info("UA:" + ua);
 		log.info("客户端:" +userAgent.getOperatingSystem() + ",浏览器:" + userAgent.getBrowser());
 		
-		if(ua.contains("MicroMessenger")){
+		if(ua.contains("MicroMessenger") || ua.contains("webview")){
 			return true;
 		}
 		
@@ -52,15 +52,14 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 			return true;
 		}
 		String reqUrl = request.getRequestURI();
-		if (reqUrl.contains("/verify")) {
-			return true;
-		}
+		log.debug("URI:" + reqUrl);
 		// 验证登录信息,分别从cookie和session取出并进行匹配
 		Box box = new Box();
 		loadCookie(request, box);
 		String sessioncookieid = box.$cv(X.ENCRYPTED + X.SESSION_ID);
 		String userid = box.$cv(X.ENCRYPTED + X.USERID);
 		if(null == sessioncookieid || null == userid){
+			response.sendRedirect("/");
 			return false;
 		}
 		
@@ -72,7 +71,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		if (null != user && sessioncookieid.equals(sessionid) && userid.equals(user.getId())) {
 			return true;
 		} else {
-			response.sendRedirect("/login");
+			response.sendRedirect("/");
 			//request.getRequestDispatcher("/login").forward(request, response); //只提供RESTful接口,不提供后台跳转
 			return false;
 		}

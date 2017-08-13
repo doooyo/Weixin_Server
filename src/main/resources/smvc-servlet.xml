@@ -149,7 +149,6 @@
 					<value>/user/weixin/login</value>
 					<value>/user/logout</value>
 					<value>/login</value>
-					<value>/index</value>
 					<value>/register</value>
 					<value>/upload</value>
 					<value>/user/logout</value>

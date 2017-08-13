@@ -61,7 +61,7 @@
 							</div>
 							<div class="tips clearfix">
 								<label><input type="checkbox" checked="checked">记住用户名</label>
-								<a href="register.html" target='_blank' class="register">立即注册</a>
+								<a href="/register" target='_blank' class="register">立即注册</a>
 								<!-- <a href="javascript:;" class="forget-pwd">忘记密码？</a> -->
 							</div>
 							<div class="enter" style="margin: 0 10px;">
@@ -128,7 +128,7 @@
 				whayer.post(url,param,function(res){
 					var user = res.list[0];
 					Cookies.set('userName', user['nickName'], { expires: 1});
-					window.location.href = 'index.html';
+					window.location.href = '/index';
 				},function(res){
 					_this.getVerifyCode();
 					//error
