@@ -16,7 +16,7 @@
                      http://www.springframework.org/schema/task 
                      http://www.springframework.org/schema/task/spring-task-3.0.xsd">
  
-    <context:property-placeholder location="classpath:x.properties" />
+    <context:property-placeholder order="1" location="classpath:x.properties" ignore-unresolvable="false"/>
     
     <!-- <task:annotation-driven/> -->
 
@@ -121,9 +121,14 @@
 	
 	<bean id="springFactory" class="com.whayer.wx.common.bean.SpringFactory"></bean>
 	
+	<!-- 
+	Spring2.5 后使用context:property-placeholder替换PropertyPlaceholderConfigurer。 
+	其本质是注册了一个PropertyPlaceholderConfigurer（3.1之前）或者是PropertySourcesPlaceholderConfigurer（3.1之后）
+	-->
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="placeholderPrefix" value="jlfu{" />
+		<property name="placeholderPrefix" value="${" />
+		<property name="placeholderSuffix" value="}" />
 		<property name="locations">
 			<list>
 				<value>classpath:java-large-file-uploader.properties</value>
@@ -152,14 +157,14 @@
 	</bean> -->
 
 	<!-- spring task jms -->
-	<!-- <task:scheduled-tasks scheduler="jlfuScheduler">
+	<task:scheduled-tasks scheduler="jlfuScheduler">
 		<task:scheduled ref="importedFilesCleaner" method="clean"
 			cron="0/30 * * * * ?" />
 	</task:scheduled-tasks>
 
 	<task:scheduler id="jlfuScheduler" />
 
-	<task:annotation-driven /> -->
+	<task:annotation-driven />
 	
 	<!-- <bean id="UploadServlet" class="com.whayer.wx.upload.fileuploader.web.UploadServlet"/>
     <bean id="UploadServletAsync" class="com.whayer.wx.upload.fileuploader.web.UploadServletAsync"/> -->

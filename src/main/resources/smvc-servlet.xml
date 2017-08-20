@@ -153,12 +153,14 @@
 					<value>/upload</value>
 					<value>/user/logout</value>
 					<value>/css/** </value>
+					<value>/static/** </value>
 					<value>/img/**</value>
 					<value>/WEB-INF/jsp/**</value>
 					<value>/js/**</value>
 					<value>/easyui/**</value>
 					<value>/easyui-extensions/**</value>
 					<value>/view/**</value>
+					<value>/payV2/callback</value>
 				</array>
 			</property>
 		</bean>

@@ -95,7 +95,7 @@ public class UploadProcessor {
 	 * Size of a slice <br>
 	 * Default to 10MB.
 	 */
-	@Value("jlfu{jlfu.sliceSizeInBytes:10485760}")
+	@Value("${jlfu.sliceSizeInBytes:10485760}")
 	private long sliceSizeInBytes;
 
 	/**
@@ -103,7 +103,7 @@ public class UploadProcessor {
 	 * If <code>false</code>, the name will be a {@link UUID} which will guarantee no name-collision.<br>
 	 * Default to <code>false</code>
 	 */
-	@Value("jlfu{jlfu.keepOriginalFileName:false}")
+	@Value("${jlfu.keepOriginalFileName:false}")
 	private boolean keepOriginalFileName;
 
 	public InitializationConfiguration getConfig(UUID clientId) {

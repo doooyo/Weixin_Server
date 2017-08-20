@@ -19,10 +19,10 @@ import org.springframework.web.context.WebApplicationContext;
 @Component
 public class StaticStateRootFolderProvider {
 	
-	@Value("jlfu{jlfu.defaultUploadFolder:/JavaLargeFileUploader}")
+	@Value("${jlfu.defaultUploadFolder:/JavaLargeFileUploader}")
 	private String defaultUploadFolder;
 	
-	@Value("jlfu{jlfu.uploadFolderRelativePath:true}")
+	@Value("${jlfu.uploadFolderRelativePath:true}")
 	private Boolean uploadFolderRelativePath;
 	
 	@Autowired(required = false)
